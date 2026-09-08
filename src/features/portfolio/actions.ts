@@ -233,19 +233,14 @@ export async function getPublicPortfolio(username: string) {
   const supabase = getSupabaseServiceClient()
   const cleanUsername = username.toLowerCase()
 
-  // 1. Check portfolio_sites first
-  const { data: site } = await supabase
-    .from('portfolio_sites')
-    .select('*')
-    .eq('username', cleanUsername)
-    .maybeSingle()
+  // 1 & 2. Fetch portfolio_sites and profiles in parallel for maximum performance
+  const [siteRes, profileRes] = await Promise.all([
+    supabase.from('portfolio_sites').select('*').eq('username', cleanUsername).maybeSingle(),
+    supabase.from('profiles').select('*').eq('username', cleanUsername).maybeSingle(),
+  ])
 
-  // 2. Fetch user profile
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('username', cleanUsername)
-    .maybeSingle()
+  const site = siteRes.data
+  const profile = profileRes.data
 
   // 3. Fetch latest resume
   let resume: Resume | null = null
@@ -270,15 +265,13 @@ export async function getPublicPortfolio(username: string) {
       .eq('user_id', profile.user_id)
       .order('created_at', { ascending: false })
 
-    if (files) {
-      filesWithUrls = await Promise.all(
-        (files as UserFile[]).map(async (file) => {
-          const { data } = await supabase.storage
-            .from('user_files')
-            .createSignedUrl(file.storage_path, 3600)
-          return { ...file, public_url: data?.signedUrl || null } as any
-        })
-      )
+    if (files && files.length > 0) {
+      filesWithUrls = (files as UserFile[]).map((file) => {
+        const publicUrlData = supabase.storage
+          .from('user_files')
+          .getPublicUrl(file.storage_path)
+        return { ...file, public_url: publicUrlData?.data?.publicUrl || null } as any
+      })
     }
   }
 

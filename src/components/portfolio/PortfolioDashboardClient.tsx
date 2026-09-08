@@ -143,21 +143,21 @@ export function PortfolioDashboardClient({ portfolio, profile }: PortfolioDashbo
 
         {/* Quick Links */}
         <div className="grid sm:grid-cols-3 gap-4 pt-2">
-          <Link href={`/portfolio/editor/${portfolio.id}`}>
+          <Link href={`/portfolio/editor/${portfolio.id}`} prefetch={true}>
             <Card className="p-4 hover:border-primary/40 transition-all cursor-pointer group">
               <Edit3 className="h-5 w-5 text-primary mb-2" />
               <p className="font-bold text-sm group-hover:text-primary transition-colors">Studio Editor</p>
               <p className="text-xs text-muted-foreground mt-0.5">Customize sections, content, and colors</p>
             </Card>
           </Link>
-          <Link href={`/portfolio/analytics/${portfolio.id}`}>
+          <Link href={`/portfolio/analytics/${portfolio.id}`} prefetch={true}>
             <Card className="p-4 hover:border-primary/40 transition-all cursor-pointer group">
               <BarChart2 className="h-5 w-5 text-blue-500 mb-2" />
               <p className="font-bold text-sm group-hover:text-primary transition-colors">Analytics</p>
               <p className="text-xs text-muted-foreground mt-0.5">View traffic, referrers, and visitor insights</p>
             </Card>
           </Link>
-          <Link href={`/portfolio/settings/${portfolio.id}`}>
+          <Link href={`/portfolio/settings/${portfolio.id}`} prefetch={true}>
             <Card className="p-4 hover:border-primary/40 transition-all cursor-pointer group">
               <Settings className="h-5 w-5 text-orange-500 mb-2" />
               <p className="font-bold text-sm group-hover:text-primary transition-colors">SEO & Settings</p>
