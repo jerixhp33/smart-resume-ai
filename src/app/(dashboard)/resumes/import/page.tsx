@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Upload, FileText, Loader2, Sparkles, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { importResumeFromText } from '@/features/resume/actions'
+import { AIProcessingModal } from '@/components/ai/AIProcessingModal'
 
 
 export default function ImportResumePage() {
@@ -100,6 +101,8 @@ export default function ImportResumePage() {
 
   return (
     <div className="max-w-3xl mx-auto py-8 px-4">
+      <AIProcessingModal isOpen={isLoading} />
+      
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Import Resume</h1>
         <p className="text-muted-foreground">

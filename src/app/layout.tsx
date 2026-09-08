@@ -38,12 +38,15 @@ export const viewport: Viewport = {
 }
 
 import { Toaster } from '@/components/ui/toast'
+import { SmoothScroller } from '@/components/ui/SmoothScroller'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground antialiased">
-        {children}
+        <SmoothScroller>
+          {children}
+        </SmoothScroller>
         <Toaster />
       </body>
     </html>
