@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { PortfolioSite } from '@/types'
 import { usePortfolioStore } from '@/features/portfolio/usePortfolioStore'
@@ -9,7 +9,18 @@ import { CenterPreviewPanel } from './CenterPreviewPanel'
 import { RightDesignPanel } from './RightDesignPanel'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Eye, Share2, Check, Loader2, Sparkles } from 'lucide-react'
+import {
+  ArrowLeft,
+  Eye,
+  Check,
+  Loader2,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
+  Maximize2,
+  Minimize2,
+} from 'lucide-react'
 
 interface PortfolioStudioEditorProps {
   portfolio: PortfolioSite
@@ -20,9 +31,22 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
   const saveStatus = usePortfolioStore((s) => s.saveStatus)
   const username = portfolio.username
 
+  const [isLeftOpen, setIsLeftOpen] = useState(true)
+  const [isRightOpen, setIsRightOpen] = useState(true)
+
   useEffect(() => {
     initialize(portfolio)
   }, [portfolio, initialize])
+
+  const toggleFullFocus = () => {
+    if (isLeftOpen || isRightOpen) {
+      setIsLeftOpen(false)
+      setIsRightOpen(false)
+    } else {
+      setIsLeftOpen(true)
+      setIsRightOpen(true)
+    }
+  }
 
   return (
     <div className="h-screen flex flex-col bg-background text-foreground overflow-hidden">
@@ -35,10 +59,23 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
             </Button>
           </Link>
           <span className="text-border">|</span>
-          <span className="font-bold text-sm truncate max-w-[200px]">{portfolio.title}</span>
+
+          {/* Toggle Left Navigation Panel */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsLeftOpen(!isLeftOpen)}
+            title={isLeftOpen ? "Collapse Content Editor Sidebar" : "Expand Content Editor Sidebar"}
+            className="gap-1.5 text-xs h-8 text-muted-foreground hover:text-foreground"
+          >
+            {isLeftOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4 text-primary" />}
+            <span className="hidden sm:inline">{isLeftOpen ? "Close Editor" : "Expand Editor"}</span>
+          </Button>
+
+          <span className="font-bold text-sm truncate max-w-[180px] hidden sm:inline">{portfolio.title}</span>
 
           {/* Autosave Status Indicator */}
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground ml-2">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground ml-1">
             {saveStatus === 'saving' && (
               <Badge variant="outline" className="gap-1 text-amber-500 border-amber-500/30">
                 <Loader2 className="h-3 w-3 animate-spin" /> Saving...
@@ -51,15 +88,48 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
             )}
             {saveStatus === 'unsaved' && (
               <Badge variant="outline" className="gap-1 text-slate-400">
-                Unsaved changes
+                Unsaved
               </Badge>
             )}
           </div>
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Toggle Full Screen Canvas Focus Mode */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleFullFocus}
+            title={!isLeftOpen && !isRightOpen ? "Restore Panels" : "Full Screen Canvas Mode"}
+            className="gap-1.5 text-xs h-8"
+          >
+            {!isLeftOpen && !isRightOpen ? (
+              <>
+                <Minimize2 className="h-3.5 w-3.5 text-primary" />
+                <span className="hidden md:inline">Restore Panels</span>
+              </>
+            ) : (
+              <>
+                <Maximize2 className="h-3.5 w-3.5" />
+                <span className="hidden md:inline">Full Canvas</span>
+              </>
+            )}
+          </Button>
+
+          {/* Toggle Right Design Panel */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsRightOpen(!isRightOpen)}
+            title={isRightOpen ? "Collapse Theme Controls" : "Expand Theme Controls"}
+            className="gap-1.5 text-xs h-8 text-muted-foreground hover:text-foreground"
+          >
+            <span className="hidden sm:inline">{isRightOpen ? "Close Themes" : "Expand Themes"}</span>
+            {isRightOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4 text-primary" />}
+          </Button>
+
           <Link href={`/portfolio/${username}`} target="_blank">
-            <Button variant="outline" size="sm" className="gap-1.5">
+            <Button variant="default" size="sm" className="gap-1.5 h-8 text-xs font-semibold">
               <Eye className="h-3.5 w-3.5" /> View Live
             </Button>
           </Link>
@@ -69,7 +139,11 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
       {/* 3-Panel Studio Layout */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Panel: Sections & Content Editor */}
-        <aside className="w-80 border-r border-border bg-card flex flex-col flex-shrink-0">
+        <aside
+          className={`border-r border-border bg-card flex flex-col flex-shrink-0 transition-all duration-300 ease-in-out overflow-hidden ${
+            isLeftOpen ? 'w-80 opacity-100' : 'w-0 opacity-0 pointer-events-none'
+          }`}
+        >
           <LeftNavigationPanel />
         </aside>
 
@@ -79,7 +153,11 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
         </main>
 
         {/* Right Panel: Design & Theme Controls */}
-        <aside className="w-72 border-l border-border bg-card flex flex-col flex-shrink-0">
+        <aside
+          className={`border-l border-border bg-card flex flex-col flex-shrink-0 transition-all duration-300 ease-in-out overflow-hidden ${
+            isRightOpen ? 'w-72 opacity-100' : 'w-0 opacity-0 pointer-events-none'
+          }`}
+        >
           <RightDesignPanel />
         </aside>
       </div>
