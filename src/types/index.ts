@@ -309,6 +309,7 @@ export interface UserFile {
   size: number
   mime_type: string
   category: FileCategory
+  public_url?: string | null
   created_at: string
   updated_at: string
 }
