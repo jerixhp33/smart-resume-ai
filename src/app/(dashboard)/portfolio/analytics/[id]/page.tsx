@@ -31,7 +31,7 @@ export default async function PortfolioAnalyticsPage({ params }: Props) {
   return (
     <div className="max-w-5xl mx-auto space-y-8 py-6 px-4 sm:px-6">
       <div className="flex items-center gap-4">
-        <Link href="/portfolio">
+        <Link href="/portfolio" prefetch={true}>
           <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground">
             <ArrowLeft className="h-4 w-4" /> Back to Portfolio
           </Button>

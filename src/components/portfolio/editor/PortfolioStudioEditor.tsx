@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import type { PortfolioSite } from '@/types'
 import { usePortfolioStore } from '@/features/portfolio/usePortfolioStore'
 import { LeftNavigationPanel } from './LeftNavigationPanel'
@@ -31,12 +32,14 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
   const saveStatus = usePortfolioStore((s) => s.saveStatus)
   const username = portfolio.username
 
+  const router = useRouter()
   const [isLeftOpen, setIsLeftOpen] = useState(true)
   const [isRightOpen, setIsRightOpen] = useState(true)
 
   useEffect(() => {
     initialize(portfolio)
-  }, [portfolio, initialize])
+    router.prefetch('/portfolio')
+  }, [portfolio, initialize, router])
 
   const toggleFullFocus = () => {
     if (isLeftOpen || isRightOpen) {
@@ -53,7 +56,11 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
       {/* Studio Header Bar */}
       <header className="h-14 border-b border-border bg-card px-4 flex items-center justify-between z-30 flex-shrink-0">
         <div className="flex items-center gap-3">
-          <Link href="/portfolio">
+          <Link
+            href="/portfolio"
+            prefetch={true}
+            onMouseEnter={() => router.prefetch('/portfolio')}
+          >
             <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
               <ArrowLeft className="h-4 w-4" /> Portfolio Hub
             </Button>
