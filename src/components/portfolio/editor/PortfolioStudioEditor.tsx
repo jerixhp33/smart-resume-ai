@@ -21,6 +21,8 @@ import {
   PanelRightOpen,
   Maximize2,
   Minimize2,
+  Globe,
+  ExternalLink,
 } from 'lucide-react'
 
 interface PortfolioStudioEditorProps {
@@ -35,11 +37,22 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
   const router = useRouter()
   const [isLeftOpen, setIsLeftOpen] = useState(true)
   const [isRightOpen, setIsRightOpen] = useState(true)
+  const [isNavigatingHub, setIsNavigatingHub] = useState(false)
 
   useEffect(() => {
     initialize(portfolio)
+    // Instant prefetch both the hub and the public slug location
     router.prefetch('/portfolio')
-  }, [portfolio, initialize, router])
+    if (username) {
+      router.prefetch(`/portfolio/${username}`)
+    }
+  }, [portfolio, username, initialize, router])
+
+  const handleNavigateHub = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsNavigatingHub(true)
+    router.push('/portfolio')
+  }
 
   const toggleFullFocus = () => {
     if (isLeftOpen || isRightOpen) {
@@ -56,16 +69,39 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
       {/* Studio Header Bar */}
       <header className="h-14 border-b border-border bg-card px-4 flex items-center justify-between z-30 flex-shrink-0">
         <div className="flex items-center gap-3">
-          <Link
-            href="/portfolio"
-            prefetch={true}
-            onMouseEnter={() => router.prefetch('/portfolio')}
+          {/* Instant Fast Portfolio Hub Button */}
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer"
           >
-            <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-4 w-4" /> Portfolio Hub
-            </Button>
-          </Link>
+            <Link
+              href="/portfolio"
+              prefetch={true}
+              onClick={handleNavigateHub}
+            >
+              {isNavigatingHub ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <ArrowLeft className="h-4 w-4" />}
+              <span>Portfolio Hub</span>
+            </Link>
+          </Button>
+
           <span className="text-border">|</span>
+
+          {/* Direct Live Slug Location Link Button */}
+          {username && (
+            <Link
+              href={`/portfolio/${username}`}
+              target="_blank"
+              prefetch={true}
+              className="inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-lg bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all font-semibold hover:scale-105 active:scale-95"
+              title={`Jump directly to Live Slug Location: /portfolio/${username}`}
+            >
+              <Globe className="h-3.5 w-3.5" />
+              <span className="truncate max-w-[130px]">/{username}</span>
+              <ExternalLink className="h-3 w-3 opacity-70" />
+            </Link>
+          )}
 
           {/* Toggle Left Navigation Panel */}
           <Button
@@ -79,7 +115,7 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
             <span className="hidden sm:inline">{isLeftOpen ? "Close Editor" : "Expand Editor"}</span>
           </Button>
 
-          <span className="font-bold text-sm truncate max-w-[180px] hidden sm:inline">{portfolio.title}</span>
+          <span className="font-bold text-sm truncate max-w-[160px] hidden lg:inline">{portfolio.title}</span>
 
           {/* Autosave Status Indicator */}
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground ml-1">
@@ -135,11 +171,11 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
             {isRightOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4 text-primary" />}
           </Button>
 
-          <Link href={`/portfolio/${username}`} target="_blank">
-            <Button variant="default" size="sm" className="gap-1.5 h-8 text-xs font-semibold">
+          <Button asChild variant="default" size="sm" className="gap-1.5 h-8 text-xs font-semibold shadow-xs">
+            <Link href={`/portfolio/${username}`} target="_blank" prefetch={true}>
               <Eye className="h-3.5 w-3.5" /> View Live
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </header>
 
