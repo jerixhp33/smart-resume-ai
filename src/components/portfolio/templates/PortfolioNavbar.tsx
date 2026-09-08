@@ -110,11 +110,31 @@ export function PortfolioNavbar({ content, template = 'modern', theme = 'indigo'
     { label: 'Contact', href: '#contact', show: !hidden.contact && Boolean(contact) },
   ].filter((link) => link.show)
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault()
+    if (mobileMenuOpen) setMobileMenuOpen(false)
+
+    if (href === '#top') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+
+    const targetId = href.replace('#', '')
+    const element = document.getElementById(targetId)
+    if (element) {
+      const yOffset = -80
+      const y = element.getBoundingClientRect().top + window.scrollY + yOffset
+      window.scrollTo({ top: y, behavior: 'smooth' })
+    } else {
+      window.location.hash = href
+    }
+  }
+
   return (
     <header className={`sticky top-0 z-50 max-w-6xl mx-auto px-4 sm:px-6 pt-3 pb-2 transition-all duration-300 ${styles.fontFamily}`}>
       <div className={`rounded-full px-5 py-2.5 flex items-center justify-between transition-all duration-300 ${styles.container}`}>
         {/* Brand Name / Logo */}
-        <a href="#top" className="font-extrabold text-sm sm:text-base tracking-tight flex items-center gap-2 group">
+        <a href="#top" onClick={(e) => handleNavClick(e, '#top')} className="font-extrabold text-sm sm:text-base tracking-tight flex items-center gap-2 group">
           <span className={`w-2.5 h-2.5 rounded-full animate-pulse group-hover:scale-125 transition-transform ${styles.dot}`} />
           <span className="truncate max-w-[160px] sm:max-w-none">{hero.full_name}</span>
         </a>
@@ -125,6 +145,7 @@ export function PortfolioNavbar({ content, template = 'modern', theme = 'indigo'
             <a
               key={link.href}
               href={link.href}
+              onClick={(e) => handleNavClick(e, link.href)}
               className={`px-3 py-1 rounded-full transition-all duration-200 ${styles.link}`}
             >
               {link.label}
@@ -137,6 +158,7 @@ export function PortfolioNavbar({ content, template = 'modern', theme = 'indigo'
           {contact.email && (
             <a
               href="#contact"
+              onClick={(e) => handleNavClick(e, '#contact')}
               className={`hidden sm:inline-flex items-center gap-1.5 transition-all shadow-md hover:scale-105 ${styles.button}`}
             >
               <Mail className="h-3.5 w-3.5" />
@@ -163,7 +185,7 @@ export function PortfolioNavbar({ content, template = 'modern', theme = 'indigo'
               <a
                 key={link.href}
                 href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={(e) => handleNavClick(e, link.href)}
                 className={`px-4 py-2.5 rounded-2xl text-sm font-semibold transition-colors flex items-center justify-between ${styles.link}`}
               >
                 <span>{link.label}</span>
@@ -176,7 +198,7 @@ export function PortfolioNavbar({ content, template = 'modern', theme = 'indigo'
             <div className="pt-2 border-t border-white/10">
               <a
                 href="#contact"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={(e) => handleNavClick(e, '#contact')}
                 className={`w-full py-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 shadow-lg ${styles.button}`}
               >
                 <Mail className="h-4 w-4" /> Get In Touch

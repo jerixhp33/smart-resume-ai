@@ -63,6 +63,8 @@ export function DashboardNav({ userId }: DashboardNavProps) {
             <Link
               key={href}
               href={href}
+              prefetch={true}
+              onMouseEnter={() => router.prefetch(href)}
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group',
                 isActive
