@@ -70,21 +70,15 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
       <header className="h-14 border-b border-border bg-card px-4 flex items-center justify-between z-30 flex-shrink-0">
         <div className="flex items-center gap-3">
           {/* Instant Fast Portfolio Hub Button */}
-          <Button
-            asChild
-            variant="ghost"
-            size="sm"
-            className="gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer"
+          <Link
+            href="/portfolio"
+            prefetch={true}
+            onClick={handleNavigateHub}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors cursor-pointer"
           >
-            <Link
-              href="/portfolio"
-              prefetch={true}
-              onClick={handleNavigateHub}
-            >
-              {isNavigatingHub ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <ArrowLeft className="h-4 w-4" />}
-              <span>Portfolio Hub</span>
-            </Link>
-          </Button>
+            {isNavigatingHub ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <ArrowLeft className="h-4 w-4" />}
+            <span>Portfolio Hub</span>
+          </Link>
 
           <span className="text-border">|</span>
 
@@ -171,11 +165,14 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
             {isRightOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4 text-primary" />}
           </Button>
 
-          <Button asChild variant="default" size="sm" className="gap-1.5 h-8 text-xs font-semibold shadow-xs">
-            <Link href={`/portfolio/${username}`} target="_blank" prefetch={true}>
-              <Eye className="h-3.5 w-3.5" /> View Live
-            </Link>
-          </Button>
+          <Link
+            href={`/portfolio/${username}`}
+            target="_blank"
+            prefetch={true}
+            className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs transition-colors"
+          >
+            <Eye className="h-3.5 w-3.5" /> View Live
+          </Link>
         </div>
       </header>
 

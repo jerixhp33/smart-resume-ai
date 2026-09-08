@@ -3,7 +3,7 @@ import { getPublicPortfolio } from '@/features/portfolio/actions'
 import { renderResumeHTML } from '@/templates/renderer'
 import { ViewTracker } from '@/components/portfolio/ViewTracker'
 import { PortfolioClient } from '@/app/portfolio/[username]/PortfolioClient'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 
 type Props = {
@@ -33,21 +33,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+
+
 export default async function PublicSlugPage({ params }: Props) {
   const { slug } = await params
 
-  // 1. Try public portfolio first
-  const { site, profile, resume, items } = await getPublicPortfolio(slug)
+  // 1. Try public portfolio first -> Redirect to standardized /portfolio/[username] URL
+  const { site, profile } = await getPublicPortfolio(slug)
   if (site || profile) {
-    return (
-      <PortfolioClient
-        site={site}
-        profile={profile}
-        resume={resume}
-        items={items || []}
-        username={slug}
-      />
-    )
+    redirect(`/portfolio/${slug}`)
   }
 
   // 2. Fallback to public resume by slug
