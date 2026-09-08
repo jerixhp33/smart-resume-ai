@@ -45,7 +45,9 @@ export function EditorialTemplate({ content, theme, items }: TemplateProps) {
       {!hidden.about && about && (
         <section id="about" className="space-y-6 border-b border-[#e7e5e4] pb-16">
           <h2 className="text-xs uppercase tracking-[0.2em] text-[#78716c] font-sans font-bold">Biography & Direction</h2>
-          <p className="text-xl leading-relaxed text-[#292524] font-normal">{about.biography}</p>
+          {about.biography && about.biography.trim() !== hero.summary?.trim() && (
+            <p className="text-xl leading-relaxed text-[#292524] font-normal">{about.biography}</p>
+          )}
           {about.career_direction && (
             <p className="text-base italic text-[#57534e] border-l-2 border-[#1c1917] pl-4 py-1">
               "{about.career_direction}"

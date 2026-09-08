@@ -41,7 +41,11 @@ export function ProfessionalTemplate({ content, theme, items }: TemplateProps) {
         {!hidden.about && (
           <section className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Executive Summary</h2>
-            <p className="text-base text-slate-700 dark:text-slate-200 leading-relaxed">{hero.summary || about?.biography}</p>
+            <p className="text-base text-slate-700 dark:text-slate-200 leading-relaxed">
+              {about?.biography && about.biography.trim() !== hero.summary?.trim()
+                ? about.biography
+                : about?.career_direction || hero.summary}
+            </p>
           </section>
         )}
 

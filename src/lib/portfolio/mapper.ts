@@ -24,11 +24,15 @@ export function mapResumeToPortfolioContent(
     other_links: [],
   }
 
+  // Ensure hero.summary is a punchy tagline/sentence while about.biography holds full summary
+  const fullSummary = resumeData.summary?.trim() || ''
+  const firstSentence = fullSummary ? (fullSummary.split(/(?<=[.!?])\s+/)[0] || fullSummary) : ''
+
   const hero = {
     full_name: p.full_name || profile?.full_name || 'Professional',
     title: p.professional_title || 'Software Developer & Specialist',
     tagline: `Building high-impact digital solutions and scalable products.`,
-    summary: resumeData.summary || `Passionate professional driven to deliver innovative solutions and technical excellence.`,
+    summary: firstSentence || `Passionate professional driven to deliver innovative solutions and technical excellence.`,
     avatar_url: profile?.avatar_url || undefined,
     location: p.location || undefined,
     availability: 'Available for opportunities',
@@ -38,8 +42,12 @@ export function mapResumeToPortfolioContent(
     cta_secondary_url: '#contact',
   }
 
+  const bioText = fullSummary && fullSummary !== firstSentence 
+    ? fullSummary 
+    : (fullSummary || `${p.full_name} is a ${p.professional_title || 'specialist'} dedicated to delivering high-impact technical solutions and user-centered products.`)
+
   const about = {
-    biography: resumeData.summary || `${p.full_name} is a ${p.professional_title} with experience delivering innovative technical projects.`,
+    biography: bioText,
     career_direction: 'Focused on designing intuitive systems, writing clean maintainable code, and driving product innovation.',
     highlights: [
       'Proven expertise in modern software engineering principles',
@@ -158,8 +166,32 @@ export function enrichContentWithResume(
   if (!resumeData) return content
   const mapped = mapResumeToPortfolioContent(resumeData, profile)
 
+  let heroSummary = content.hero?.summary || mapped.hero.summary
+  let aboutBio = content.about?.biography || mapped.about.biography
+
+  // If hero summary and about biography are identical, split them so hero gets the 1-sentence hook and about gets full bio
+  if (heroSummary && aboutBio && heroSummary.trim() === aboutBio.trim()) {
+    const fullText = aboutBio.trim()
+    const firstSentence = fullText.split(/(?<=[.!?])\s+/)[0] || fullText
+    if (firstSentence !== fullText) {
+      heroSummary = firstSentence
+    } else {
+      heroSummary = content.hero?.tagline || `Building high-impact digital solutions and scalable products.`
+    }
+  }
+
   return {
     ...content,
+    hero: {
+      ...mapped.hero,
+      ...content.hero,
+      summary: heroSummary,
+    },
+    about: {
+      ...mapped.about,
+      ...content.about,
+      biography: aboutBio,
+    },
     experience: (content.experience && content.experience.length > 0) ? content.experience : mapped.experience,
     education: (content.education && content.education.length > 0) ? content.education : mapped.education,
     skills: (content.skills && content.skills.length > 0) ? content.skills : mapped.skills,
@@ -175,4 +207,5 @@ export function enrichContentWithResume(
     },
   }
 }
+
 

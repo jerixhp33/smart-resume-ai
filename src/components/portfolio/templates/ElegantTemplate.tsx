@@ -55,7 +55,9 @@ export function ElegantTemplate({ content, theme, items }: TemplateProps) {
       {!hidden.about && about && (
         <section id="about" className="bg-slate-900/40 border border-slate-800 rounded-3xl p-8 space-y-4">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-amber-400">About Me</h2>
-          <p className="text-slate-300 text-base leading-relaxed whitespace-pre-line">{about.biography}</p>
+          {about.biography && about.biography.trim() !== hero.summary?.trim() && (
+            <p className="text-slate-300 text-base leading-relaxed whitespace-pre-line">{about.biography}</p>
+          )}
           {about.career_direction && (
             <p className="text-amber-400/90 text-sm font-serif italic border-l-2 border-amber-400 pl-4 py-1">
               {about.career_direction}

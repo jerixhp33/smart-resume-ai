@@ -59,13 +59,28 @@ export function BoldTemplate({ content, theme, items }: TemplateProps) {
       {/* About Section */}
       {!hidden.about && about && (
         <section id="about" className="space-y-6 border-t-2 border-zinc-900 pt-16">
-          <h2 className="text-xs font-black uppercase tracking-widest text-zinc-500">ABOUT</h2>
+          <h2 className="text-xs font-black uppercase tracking-widest text-zinc-500">ABOUT ME</h2>
           <div className="bg-zinc-900/80 border-2 border-zinc-800 p-8 rounded-3xl space-y-4">
-            <p className="text-xl text-zinc-200 leading-relaxed font-medium whitespace-pre-line">{about.biography}</p>
+            {about.biography && about.biography.trim() !== hero.summary?.trim() && (
+              <p className="text-xl text-zinc-200 leading-relaxed font-medium whitespace-pre-line">{about.biography}</p>
+            )}
             {about.career_direction && (
               <p className="text-base text-zinc-400 font-bold italic border-l-4 border-white pl-4 py-1">
                 {about.career_direction}
               </p>
+            )}
+            {about.highlights && about.highlights.length > 0 && (
+              <div className="pt-2 border-t border-zinc-800 space-y-2">
+                <h3 className="text-xs font-black uppercase tracking-widest text-zinc-500">KEY HIGHLIGHTS</h3>
+                <ul className="space-y-2">
+                  {about.highlights.map((h, i) => (
+                    <li key={i} className="text-zinc-300 text-sm flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-white flex-shrink-0" />
+                      <span>{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </div>
         </section>

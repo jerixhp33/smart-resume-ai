@@ -54,7 +54,9 @@ export function CreativeTemplate({ content, theme, items }: TemplateProps) {
           <section id="about" className="space-y-8 bg-white/5 border border-white/10 backdrop-blur-md rounded-3xl p-8">
             <h2 className="text-3xl font-extrabold tracking-tight text-white">About Me</h2>
             <div className="space-y-4">
-              <p className="text-slate-300 leading-relaxed whitespace-pre-line text-base">{about.biography}</p>
+              {about.biography && about.biography.trim() !== hero.summary?.trim() && (
+                <p className="text-slate-300 leading-relaxed whitespace-pre-line text-base">{about.biography}</p>
+              )}
               {about.career_direction && (
                 <p className="text-purple-300 font-medium italic border-l-2 border-purple-400 pl-4 py-1">
                   {about.career_direction}

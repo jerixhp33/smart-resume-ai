@@ -73,7 +73,12 @@ export function DeveloperTemplate({ content, theme, items }: TemplateProps) {
             <h2 className="text-xl font-bold text-slate-200 flex items-center gap-2">
               <span className="text-emerald-400">#</span> About
             </h2>
-            <p className="text-sm text-slate-300 font-sans leading-relaxed whitespace-pre-line">{about.biography}</p>
+            {about.biography && about.biography.trim() !== hero.summary?.trim() && (
+              <p className="text-sm text-slate-300 font-sans leading-relaxed whitespace-pre-line">{about.biography}</p>
+            )}
+            {about.career_direction && (
+              <p className="text-xs text-emerald-400 font-mono italic border-l-2 border-emerald-500 pl-3 py-0.5">{about.career_direction}</p>
+            )}
           </section>
         )}
 

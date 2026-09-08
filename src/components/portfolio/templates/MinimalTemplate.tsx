@@ -45,7 +45,12 @@ export function MinimalTemplate({ content, theme, items }: TemplateProps) {
       {!hidden.about && about && (
         <section id="about" className="space-y-4">
           <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">About</h2>
-          <p className="text-base leading-relaxed text-foreground/90">{about.biography}</p>
+          {about.biography && about.biography.trim() !== hero.summary?.trim() && (
+            <p className="text-base leading-relaxed text-foreground/90">{about.biography}</p>
+          )}
+          {about.career_direction && (
+            <p className="text-sm italic text-muted-foreground border-l-2 border-primary/40 pl-3 py-0.5">{about.career_direction}</p>
+          )}
         </section>
       )}
 

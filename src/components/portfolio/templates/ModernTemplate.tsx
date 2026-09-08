@@ -84,9 +84,11 @@ export function ModernTemplate({ content, theme, items }: TemplateProps) {
             <h2 className="text-2xl font-bold tracking-tight mb-8">About Me</h2>
             <div className="grid md:grid-cols-3 gap-8">
               <div className="md:col-span-2 space-y-4">
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                  {about.biography}
-                </p>
+                {about.biography && about.biography.trim() !== hero.summary?.trim() && (
+                  <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                    {about.biography}
+                  </p>
+                )}
                 {about.career_direction && (
                   <p className="text-sm text-foreground/80 font-medium italic border-l-2 border-primary pl-4 py-1">
                     {about.career_direction}
