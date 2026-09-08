@@ -50,13 +50,28 @@ export function mapResumeToPortfolioContent(
     interests: ['Artificial Intelligence', 'Open Source', 'Web Performance'],
   }
 
-  const experience = (resumeData.experience || []).map((exp, idx) => ({
+  const rawExp = [
+    ...(resumeData.experience || []),
+    ...((resumeData as any)?.internships || []).map((exp: any, idx: number) => ({
+      id: exp.id || `intern-${idx}`,
+      company: exp.company || 'Internship',
+      position: exp.position || exp.role || 'Software Intern',
+      location: exp.location || undefined,
+      start_date: exp.start_date,
+      end_date: exp.end_date,
+      is_current: exp.is_current,
+      description: exp.description || '',
+      bullets: exp.bullets || [],
+    })),
+  ]
+
+  const experience = rawExp.map((exp: any, idx: number) => ({
     id: exp.id || `exp-${idx}`,
-    company: exp.company,
-    role: exp.position,
+    company: exp.company || 'Company',
+    role: exp.position || exp.role || 'Contributor',
     location: exp.location || undefined,
-    period: `${exp.start_date || ''} - ${exp.is_current ? 'Present' : exp.end_date || ''}`,
-    is_current: exp.is_current,
+    period: `${exp.start_date || ''}${exp.start_date || exp.end_date ? ' - ' : ''}${exp.is_current ? 'Present' : exp.end_date || ''}`,
+    is_current: exp.is_current || false,
     description: exp.description || '',
     bullets: exp.bullets || [],
   }))
@@ -66,7 +81,7 @@ export function mapResumeToPortfolioContent(
     institution: edu.institution,
     degree: edu.degree,
     field: edu.field_of_study || '',
-    period: `${edu.start_date || ''} - ${edu.is_current ? 'Present' : edu.end_date || ''}`,
+    period: `${edu.start_date || ''}${edu.start_date || edu.end_date ? ' - ' : ''}${edu.is_current ? 'Present' : edu.end_date || ''}`,
     gpa: edu.gpa || undefined,
     achievements: edu.achievements || [],
   }))
@@ -131,3 +146,33 @@ export function mapResumeToPortfolioContent(
     hidden_sections: {},
   }
 }
+
+/**
+ * Enriches a portfolio content object with any missing sections from resume data
+ */
+export function enrichContentWithResume(
+  content: PortfolioContent,
+  resumeData?: Partial<ResumeData> | null,
+  profile?: Partial<Profile> | null
+): PortfolioContent {
+  if (!resumeData) return content
+  const mapped = mapResumeToPortfolioContent(resumeData, profile)
+
+  return {
+    ...content,
+    experience: (content.experience && content.experience.length > 0) ? content.experience : mapped.experience,
+    education: (content.education && content.education.length > 0) ? content.education : mapped.education,
+    skills: (content.skills && content.skills.length > 0) ? content.skills : mapped.skills,
+    projects: (content.projects && content.projects.length > 0) ? content.projects : mapped.projects,
+    certifications: (content.certifications && content.certifications.length > 0) ? content.certifications : mapped.certifications,
+    achievements: (content.achievements && content.achievements.length > 0) ? content.achievements : mapped.achievements,
+    contact: {
+      ...mapped.contact,
+      ...content.contact,
+      email: content.contact?.email || mapped.contact.email,
+      github_url: content.contact?.github_url || mapped.contact.github_url,
+      linkedin_url: content.contact?.linkedin_url || mapped.contact.linkedin_url,
+    },
+  }
+}
+

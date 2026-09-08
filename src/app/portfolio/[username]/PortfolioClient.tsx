@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react'
 import type { PortfolioSite, Profile, Resume, UserFile } from '@/types'
 import { PortfolioRenderer } from '@/components/portfolio/templates/PortfolioRenderer'
-import { mapResumeToPortfolioContent } from '@/lib/portfolio/mapper'
+import { mapResumeToPortfolioContent, enrichContentWithResume } from '@/lib/portfolio/mapper'
 import { trackPortfolioViewAction } from '@/features/portfolio/actions'
 import Link from 'next/link'
 import { Sparkles } from 'lucide-react'
@@ -23,7 +23,8 @@ export function PortfolioClient({ site, profile, resume, items, username }: Port
     }
   }, [site?.id])
 
-  const content = site?.content || mapResumeToPortfolioContent((resume?.data as any) || {}, profile)
+  const rawContent = site?.content || mapResumeToPortfolioContent((resume?.data as any) || {}, profile)
+  const content = enrichContentWithResume(rawContent, (resume?.data as any) || {}, profile)
   const template = site?.template || 'modern'
   const theme = site?.theme || 'indigo'
 
