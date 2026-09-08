@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -31,6 +31,11 @@ export default function SignupPage() {
   const [done, setDone] = useState(false)
   const supabase = getSupabaseBrowserClient()
 
+  // Pre-fetch dashboard route for zero-latency instant entry after creation
+  useEffect(() => {
+    router.prefetch('/dashboard')
+  }, [router])
+
   const { register, handleSubmit, formState: { errors, isSubmitting }, watch } = useForm<SignupForm>({
     resolver: zodResolver(signupSchema),
   })
@@ -45,17 +50,45 @@ export default function SignupPage() {
   const strengthScore = strength.filter(Boolean).length
 
   async function onSubmit(data: SignupForm) {
-    const { error } = await supabase.auth.signUp({
+    // 1. Create user account
+    const { data: authData, error } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
       options: {
         data: { full_name: data.full_name },
-        emailRedirectTo: `${window.location.origin}/auth/callback?redirect=/onboarding`,
       },
     })
 
     if (error) {
       toast({ title: 'Signup failed', description: error.message, variant: 'error' })
+      return
+    }
+
+    // 2. Direct login & fast entry to home
+    let session = authData.session
+    if (!session) {
+      const { data: loginData } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      })
+      session = loginData?.session
+    }
+
+    if (session?.user) {
+      // Upsert profile and auto-complete onboarding so user enters home dashboard directly
+      await supabase.from('profiles').upsert(
+        {
+          user_id: session.user.id,
+          full_name: data.full_name,
+          email: data.email,
+          onboarding_completed: true,
+        },
+        { onConflict: 'user_id' }
+      )
+
+      toast({ title: 'Account Created!', description: 'Entering home dashboard...', variant: 'success' })
+      router.push('/dashboard')
+      router.refresh()
     } else {
       setDone(true)
     }
@@ -64,7 +97,7 @@ export default function SignupPage() {
   async function onGoogle() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback?redirect=/onboarding` },
+      options: { redirectTo: `${window.location.origin}/auth/callback?redirect=/dashboard` },
     })
   }
 
@@ -93,7 +126,7 @@ export default function SignupPage() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight">Create your account</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            First 3 resumes are completely free. No credit card required.
+            Build ATS-optimized resumes and interactive portfolio in seconds.
           </p>
         </div>
 
@@ -130,8 +163,8 @@ export default function SignupPage() {
           </div>
           <Input label="Confirm password" type="password" placeholder="Repeat password" icon={<Lock className="h-4 w-4" />} error={errors.confirmPassword?.message} autoComplete="new-password" {...register('confirmPassword')} />
 
-          <Button type="submit" className="w-full h-11 mt-2" loading={isSubmitting}>
-            Create account <ArrowRight className="h-4 w-4" />
+          <Button type="submit" className="w-full h-11 mt-2 font-bold" loading={isSubmitting}>
+            Create Account & Start <ArrowRight className="h-4 w-4" />
           </Button>
 
           <p className="text-xs text-center text-muted-foreground">

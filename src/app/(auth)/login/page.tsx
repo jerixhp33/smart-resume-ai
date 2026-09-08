@@ -31,6 +31,11 @@ function LoginFormContent() {
   const [magicSent, setMagicSent] = useState(false)
   const supabase = getSupabaseBrowserClient()
 
+  // Pre-fetch target dashboard route for zero-latency instant transition
+  React.useEffect(() => {
+    router.prefetch(redirectTo)
+  }, [router, redirectTo])
+
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   })
