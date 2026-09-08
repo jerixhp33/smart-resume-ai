@@ -376,6 +376,15 @@ export function LeftNavigationPanel() {
                     />
                   </div>
                 </div>
+                <div>
+                  <label className="text-[10px] font-semibold text-muted-foreground">App Preview Image URL</label>
+                  <Input
+                    value={proj.image_url || ''}
+                    onChange={(e) => updateProjectItem(idx, { image_url: e.target.value })}
+                    className="h-7 text-xs mt-0.5"
+                    placeholder="https://... (App screenshot or mockup image)"
+                  />
+                </div>
               </div>
             ))}
             <Button

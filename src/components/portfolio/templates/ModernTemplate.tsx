@@ -9,6 +9,7 @@ import { StaggerContainer } from '@/components/motion/StaggerContainer'
 import { StaggerItem } from '@/components/motion/StaggerItem'
 import { Briefcase, GraduationCap, Award, ExternalLink, Mail, MapPin, CheckCircle2 } from 'lucide-react'
 import { GithubIcon } from '@/components/ui/icons'
+import { ProjectAppPreview } from './ProjectAppPreview'
 
 interface TemplateProps {
   content: PortfolioContent
@@ -124,8 +125,11 @@ export function ModernTemplate({ content, theme, items }: TemplateProps) {
           <StaggerContainer className="grid md:grid-cols-2 gap-6">
             {projects.map((proj) => (
               <StaggerItem key={proj.id}>
-                <div className="group bg-card border border-border/60 rounded-2xl p-6 hover:shadow-md hover:border-primary/40 transition-all duration-300 flex flex-col justify-between h-full">
+                <div className="group bg-card border border-border/60 rounded-2xl p-6 hover:shadow-xl hover:border-primary/40 transition-all duration-300 flex flex-col justify-between h-full">
                   <div>
+                    {/* App Preview Mockup Window */}
+                    <ProjectAppPreview project={proj} />
+
                     <div className="flex items-center justify-between gap-4 mb-3">
                       <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
                         {proj.title}

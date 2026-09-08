@@ -8,6 +8,7 @@ import { StaggerContainer } from '@/components/motion/StaggerContainer'
 import { StaggerItem } from '@/components/motion/StaggerItem'
 import { Sparkles, ArrowUpRight, Mail, Briefcase, GraduationCap, Code, Award, ExternalLink } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { ProjectAppPreview } from './ProjectAppPreview'
 
 interface TemplateProps {
   content: PortfolioContent
@@ -123,10 +124,13 @@ export function CreativeTemplate({ content, theme, items }: TemplateProps) {
                     <motion.div
                       whileHover={{ y: -6, scale: 1.01 }}
                       transition={{ duration: 0.2 }}
-                      className="group h-full bg-white/5 border border-white/10 backdrop-blur-md rounded-3xl p-8 hover:bg-white/10 hover:border-purple-500/30 transition-all duration-300 flex flex-col justify-between shadow-xl"
+                      className="group h-full bg-white/5 border border-white/10 backdrop-blur-md rounded-3xl p-6 sm:p-8 hover:bg-white/10 hover:border-purple-500/40 transition-all duration-300 flex flex-col justify-between shadow-xl"
                     >
                       <div>
-                        <div className="flex items-center justify-between gap-4 mb-4">
+                        {/* Interactive App Preview Window */}
+                        <ProjectAppPreview project={p} />
+
+                        <div className="flex items-center justify-between gap-4 mb-3">
                           <h3 className="text-2xl font-bold text-white group-hover:text-purple-300 transition-colors">{p.title}</h3>
                           {p.live_url && (
                             <a href={p.live_url} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-white/10 text-white hover:bg-purple-500/20 hover:text-purple-300 transition-colors">
