@@ -111,36 +111,7 @@
 
 
 @layer utilities {
-  /* Cursor variables */
-  :root {
-    --cx: 50vw;
-    --cy: 50vh;
-  }
 
-  /* Custom Cursor Components */
-  .cursor-dot {
-    position: fixed;
-    top: 0; left: 0;
-    width: 8px; height: 8px;
-    background: hsl(var(--primary));
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(calc(var(--cx) - 50%), calc(var(--cy) - 50%));
-    transition: transform 80ms linear;
-  }
-
-  .cursor-ring {
-    position: fixed;
-    top: 0; left: 0;
-    width: 32px; height: 32px;
-    border: 1px solid hsl(var(--primary));
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9998;
-    transform: translate(calc(var(--cx) - 50%), calc(var(--cy) - 50%));
-    transition: transform 200ms ease;
-  }
 
   /* View Transitions API */
   ::view-transition-old(root) {

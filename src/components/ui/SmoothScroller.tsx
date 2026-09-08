@@ -8,7 +8,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 export function SmoothScroller({ children }: { children: React.ReactNode }) {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [isReducedMotion, setIsReducedMotion] = useState(false)
 
   useEffect(() => {
@@ -33,17 +32,7 @@ export function SmoothScroller({ children }: { children: React.ReactNode }) {
     
     gsap.ticker.lagSmoothing(0)
 
-    // Cursor tracking
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY })
-      document.documentElement.style.setProperty('--cx', `${e.clientX}px`)
-      document.documentElement.style.setProperty('--cy', `${e.clientY}px`)
-    }
-    
-    window.addEventListener('mousemove', handleMouseMove)
-
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove)
       lenis.destroy()
       gsap.ticker.remove((time) => lenis.raf(time * 1000))
     }
@@ -51,12 +40,6 @@ export function SmoothScroller({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {!isReducedMotion && (
-        <>
-          <div className="cursor-dot hidden md:block" />
-          <div className="cursor-ring hidden md:block" />
-        </>
-      )}
       {children}
     </>
   )
