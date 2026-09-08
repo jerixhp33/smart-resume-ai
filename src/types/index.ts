@@ -391,6 +391,7 @@ export type AITaskType =
   | 'ats_explain'
   | 'content_review'
   | 'interview_generate'
+  | 'generate_portfolio'
 
 export interface AIUsage {
   id: string
@@ -429,3 +430,170 @@ export interface Template {
   preview_image: string
   features: string[]
 }
+
+// ── Portfolio Domain Model ────────────────────────────────
+export type PortfolioTemplateId =
+  | 'minimal'
+  | 'modern'
+  | 'creative'
+  | 'developer'
+  | 'professional'
+  | 'editorial'
+  | 'bold'
+  | 'elegant'
+
+export type PortfolioThemeId =
+  | 'neutral'
+  | 'indigo'
+  | 'blue'
+  | 'emerald'
+  | 'violet'
+  | 'rose'
+  | 'amber'
+
+export type MotionLevel = 'subtle' | 'smooth' | 'dynamic'
+
+export interface PortfolioHeroSection {
+  full_name: string
+  title: string
+  tagline: string
+  summary: string
+  avatar_url?: string
+  location?: string
+  availability?: string
+  cta_primary_label?: string
+  cta_primary_url?: string
+  cta_secondary_label?: string
+  cta_secondary_url?: string
+}
+
+export interface PortfolioAboutSection {
+  biography: string
+  career_direction?: string
+  highlights?: string[]
+  strengths?: string[]
+  interests?: string[]
+}
+
+export interface PortfolioExperienceItem {
+  id: string
+  company: string
+  role: string
+  location?: string
+  period: string
+  is_current?: boolean
+  description: string
+  bullets: string[]
+}
+
+export interface PortfolioEducationItem {
+  id: string
+  institution: string
+  degree: string
+  field: string
+  period: string
+  gpa?: string
+  achievements?: string[]
+}
+
+export interface PortfolioSkillGroup {
+  id: string
+  category: string
+  skills: string[]
+}
+
+export interface PortfolioProjectItem {
+  id: string
+  title: string
+  tagline: string
+  description: string
+  technologies: string[]
+  github_url?: string
+  live_url?: string
+  image_url?: string
+  highlights?: string[]
+  problem?: string
+  solution?: string
+  result?: string
+}
+
+export interface PortfolioCertificationItem {
+  id: string
+  title: string
+  issuer: string
+  date: string
+  credential_url?: string
+}
+
+export interface PortfolioAchievementItem {
+  id: string
+  title: string
+  description: string
+  date?: string
+}
+
+export interface PortfolioContactSection {
+  heading: string
+  subheading: string
+  email: string
+  phone?: string
+  location?: string
+  linkedin_url?: string
+  github_url?: string
+  twitter_url?: string
+  website_url?: string
+}
+
+export interface PortfolioContent {
+  hero: PortfolioHeroSection
+  about: PortfolioAboutSection
+  experience: PortfolioExperienceItem[]
+  education: PortfolioEducationItem[]
+  skills: PortfolioSkillGroup[]
+  projects: PortfolioProjectItem[]
+  certifications: PortfolioCertificationItem[]
+  achievements: PortfolioAchievementItem[]
+  contact: PortfolioContactSection
+  section_order?: string[]
+  hidden_sections?: Record<string, boolean>
+}
+
+export interface PortfolioSEOMetadata {
+  title: string
+  description: string
+  keywords: string[]
+  og_image?: string
+}
+
+export interface PortfolioSite {
+  id: string
+  user_id: string
+  username: string
+  slug: string
+  title: string
+  theme: PortfolioThemeId
+  template: PortfolioTemplateId
+  motion_level: MotionLevel
+  content: PortfolioContent
+  seo_metadata: PortfolioSEOMetadata
+  published: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface PortfolioView {
+  id: string
+  portfolio_id: string
+  referrer: string | null
+  user_agent: string | null
+  created_at: string
+}
+
+export interface PortfolioVersion {
+  id: string
+  portfolio_id: string
+  version_number: number
+  content: PortfolioContent
+  created_at: string
+}
+

@@ -1,5 +1,6 @@
 import React from 'react'
 import { getPublicPortfolio } from '@/features/portfolio/actions'
+import { mapResumeToPortfolioContent } from '@/lib/portfolio/mapper'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { PortfolioClient } from './PortfolioClient'
@@ -10,27 +11,40 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params
-  const { profile, resume } = await getPublicPortfolio(username)
-  if (!profile) return { title: 'Portfolio Not Found' }
-  
+  const { site, profile, resume } = await getPublicPortfolio(username)
+  if (!profile && !site) return { title: 'Portfolio Not Found' }
+
   const resumeData = (resume?.data as any) || {}
-  const name = resumeData.personal?.full_name || profile.full_name || 'User'
-  const title = resumeData.personal?.professional_title || 'Portfolio'
-  
+  const content = site?.content || mapResumeToPortfolioContent(resumeData, profile)
+  const name = content.hero?.full_name || profile?.full_name || 'Professional'
+  const title = content.hero?.title || 'Portfolio'
+
   return {
-    title: `${name} | ${title}`,
-    description: resumeData.summary || `View ${name}'s professional portfolio and credentials.`,
+    title: site?.title || `${name} | ${title}`,
+    description: site?.seo_metadata?.description || content.hero?.summary || `View ${name}'s professional portfolio and credentials.`,
+    openGraph: {
+      title: `${name} — ${title}`,
+      description: content.hero?.summary,
+      type: 'profile',
+    },
   }
 }
 
 export default async function PortfolioPage({ params }: Props) {
   const { username } = await params
-  const { profile, resume, items, error } = await getPublicPortfolio(username)
+  const { site, profile, resume, items } = await getPublicPortfolio(username)
 
-  if (error || !profile) {
-    console.log('PortfolioPage 404 triggered because:', { error, hasProfile: !!profile })
+  if (!profile && !site) {
     notFound()
   }
 
-  return <PortfolioClient profile={profile} resume={resume} items={items || []} />
+  return (
+    <PortfolioClient
+      site={site}
+      profile={profile}
+      resume={resume}
+      items={items || []}
+      username={username}
+    />
+  )
 }

@@ -3,12 +3,13 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, FileText, Briefcase, Sparkles, User } from 'lucide-react'
+import { LayoutDashboard, FileText, Globe, Briefcase, Sparkles, User } from 'lucide-react'
 import { cn } from '@/utils/cn'
 
 const MOBILE_NAV = [
   { href: '/dashboard', label: 'Home', icon: LayoutDashboard },
   { href: '/resumes', label: 'Resumes', icon: FileText },
+  { href: '/portfolio', label: 'Portfolio', icon: Globe },
   { href: '/applications', label: 'Jobs', icon: Briefcase },
   { href: '/ai-tools', label: 'AI', icon: Sparkles },
   { href: '/settings', label: 'Profile', icon: User },

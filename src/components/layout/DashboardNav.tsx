@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, FileText, ScanSearch, Briefcase,
-  Sparkles, FolderOpen, Settings, LogOut, ChevronRight, FlaskConical
+  Sparkles, FolderOpen, Settings, LogOut, ChevronRight, FlaskConical, Globe
 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import { getSupabaseBrowserClient } from '@/lib/supabase/client'
@@ -15,6 +15,7 @@ import { NotificationBell } from '@/components/notifications/NotificationBell'
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/resumes', label: 'My Resumes', icon: FileText },
+  { href: '/portfolio', label: 'AI Portfolio', icon: Globe },
   { href: '/analyzer', label: 'ATS Analyzer', icon: ScanSearch },
   { href: '/applications', label: 'Applications', icon: Briefcase },
   { href: '/ai-tools', label: 'AI Tools', icon: Sparkles },
