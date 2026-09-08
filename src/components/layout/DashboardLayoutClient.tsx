@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { DashboardNav } from '@/components/layout/DashboardNav'
 import { MobileNav } from '@/components/layout/MobileNav'
 import { Toaster } from '@/components/ui/toast'
@@ -12,8 +13,12 @@ export function DashboardLayoutClient({
   userId: string
   children: React.ReactNode
 }) {
+  const pathname = usePathname()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [mounted, setMounted] = useState(false)
+
+  // Full studio pages (Portfolio Editor, Resume Builder) get full screen workspace without duplicate navbars
+  const isStudioPage = pathname.includes('/portfolio/editor/') || pathname.includes('/builder/')
 
   useEffect(() => {
     setMounted(true)
@@ -29,6 +34,17 @@ export function DashboardLayoutClient({
       localStorage.setItem('smartresume_sidebar_collapsed', String(next))
       return next
     })
+  }
+
+  if (isStudioPage) {
+    return (
+      <div className="h-screen w-screen bg-background overflow-hidden">
+        <main className="h-full w-full overflow-hidden p-0">
+          {children}
+        </main>
+        <Toaster />
+      </div>
+    )
   }
 
   return (

@@ -101,10 +101,15 @@ export function LeftNavigationPanel() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      {/* Section Selector Tabs */}
+      {/* Compact Section Selector Tabs Bar */}
       <div className="p-3 border-b border-border bg-muted/20">
-        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Sections</p>
-        <div className="space-y-1">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Select Section</p>
+          <span className="text-[10px] text-primary font-bold">
+            {SECTIONS.find((s) => s.id === activeSection)?.title}
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-1.5">
           {SECTIONS.map(({ id, title, icon: Icon }) => {
             const isHidden = !!hiddenMap[id]
             const isActive = activeSection === id
@@ -113,15 +118,15 @@ export function LeftNavigationPanel() {
               <div
                 key={id}
                 onClick={() => setActiveSection(id)}
-                className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition-all ${
+                className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[11px] font-medium cursor-pointer transition-all ${
                   isActive
-                    ? 'bg-primary/10 text-primary font-bold shadow-xs'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground font-bold shadow-sm'
+                    : 'bg-card border border-border/70 text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
               >
-                <div className="flex items-center gap-2.5">
-                  <Icon className="h-3.5 w-3.5" />
-                  <span>{title}</span>
+                <div className="flex items-center gap-1.5 truncate">
+                  <Icon className="h-3.5 w-3.5 flex-shrink-0" />
+                  <span className="truncate">{title.replace(' Section', '').replace(' Bio', '').replace(' & CTA', '')}</span>
                 </div>
                 <button
                   type="button"
@@ -129,10 +134,14 @@ export function LeftNavigationPanel() {
                     e.stopPropagation()
                     toggleSectionVisibility(id, !isHidden)
                   }}
-                  className="p-1 hover:text-foreground text-muted-foreground rounded"
+                  className="p-0.5 hover:opacity-100 text-current opacity-75 rounded"
                   title={isHidden ? "Show Section" : "Hide Section"}
                 >
-                  {isHidden ? <EyeOff className="h-3.5 w-3.5 text-muted-foreground/60" /> : <Eye className="h-3.5 w-3.5 text-emerald-500" />}
+                  {isHidden ? (
+                    <EyeOff className="h-3 w-3 opacity-50" />
+                  ) : (
+                    <Eye className={`h-3 w-3 ${isActive ? 'text-emerald-300' : 'text-emerald-500'}`} />
+                  )}
                 </button>
               </div>
             )
