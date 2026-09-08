@@ -27,6 +27,7 @@ export function PortfolioClient({ site, profile, resume, items, username }: Port
   const content = enrichContentWithResume(rawContent, (resume?.data as any) || {}, profile)
   const template = site?.template || 'modern'
   const theme = site?.theme || 'indigo'
+  const bgClass = template === 'bold' ? 'bg-black text-white' : template === 'editorial' ? 'bg-[#faf8f5] text-[#1c1917]' : template === 'minimal' ? 'bg-background text-foreground' : 'bg-slate-950 text-slate-100'
 
   // JSON-LD Structured Data
   const jsonLd = {
@@ -42,7 +43,7 @@ export function PortfolioClient({ site, profile, resume, items, username }: Port
   }
 
   return (
-    <div className="relative min-h-screen w-full">
+    <div className={`relative min-h-screen w-full overflow-x-hidden ${bgClass}`}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

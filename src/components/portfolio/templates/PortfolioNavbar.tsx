@@ -111,7 +111,7 @@ export function PortfolioNavbar({ content, template = 'modern', theme = 'indigo'
   ].filter((link) => link.show)
 
   return (
-    <header className={`sticky top-3 z-50 max-w-6xl mx-auto px-4 sm:px-6 my-2 transition-all duration-300 ${styles.fontFamily}`}>
+    <header className={`sticky top-0 z-50 max-w-6xl mx-auto px-4 sm:px-6 pt-3 pb-2 transition-all duration-300 ${styles.fontFamily}`}>
       <div className={`rounded-full px-5 py-2.5 flex items-center justify-between transition-all duration-300 ${styles.container}`}>
         {/* Brand Name / Logo */}
         <a href="#top" className="font-extrabold text-sm sm:text-base tracking-tight flex items-center gap-2 group">
