@@ -47,7 +47,7 @@ export function PortfolioClient({ site, profile, resume, items, username }: Port
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <PortfolioRenderer content={content} template={template} theme={theme} />
+      <PortfolioRenderer content={content} template={template} theme={theme} items={items} />
 
       {/* Branding Badge */}
       <Link

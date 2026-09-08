@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import type { PortfolioContent, PortfolioThemeId } from '@/types'
+import type { PortfolioContent, PortfolioThemeId, UserFile } from '@/types'
 import { THEMES } from './theme-config'
 import { Reveal } from '@/components/motion/Reveal'
 import { SectionReveal } from '@/components/motion/SectionReveal'
@@ -13,9 +13,10 @@ import { GithubIcon } from '@/components/ui/icons'
 interface TemplateProps {
   content: PortfolioContent
   theme: PortfolioThemeId
+  items?: UserFile[]
 }
 
-export function ModernTemplate({ content, theme }: TemplateProps) {
+export function ModernTemplate({ content, theme, items }: TemplateProps) {
   const themeConfig = THEMES[theme] || THEMES.indigo
   const { hero, about, experience, education, skills, projects, certifications, achievements, contact } = content
   const hidden = content.hidden_sections || {}
@@ -242,6 +243,48 @@ export function ModernTemplate({ content, theme }: TemplateProps) {
                     </div>
                     <span className="text-xs text-muted-foreground font-medium">{edu.period}</span>
                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </SectionReveal>
+      )}
+
+      {/* Uploaded Certificates & Documents Section */}
+      {items && items.length > 0 && (
+        <SectionReveal id="certificates" className="py-16 bg-muted/20 border-y border-border/40">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+                <Award className="h-6 w-6 text-primary" />
+                Verified Certificates & Credentials
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">Uploaded certificates and reference documents.</p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {items.map((file) => (
+                <div key={file.id} className="bg-card border border-border/60 rounded-xl p-4 flex flex-col justify-between hover:border-primary/40 transition-all">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className={`p-2 rounded-lg ${themeConfig.accentBg}`}>
+                        <Award className={`h-4 w-4 ${themeConfig.accentText}`} />
+                      </div>
+                      <span className="font-semibold text-sm truncate">{file.name}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground capitalize">{file.category || 'Certificate'}</p>
+                  </div>
+                  {file.public_url && (
+                    <div className="pt-3 mt-3 border-t border-border/40 flex justify-end">
+                      <a
+                        href={file.public_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+                      >
+                        View Credential <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

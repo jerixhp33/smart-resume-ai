@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import type { PortfolioContent, PortfolioThemeId } from '@/types'
+import type { PortfolioContent, PortfolioThemeId, UserFile } from '@/types'
 import { THEMES } from './theme-config'
 import { SectionReveal } from '@/components/motion/SectionReveal'
 import { ExternalLink, Mail } from 'lucide-react'
@@ -10,9 +10,10 @@ import { GithubIcon } from '@/components/ui/icons'
 interface TemplateProps {
   content: PortfolioContent
   theme: PortfolioThemeId
+  items?: UserFile[]
 }
 
-export function MinimalTemplate({ content, theme }: TemplateProps) {
+export function MinimalTemplate({ content, theme, items }: TemplateProps) {
   const themeConfig = THEMES[theme] || THEMES.neutral
   const { hero, about, experience, education, skills, projects, contact } = content
 

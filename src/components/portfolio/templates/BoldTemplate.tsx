@@ -1,15 +1,16 @@
 'use client'
 
 import React from 'react'
-import type { PortfolioContent, PortfolioThemeId } from '@/types'
+import type { PortfolioContent, PortfolioThemeId, UserFile } from '@/types'
 import { THEMES } from './theme-config'
 
 interface TemplateProps {
   content: PortfolioContent
   theme: PortfolioThemeId
+  items?: UserFile[]
 }
 
-export function BoldTemplate({ content, theme }: TemplateProps) {
+export function BoldTemplate({ content, theme, items }: TemplateProps) {
   const themeConfig = THEMES[theme] || THEMES.rose
   const { hero, projects, experience, contact } = content
 

@@ -1,15 +1,16 @@
 'use client'
 
 import React from 'react'
-import type { PortfolioContent, PortfolioThemeId } from '@/types'
+import type { PortfolioContent, PortfolioThemeId, UserFile } from '@/types'
 import { THEMES } from './theme-config'
 
 interface TemplateProps {
   content: PortfolioContent
   theme: PortfolioThemeId
+  items?: UserFile[]
 }
 
-export function EditorialTemplate({ content, theme }: TemplateProps) {
+export function EditorialTemplate({ content, theme, items }: TemplateProps) {
   const { hero, about, experience, projects, contact } = content
 
   return (

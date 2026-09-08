@@ -36,7 +36,7 @@ export async function uploadFileAction(formData: FormData) {
       storage_path: storagePath,
       size: file.size,
       mime_type: file.type || 'application/octet-stream',
-      category: category || 'other',
+      category: category || 'certificates',
     })
     .select()
     .single()

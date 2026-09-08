@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import type { PortfolioContent, PortfolioThemeId } from '@/types'
+import type { PortfolioContent, PortfolioThemeId, UserFile } from '@/types'
 import { THEMES } from './theme-config'
 import { Sparkles, Mail, ExternalLink } from 'lucide-react'
 import { GithubIcon } from '@/components/ui/icons'
@@ -9,9 +9,10 @@ import { GithubIcon } from '@/components/ui/icons'
 interface TemplateProps {
   content: PortfolioContent
   theme: PortfolioThemeId
+  items?: UserFile[]
 }
 
-export function ElegantTemplate({ content, theme }: TemplateProps) {
+export function ElegantTemplate({ content, theme, items }: TemplateProps) {
   const themeConfig = THEMES[theme] || THEMES.amber
   const { hero, about, experience, projects, contact } = content
 

@@ -1,16 +1,17 @@
 'use client'
 
 import React from 'react'
-import type { PortfolioContent, PortfolioThemeId } from '@/types'
+import type { PortfolioContent, PortfolioThemeId, UserFile } from '@/types'
 import { THEMES } from './theme-config'
 import { Briefcase, GraduationCap, Mail, Phone, MapPin, Award } from 'lucide-react'
 
 interface TemplateProps {
   content: PortfolioContent
   theme: PortfolioThemeId
+  items?: UserFile[]
 }
 
-export function ProfessionalTemplate({ content, theme }: TemplateProps) {
+export function ProfessionalTemplate({ content, theme, items }: TemplateProps) {
   const themeConfig = THEMES[theme] || THEMES.blue
   const { hero, about, experience, education, skills, projects, contact } = content
 

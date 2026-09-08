@@ -33,7 +33,7 @@ export default function FilesPage() {
   const handleUpload = async (file: File) => {
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('category', activeTab === 'all' ? 'other' : activeTab)
+    formData.append('category', activeTab === 'all' ? 'certificates' : activeTab)
 
     const res = await uploadFileAction(formData)
     if (res.error) throw new Error(res.error)
@@ -95,9 +95,9 @@ export default function FilesPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight mb-1 flex items-center gap-2">
             <FolderOpen className="h-6 w-6 text-primary" />
-            My Files
+            My Certificates & Files
           </h1>
-          <p className="text-sm text-muted-foreground">Manage your uploaded certificates, portfolios, and reference documents.</p>
+          <p className="text-sm text-muted-foreground">Upload your certificates and documents. Uploaded certificates will be displayed on your AI Portfolio.</p>
         </div>
         {userId && (
           <Button onClick={handleSharePortfolio} variant="outline" className="gap-2 shadow-sm border-primary/20 hover:bg-primary/5">
@@ -105,6 +105,14 @@ export default function FilesPage() {
             Share Portfolio
           </Button>
         )}
+      </div>
+
+      {/* Sync Banner */}
+      <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-center justify-between text-xs text-foreground">
+        <div className="flex items-center gap-2 font-medium">
+          <span className="text-base">📜</span>
+          <span>Uploaded certificates and documents automatically sync and display on your public AI Portfolio!</span>
+        </div>
       </div>
 
       <FileUploader onUpload={handleUpload} />
