@@ -44,7 +44,7 @@ export function PortfolioRenderer({ content, template, theme, items }: Portfolio
 
   return (
     <div id="top" className="relative min-h-screen">
-      <PortfolioNavbar content={content} items={items} />
+      <PortfolioNavbar content={content} template={template} theme={theme} items={items} />
       {renderTemplate()}
     </div>
   )
