@@ -6,6 +6,21 @@
 import type { ResumeData, Profile, PortfolioContent } from '@/types'
 
 /**
+ * Safely extracts the first sentence of a text without breaking on abbreviations (B.Sc., M.Sc., Ph.D., Dr., etc.)
+ */
+function getFirstSentence(text: string): string {
+  if (!text) return ''
+  const trimmed = text.trim()
+  const sentenceEndPattern = /(?<!\b(?:B\.Sc|M\.Sc|Ph\.D|B\.Tech|M\.Tech|B\.E|M\.E|B\.S|M\.S|Dr|Mr|Mrs|Ms|Inc|Ltd|vs|[A-Z]))[.!?]\s+/i
+  const match = trimmed.match(sentenceEndPattern)
+  
+  if (match && match.index !== undefined) {
+    return trimmed.slice(0, match.index + 1)
+  }
+  return trimmed
+}
+
+/**
  * Deterministic mapping function from resume & profile data to portfolio content
  */
 export function mapResumeToPortfolioContent(
@@ -26,13 +41,15 @@ export function mapResumeToPortfolioContent(
 
   // Ensure hero.summary is a punchy tagline/sentence while about.biography holds full summary
   const fullSummary = resumeData.summary?.trim() || ''
-  const firstSentence = fullSummary ? (fullSummary.split(/(?<=[.!?])\s+/)[0] || fullSummary) : ''
+  const firstSentence = getFirstSentence(fullSummary)
 
   const hero = {
     full_name: p.full_name || profile?.full_name || 'Professional',
     title: p.professional_title || 'Software Developer & Specialist',
     tagline: `Building high-impact digital solutions and scalable products.`,
-    summary: firstSentence || `Passionate professional driven to deliver innovative solutions and technical excellence.`,
+    summary: (firstSentence && firstSentence !== fullSummary)
+      ? firstSentence
+      : `Building high-impact digital solutions and scalable products.`,
     avatar_url: profile?.avatar_url || undefined,
     location: p.location || undefined,
     availability: 'Available for opportunities',
@@ -42,9 +59,7 @@ export function mapResumeToPortfolioContent(
     cta_secondary_url: '#contact',
   }
 
-  const bioText = fullSummary && fullSummary !== firstSentence 
-    ? fullSummary 
-    : (fullSummary || `${p.full_name} is a ${p.professional_title || 'specialist'} dedicated to delivering high-impact technical solutions and user-centered products.`)
+  const bioText = fullSummary || `${p.full_name} is a ${p.professional_title || 'specialist'} dedicated to delivering high-impact technical solutions and user-centered products.`
 
   const about = {
     biography: bioText,
@@ -172,8 +187,8 @@ export function enrichContentWithResume(
   // If hero summary and about biography are identical, split them so hero gets the 1-sentence hook and about gets full bio
   if (heroSummary && aboutBio && heroSummary.trim() === aboutBio.trim()) {
     const fullText = aboutBio.trim()
-    const firstSentence = fullText.split(/(?<=[.!?])\s+/)[0] || fullText
-    if (firstSentence !== fullText) {
+    const firstSentence = getFirstSentence(fullText)
+    if (firstSentence && firstSentence !== fullText) {
       heroSummary = firstSentence
     } else {
       heroSummary = content.hero?.tagline || `Building high-impact digital solutions and scalable products.`
