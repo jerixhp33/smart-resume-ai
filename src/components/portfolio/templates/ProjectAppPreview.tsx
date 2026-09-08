@@ -12,6 +12,11 @@ interface ProjectAppPreviewProps {
 export function ProjectAppPreview({ project, accentColor = 'purple' }: ProjectAppPreviewProps) {
   const { title, image_url, technologies = [], live_url, tagline } = project
 
+  // Only render preview frame if an image URL is explicitly present
+  if (!image_url || !image_url.trim()) {
+    return null
+  }
+
   // Generate a clean domain name from title
   const domainName = (title || 'app').toLowerCase().replace(/[^a-z0-9]/g, '-') + '.dev'
 
