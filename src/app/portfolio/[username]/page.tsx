@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { profile, resume } = await getPublicPortfolio(username)
   if (!profile) return { title: 'Portfolio Not Found' }
   
-  const resumeData = resume?.data || {}
+  const resumeData = (resume?.data as any) || {}
   const name = resumeData.personal?.full_name || profile.full_name || 'User'
   const title = resumeData.personal?.professional_title || 'Portfolio'
   
@@ -28,6 +28,7 @@ export default async function PortfolioPage({ params }: Props) {
   const { profile, resume, items, error } = await getPublicPortfolio(username)
 
   if (error || !profile) {
+    console.log('PortfolioPage 404 triggered because:', { error, hasProfile: !!profile })
     notFound()
   }
 

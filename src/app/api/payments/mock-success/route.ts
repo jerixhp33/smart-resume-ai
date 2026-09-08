@@ -27,5 +27,5 @@ export async function POST(request: NextRequest) {
     amount: 9900, // ₹99
   })
 
-  return NextResponse.json({ success: true, ...result })
+  return NextResponse.json(result)
 }

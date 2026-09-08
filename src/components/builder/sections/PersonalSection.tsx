@@ -71,8 +71,6 @@ export function PersonalSection() {
           icon={<MapPin className="h-4 w-4" />}
           value={personal?.location ?? ''}
           onChange={e => update('location', e.target.value)}
-            enableAI
-            onAIChange={val => update('location', val)}
           hint="City, State or City, Country"
           enableAI
           onAIChange={val => update('location', val)}

@@ -19,9 +19,10 @@ export interface Database {
           is_admin: boolean
           created_at: string
           updated_at: string
+          username: string | null
         }
-        Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'id' | 'created_at' | 'updated_at'>
-        Update: Partial<Database['public']['Tables']['profiles']['Insert']>
+        Insert: any
+        Update: any
       }
       resumes: {
         Row: {
@@ -37,8 +38,8 @@ export interface Database {
           created_at: string
           updated_at: string
         }
-        Insert: Omit<Database['public']['Tables']['resumes']['Row'], 'id' | 'created_at' | 'updated_at'>
-        Update: Partial<Database['public']['Tables']['resumes']['Insert']>
+        Insert: any
+        Update: any
       }
       resume_versions: {
         Row: {
@@ -49,8 +50,8 @@ export interface Database {
           data: Json
           created_at: string
         }
-        Insert: Omit<Database['public']['Tables']['resume_versions']['Row'], 'id' | 'created_at'>
-        Update: Partial<Database['public']['Tables']['resume_versions']['Insert']>
+        Insert: any
+        Update: any
       }
       ats_scans: {
         Row: {
@@ -61,8 +62,8 @@ export interface Database {
           result: Json
           created_at: string
         }
-        Insert: Omit<Database['public']['Tables']['ats_scans']['Row'], 'id' | 'created_at'>
-        Update: Partial<Database['public']['Tables']['ats_scans']['Insert']>
+        Insert: any
+        Update: any
       }
       job_applications: {
         Row: {
@@ -84,10 +85,10 @@ export interface Database {
           created_at: string
           updated_at: string
         }
-        Insert: Omit<Database['public']['Tables']['job_applications']['Row'], 'id' | 'created_at' | 'updated_at'>
-        Update: Partial<Database['public']['Tables']['job_applications']['Insert']>
+        Insert: any
+        Update: any
       }
-      files: {
+      user_files: {
         Row: {
           id: string
           user_id: string
@@ -100,8 +101,8 @@ export interface Database {
           created_at: string
           updated_at: string
         }
-        Insert: Omit<Database['public']['Tables']['files']['Row'], 'id' | 'created_at' | 'updated_at'>
-        Update: Partial<Database['public']['Tables']['files']['Insert']>
+        Insert: any
+        Update: any
       }
       ai_usage: {
         Row: {
@@ -114,8 +115,8 @@ export interface Database {
           total_tokens: number
           created_at: string
         }
-        Insert: Omit<Database['public']['Tables']['ai_usage']['Row'], 'id' | 'created_at'>
-        Update: Partial<Database['public']['Tables']['ai_usage']['Insert']>
+        Insert: any
+        Update: any
       }
       payments: {
         Row: {
@@ -132,8 +133,8 @@ export interface Database {
           created_at: string
           verified_at: string | null
         }
-        Insert: Omit<Database['public']['Tables']['payments']['Row'], 'id' | 'created_at'>
-        Update: Partial<Database['public']['Tables']['payments']['Insert']>
+        Insert: any
+        Update: any
       }
       user_entitlements: {
         Row: {
@@ -145,8 +146,8 @@ export interface Database {
           paid_resume_credits: number
           updated_at: string
         }
-        Insert: Omit<Database['public']['Tables']['user_entitlements']['Row'], 'id' | 'updated_at'>
-        Update: Partial<Database['public']['Tables']['user_entitlements']['Insert']>
+        Insert: any
+        Update: any
       }
       notifications: {
         Row: {
@@ -160,8 +161,8 @@ export interface Database {
           created_at: string
           read_at: string | null
         }
-        Insert: Omit<Database['public']['Tables']['notifications']['Row'], 'id' | 'created_at'>
-        Update: Partial<Database['public']['Tables']['notifications']['Insert']>
+        Insert: any
+        Update: any
       }
     }
   }

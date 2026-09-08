@@ -21,7 +21,9 @@ type LoginForm = z.infer<typeof loginSchema>
 const magicSchema = z.object({ email: z.string().email('Please enter a valid email address') })
 type MagicForm = z.infer<typeof magicSchema>
 
-export default function LoginPage() {
+import { Suspense } from 'react'
+
+function LoginFormContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirect') ?? '/dashboard'
@@ -196,3 +198,12 @@ export default function LoginPage() {
     </div>
   )
 }
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex w-full items-center justify-center p-8">Loading...</div>}>
+      <LoginFormContent />
+    </Suspense>
+  )
+}
+

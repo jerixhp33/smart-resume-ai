@@ -84,7 +84,7 @@ Return JSON only:
       totalTokens: response.totalTokens,
     })
 
-    return { result }
+    return { result: result as AIImprovement }
   } catch (error) {
     return wrapAIError(error)
   }
@@ -237,7 +237,7 @@ export async function tailorResumeToJob(params: {
       recommendations: []
     })
 
-    const parsed = parseAIJSON(response.content, schema)
+    const parsed = parseAIJSON(response.content, schema) as any
     await logAIUsage({ userId: user.id, taskType: 'resume_tailor', model: response.model, promptTokens: response.promptTokens, completionTokens: response.completionTokens, totalTokens: response.totalTokens })
 
     return {

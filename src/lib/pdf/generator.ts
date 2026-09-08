@@ -73,7 +73,7 @@ async function getBrowser() {
 
     return await puppeteer.default.launch({
       args: chromium.default.args,
-      defaultViewport: chromium.default.defaultViewport,
+      defaultViewport: (chromium.default as any).defaultViewport,
       executablePath,
       headless: true,
     })
@@ -132,7 +132,7 @@ export async function generatePDF(options: PDFGenerationOptions): Promise<Buffer
     page = await browser.newPage()
 
     // Set content and wait for fonts to load
-    await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 })
+    await page.setContent(html, { waitUntil: 'networkidle0' as any, timeout: 30000 })
 
     // Wait for web fonts (if any)
     await page.evaluateHandle('document.fonts.ready')

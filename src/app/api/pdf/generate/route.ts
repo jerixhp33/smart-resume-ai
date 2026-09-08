@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Return PDF binary
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(pdfBuffer as any, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="resume-${Date.now()}.pdf"`,
