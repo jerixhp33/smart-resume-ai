@@ -145,7 +145,7 @@ export function BoldTemplate({ content, theme, items }: TemplateProps) {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div>
                         <h3 className="text-xl font-black uppercase text-white">{exp.role}</h3>
-                        <p className={`font-bold text-sm uppercase ${themeConfig.activeText}`}>{exp.company}</p>
+                        <p className={`font-bold text-sm uppercase ${themeConfig.accentText}`}>{exp.company}</p>
                       </div>
                       <span className="text-xs px-4 py-1.5 rounded-full bg-zinc-800 font-mono font-bold w-fit text-zinc-300">{exp.period}</span>
                     </div>
@@ -211,7 +211,7 @@ export function BoldTemplate({ content, theme, items }: TemplateProps) {
                 <StaggerItem key={edu.id}>
                   <div className="bg-zinc-900 border-2 border-zinc-800 p-6 rounded-3xl space-y-2 h-full">
                     <h3 className="font-black text-lg uppercase text-white">{edu.degree} {edu.field ? `in ${edu.field}` : ''}</h3>
-                    <p className={`font-bold text-sm uppercase ${themeConfig.activeText}`}>{edu.institution}</p>
+                    <p className={`font-bold text-sm uppercase ${themeConfig.accentText}`}>{edu.institution}</p>
                     <p className="text-xs text-zinc-500 font-mono font-bold">{edu.period}</p>
                   </div>
                 </StaggerItem>
