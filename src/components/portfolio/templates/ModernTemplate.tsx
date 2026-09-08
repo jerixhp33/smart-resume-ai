@@ -27,7 +27,7 @@ export function ModernTemplate({ content, theme, items }: TemplateProps) {
 
       {/* Hero Section */}
       {!hidden.hero && (
-        <SectionReveal className="py-20 md:py-32 max-w-6xl mx-auto px-4 sm:px-6">
+        <SectionReveal id="top" className="py-20 md:py-32 max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-10">
             <div className="max-w-3xl space-y-6 flex-1">
               {hero.availability && (
@@ -36,7 +36,7 @@ export function ModernTemplate({ content, theme, items }: TemplateProps) {
                   {hero.availability}
                 </span>
               )}
-              <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1]">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1] break-words">
                 {hero.full_name}
               </h1>
               <p className={`text-xl sm:text-2xl font-semibold bg-gradient-to-r ${themeConfig.gradient} bg-clip-text text-transparent`}>
