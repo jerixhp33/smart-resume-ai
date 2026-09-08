@@ -57,7 +57,11 @@ export function CenterPreviewPanel({ username }: CenterPreviewPanelProps) {
       </div>
 
       {/* Frame Container */}
-      <div className="flex-1 p-6 overflow-y-auto flex justify-center bg-muted/40">
+      <div
+        data-lenis-prevent
+        tabIndex={0}
+        className="flex-1 p-6 overflow-y-auto outline-none flex justify-center bg-muted/40"
+      >
         <div
           className={`transition-all duration-300 bg-background shadow-xl rounded-2xl overflow-hidden border border-border/80 h-fit min-h-full ${
             devicePreview === 'desktop'

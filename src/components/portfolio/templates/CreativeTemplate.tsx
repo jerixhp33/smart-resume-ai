@@ -18,7 +18,7 @@ export function CreativeTemplate({ content, theme, items }: TemplateProps) {
   const { hero, about, experience, projects, skills, contact } = content
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white font-sans antialiased relative overflow-hidden">
+    <div className="min-h-screen bg-slate-900 text-white font-sans antialiased relative overflow-x-hidden">
       {/* Background Ambient Glows */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/15 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-1/3 right-10 w-[400px] h-[400px] bg-blue-600/15 rounded-full blur-[120px] pointer-events-none" />

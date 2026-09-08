@@ -72,7 +72,7 @@ export function LeftNavigationPanel() {
       </div>
 
       {/* Editor Form for Active Section */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-4">
+      <div data-lenis-prevent className="flex-1 p-4 overflow-y-auto space-y-4">
         <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Editing: {activeSection}</p>
 
         {activeSection === 'hero' && (

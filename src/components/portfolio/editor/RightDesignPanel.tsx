@@ -34,7 +34,7 @@ export function RightDesignPanel() {
   const setMotionLevel = usePortfolioStore((s) => s.setMotionLevel)
 
   return (
-    <div className="flex flex-col h-full p-4 overflow-y-auto space-y-6">
+    <div data-lenis-prevent className="flex flex-col h-full p-4 overflow-y-auto space-y-6">
       {/* Template Selector */}
       <div className="space-y-3">
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
