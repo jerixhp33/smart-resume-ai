@@ -42,7 +42,7 @@ export function PortfolioClient({ site, profile, resume, items, username }: Port
   }
 
   return (
-    <div className="relative min-h-screen bg-background">
+    <div className="relative min-h-screen w-full">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

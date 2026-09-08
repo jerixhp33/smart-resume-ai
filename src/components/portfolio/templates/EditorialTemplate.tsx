@@ -17,7 +17,8 @@ export function EditorialTemplate({ content, theme, items }: TemplateProps) {
   const hidden = content.hidden_sections || {}
 
   return (
-    <div className="min-h-screen bg-[#faf8f5] text-[#1c1917] font-serif antialiased max-w-4xl mx-auto px-8 py-20 space-y-24">
+    <div className="w-full min-h-screen bg-[#faf8f5] text-[#1c1917] font-serif antialiased">
+      <div className="max-w-4xl mx-auto px-8 py-20 space-y-24">
       {/* Monograph Header / Hero */}
       {!hidden.hero && (
         <header className="border-b border-[#e7e5e4] pb-16 space-y-6">
@@ -176,6 +177,7 @@ export function EditorialTemplate({ content, theme, items }: TemplateProps) {
           )}
         </footer>
       )}
+      </div>
     </div>
   )
 }

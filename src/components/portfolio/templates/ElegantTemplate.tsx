@@ -17,7 +17,8 @@ export function ElegantTemplate({ content, theme, items }: TemplateProps) {
   const hidden = content.hidden_sections || {}
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased max-w-5xl mx-auto px-6 py-20 space-y-24">
+    <div className="w-full min-h-screen bg-slate-950 text-slate-100 font-sans antialiased">
+      <div className="max-w-5xl mx-auto px-6 py-20 space-y-24">
       {/* Header / Hero */}
       {!hidden.hero && (
         <header className="space-y-6 text-center max-w-3xl mx-auto">
@@ -205,6 +206,7 @@ export function ElegantTemplate({ content, theme, items }: TemplateProps) {
           )}
         </footer>
       )}
+      </div>
     </div>
   )
 }

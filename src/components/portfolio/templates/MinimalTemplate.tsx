@@ -19,7 +19,8 @@ export function MinimalTemplate({ content, theme, items }: TemplateProps) {
   const hidden = content.hidden_sections || {}
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans antialiased max-w-4xl mx-auto px-6 py-16 space-y-20">
+    <div className="w-full min-h-screen bg-background text-foreground font-sans antialiased">
+      <div className="max-w-4xl mx-auto px-6 py-16 space-y-20">
       {/* Header / Hero */}
       {!hidden.hero && (
         <header className="space-y-4 border-b border-border pb-12">
@@ -159,6 +160,7 @@ export function MinimalTemplate({ content, theme, items }: TemplateProps) {
       <footer className="border-t border-border pt-8 text-xs text-muted-foreground">
         <p>© {new Date().getFullYear()} {hero.full_name}</p>
       </footer>
+      </div>
     </div>
   )
 }

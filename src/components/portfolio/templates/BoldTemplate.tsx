@@ -18,7 +18,8 @@ export function BoldTemplate({ content, theme, items }: TemplateProps) {
   const hidden = content.hidden_sections || {}
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans antialiased max-w-6xl mx-auto px-6 py-20 space-y-24">
+    <div className="w-full min-h-screen bg-black text-white font-sans antialiased">
+      <div className="max-w-6xl mx-auto px-6 py-20 space-y-24">
       {/* Header / Hero */}
       {!hidden.hero && (
         <header className="space-y-6">
@@ -242,6 +243,7 @@ export function BoldTemplate({ content, theme, items }: TemplateProps) {
           )}
         </footer>
       )}
+      </div>
     </div>
   )
 }
