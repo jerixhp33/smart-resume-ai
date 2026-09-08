@@ -337,30 +337,15 @@ export async function toggleResumeSharing(resumeId: string, isPublic: boolean) {
     // Create base slug
     const baseSlug = fullName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'resume'
     
-    // Find a unique slug
-    let isUnique = false
-    let attempt = 0
-    const suffixes = ['', '-resume', '-cv', '-portfolio']
+    // Try base slug first, then append a short random suffix if taken
+    const { data: existing } = await serviceClient
+      .from('resumes')
+      .select('id')
+      .eq('public_slug', baseSlug)
+      .neq('id', resumeId)
+      .maybeSingle()
 
-    while (!isUnique && attempt < 50) {
-      const currentSlug = attempt < suffixes.length 
-        ? `${baseSlug}${suffixes[attempt]}`
-        : `${baseSlug}-${attempt - suffixes.length + 1}`
-
-      // Check if this slug is already taken by a DIFFERENT resume
-      const { data: existing } = await serviceClient
-        .from('resumes')
-        .select('id')
-        .eq('public_slug', currentSlug)
-        .neq('id', resumeId)
-        .maybeSingle()
-
-      if (!existing) {
-        slug = currentSlug
-        isUnique = true
-      }
-      attempt++
-    }
+    slug = existing ? `${baseSlug}-${crypto.randomUUID().slice(0, 6)}` : baseSlug
   }
 
   const { error } = await serviceClient

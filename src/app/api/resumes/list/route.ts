@@ -8,7 +8,7 @@ export async function GET() {
 
   const { data: resumes } = await supabase
     .from('resumes')
-    .select('id, name, template_id, ats_score, updated_at, data')
+    .select('id, name, template_id, ats_score, updated_at')
     .eq('user_id', user.id)
     .order('updated_at', { ascending: false })
 

@@ -158,15 +158,7 @@ export async function processVerifiedPayment(params: {
       })
       .eq('id', payment.id)
 
-    // Credit resume unlock to user entitlements
-    await supabase
-      .from('user_entitlements')
-      .upsert({
-        user_id: payment.user_id,
-        paid_resume_credits: 1, // Will be added to existing
-      }, { onConflict: 'user_id' })
-
-    // Use RPC for atomic increment
+    // Credit resume unlock via atomic RPC (avoids race conditions)
     await supabase.rpc('add_paid_resume_credits', {
       p_user_id: payment.user_id,
       p_credits: 1,

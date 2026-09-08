@@ -12,6 +12,23 @@ export async function uploadFileAction(formData: FormData) {
   const category = formData.get('category') as FileCategory
   if (!file) return { error: 'No file provided' }
 
+  // Security: Validate file type
+  const ALLOWED_TYPES = [
+    'application/pdf',
+    'image/png', 'image/jpeg', 'image/webp', 'image/gif',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ]
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return { error: 'File type not allowed. Please upload PDF, images, or Word documents.' }
+  }
+
+  // Security: Validate file size (10MB max)
+  const MAX_SIZE = 10 * 1024 * 1024
+  if (file.size > MAX_SIZE) {
+    return { error: 'File too large. Maximum size is 10MB.' }
+  }
+
   const originalName = file.name
   const safeName = originalName.replace(/[^a-zA-Z0-9.-]/g, '_')
   const storagePath = `${user.id}/${Date.now()}_${safeName}`
@@ -56,11 +73,12 @@ export async function deleteFileAction(id: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized' }
 
-  // 1. Get file metadata to find storage path
+  // 1. Get file metadata — with ownership check
   const { data: file } = await supabase
     .from('user_files')
     .select('storage_path')
     .eq('id', id)
+    .eq('user_id', user.id)
     .single()
 
   if (!file) return { error: 'File not found' }
@@ -70,6 +88,7 @@ export async function deleteFileAction(id: string) {
     .from('user_files')
     .delete()
     .eq('id', id)
+    .eq('user_id', user.id)
 
   if (dbError) return { error: dbError.message }
 
@@ -88,6 +107,7 @@ export async function renameFileAction(id: string, newName: string) {
     .from('user_files')
     .update({ name: newName, updated_at: new Date().toISOString() })
     .eq('id', id)
+    .eq('user_id', user.id)
     .select()
     .single()
 
@@ -129,6 +149,7 @@ export async function getFileDownloadUrlAction(id: string) {
     .from('user_files')
     .select('storage_path')
     .eq('id', id)
+    .eq('user_id', user.id)
     .single()
 
   if (!file) return { error: 'File not found' }

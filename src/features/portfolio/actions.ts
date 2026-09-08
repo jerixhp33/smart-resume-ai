@@ -171,10 +171,14 @@ export async function getUserPortfolioAction() {
 
 export async function getPortfolioByIdAction(portfolioId: string) {
   const supabase = await getSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+
   const { data: site, error } = await supabase
     .from('portfolio_sites')
     .select('*')
     .eq('id', portfolioId)
+    .eq('user_id', user.id)
     .single()
 
   if (error || !site) return { error: 'Portfolio not found' }
@@ -235,19 +239,19 @@ export async function getPublicPortfolio(username: string) {
 
   // 1 & 2. Fetch portfolio_sites and profiles in parallel for maximum performance
   const [siteRes, profileRes] = await Promise.all([
-    supabase.from('portfolio_sites').select('*').eq('username', cleanUsername).maybeSingle(),
-    supabase.from('profiles').select('*').eq('username', cleanUsername).maybeSingle(),
+    supabase.from('portfolio_sites').select('id, user_id, username, slug, title, theme, template, motion_level, content, seo_metadata, published, created_at, updated_at').eq('username', cleanUsername).maybeSingle(),
+    supabase.from('profiles').select('full_name, username, avatar_url, bio, headline, user_id').eq('username', cleanUsername).maybeSingle(),
   ])
 
   const site = siteRes.data
   const profile = profileRes.data
 
-  // 3. Fetch latest resume
+  // 3. Fetch latest resume (only public-safe fields)
   let resume: Resume | null = null
   if (profile) {
     const { data: resumes } = await supabase
       .from('resumes')
-      .select('*')
+      .select('id, name, template_id, data, ats_score, created_at, updated_at')
       .eq('user_id', profile.user_id)
       .order('updated_at', { ascending: false })
       .limit(1)
@@ -256,12 +260,12 @@ export async function getPublicPortfolio(username: string) {
     }
   }
 
-  // 4. Fetch user certificates/files
+  // 4. Fetch user certificates/files (only public-safe fields)
   let filesWithUrls: UserFile[] = []
   if (profile) {
     const { data: files } = await supabase
       .from('user_files')
-      .select('*')
+      .select('id, name, original_name, storage_path, size, mime_type, category, created_at')
       .eq('user_id', profile.user_id)
       .order('created_at', { ascending: false })
 
@@ -270,7 +274,7 @@ export async function getPublicPortfolio(username: string) {
         const publicUrlData = supabase.storage
           .from('user_files')
           .getPublicUrl(file.storage_path)
-        return { ...file, public_url: publicUrlData?.data?.publicUrl || null } as any
+        return { ...file, public_url: publicUrlData?.data?.publicUrl || null } as UserFile & { public_url: string | null }
       })
     }
   }
@@ -301,16 +305,22 @@ export async function getPortfolioAnalyticsAction(portfolioId: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized' }
 
-  const { data: views } = await supabase
+  // Use count query for total (efficient — doesn't load all rows)
+  const { count: totalViews } = await supabase
     .from('portfolio_views')
-    .select('*')
+    .select('*', { count: 'exact', head: true })
+    .eq('portfolio_id', portfolioId)
+
+  // Fetch only recent views for display
+  const { data: recentViews } = await supabase
+    .from('portfolio_views')
+    .select('id, referrer, user_agent, created_at')
     .eq('portfolio_id', portfolioId)
     .order('created_at', { ascending: false })
+    .limit(100)
 
-  const totalViews = views?.length || 0
   const referrersMap: Record<string, number> = {}
-
-  views?.forEach((v) => {
+  recentViews?.forEach((v) => {
     const ref = v.referrer || 'Direct / Bookmark'
     referrersMap[ref] = (referrersMap[ref] || 0) + 1
   })
@@ -320,8 +330,8 @@ export async function getPortfolioAnalyticsAction(portfolioId: string) {
     .sort((a, b) => b.count - a.count)
 
   return {
-    totalViews,
-    recentViews: (views || []).slice(0, 20),
+    totalViews: totalViews ?? 0,
+    recentViews: (recentViews || []).slice(0, 20),
     topReferrers: referrersList.slice(0, 10),
   }
 }
