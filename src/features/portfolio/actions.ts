@@ -59,7 +59,6 @@ export async function getPublicPortfolio(username: string) {
     .from('user_files')
     .select('*')
     .eq('user_id', profile.user_id)
-    .eq('category', 'certificates')
     .order('created_at', { ascending: false })
 
   // 4. Generate signed URLs for the files so they can be viewed publicly

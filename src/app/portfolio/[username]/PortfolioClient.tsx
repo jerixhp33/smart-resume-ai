@@ -180,6 +180,23 @@ export function PortfolioClient({ profile, resume, items }: { profile: any, resu
           )}
         </section>
 
+        {/* Empty State Notice */}
+        {(!experience?.length && !projects?.length && !education?.length && !skills?.length) && (
+          <section className="py-24 px-6 text-center">
+            <div className="max-w-md mx-auto bg-primary/5 border border-primary/20 rounded-3xl p-8">
+              <h3 className="text-xl font-bold mb-4 text-slate-900">Your Portfolio is Almost Ready! ✨</h3>
+              <p className="text-slate-600 mb-8">
+                You currently don't have any structured experience or projects to display. 
+                <br /><br />
+                Uploading a PDF to "My Files" just saves the file. To automatically generate this portfolio, head over to the <strong>Resume Builder</strong> and use the <strong>Import with AI</strong> feature to parse your PDF into structured data!
+              </p>
+              <TransitionLink href="/resumes/import" className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground font-medium rounded-full hover:scale-105 transition-transform">
+                Go to AI Resume Import
+              </TransitionLink>
+            </div>
+          </section>
+        )}
+
         {/* Experience Section */}
         {experience?.length > 0 && (
           <section id="experience" className="py-24 bg-white px-6">
