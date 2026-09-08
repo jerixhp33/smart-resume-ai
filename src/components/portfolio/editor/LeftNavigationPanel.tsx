@@ -439,7 +439,7 @@ export function LeftNavigationPanel() {
                       value={exp.period || ''}
                       onChange={(e) => updateExperienceItem(idx, { period: e.target.value })}
                       className="h-7 text-xs mt-0.5"
-                      placeholder="e.g. 2022 - Present"
+                      placeholder="e.g. 2025-05 - 2025-06"
                     />
                   </div>
                   <div>
@@ -448,9 +448,24 @@ export function LeftNavigationPanel() {
                       value={exp.location || ''}
                       onChange={(e) => updateExperienceItem(idx, { location: e.target.value })}
                       className="h-7 text-xs mt-0.5"
-                      placeholder="e.g. Remote"
+                      placeholder="e.g. Chennai, India"
                     />
                   </div>
+                </div>
+                <div>
+                  <label className="text-[10px] font-semibold text-muted-foreground">Experience Type</label>
+                  <select
+                    value={exp.type || (exp.role?.toLowerCase().includes('intern') ? 'internship' : 'full-time')}
+                    onChange={(e) => updateExperienceItem(idx, { type: e.target.value })}
+                    className="w-full h-7 text-xs mt-0.5 rounded-md border border-input bg-background px-2 py-1 text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                  >
+                    <option value="internship">Internship</option>
+                    <option value="full-time">Full-time</option>
+                    <option value="contract">Contract</option>
+                    <option value="part-time">Part-time</option>
+                    <option value="freelance">Freelance</option>
+                    <option value="leadership">Leadership / Volunteer</option>
+                  </select>
                 </div>
                 <div>
                   <label className="text-[10px] font-semibold text-muted-foreground">Description</label>

@@ -9,6 +9,7 @@ import { StaggerItem } from '@/components/motion/StaggerItem'
 import { ExternalLink, Mail, Award, Briefcase, GraduationCap, Code } from 'lucide-react'
 import { GithubIcon } from '@/components/ui/icons'
 import { motion } from 'framer-motion'
+import { getExperienceTypeLabel, getCleanDescription } from './template-utils'
 
 interface TemplateProps {
   content: PortfolioContent
@@ -106,17 +107,40 @@ export function MinimalTemplate({ content, theme, items }: TemplateProps) {
           <section className="space-y-6">
             <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Experience</h2>
             <StaggerContainer className="space-y-6">
-              {experience.map((exp) => (
-                <StaggerItem key={exp.id}>
-                  <div className="space-y-1">
-                    <div className="flex justify-between items-baseline">
-                      <h3 className="font-bold text-sm text-foreground">{exp.role} <span className="text-muted-foreground font-normal">at {exp.company}</span></h3>
-                      <span className="text-xs font-mono text-muted-foreground">{exp.period}</span>
+              {experience.map((exp) => {
+                const typeLabel = getExperienceTypeLabel(exp)
+                const cleanDesc = getCleanDescription(exp.description, exp.bullets)
+                return (
+                  <StaggerItem key={exp.id}>
+                    <div className="space-y-1.5 pb-4 border-b border-border/40 last:border-0 last:pb-0">
+                      <div className="flex justify-between items-baseline flex-wrap gap-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-bold text-sm text-foreground">
+                            {exp.role} <span className="text-muted-foreground font-normal">at {exp.company}{exp.location ? `, ${exp.location}` : ''}</span>
+                          </h3>
+                          {typeLabel && (
+                            <span className="text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-muted text-muted-foreground">
+                              {typeLabel}
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-xs font-mono text-muted-foreground">{exp.period}</span>
+                      </div>
+                      {cleanDesc && <p className="text-xs text-muted-foreground leading-relaxed">{cleanDesc}</p>}
+                      {exp.bullets && exp.bullets.length > 0 && (
+                        <ul className="space-y-1 text-xs text-muted-foreground pt-1">
+                          {exp.bullets.map((bullet, i) => (
+                            <li key={i} className="flex items-start gap-1.5">
+                              <span className="h-1 w-1 rounded-full bg-muted-foreground/60 mt-1.5 flex-shrink-0" />
+                              <span>{bullet}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
-                    {exp.description && <p className="text-xs text-muted-foreground leading-relaxed">{exp.description}</p>}
-                  </div>
-                </StaggerItem>
-              ))}
+                  </StaggerItem>
+                )
+              })}
             </StaggerContainer>
           </section>
         </SectionReveal>

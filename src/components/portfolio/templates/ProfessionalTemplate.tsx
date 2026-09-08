@@ -4,6 +4,7 @@ import React from 'react'
 import type { PortfolioContent, PortfolioThemeId, UserFile } from '@/types'
 import { THEMES } from './theme-config'
 import { Briefcase, GraduationCap, Mail, Phone, MapPin, Award, Code, FolderGit2, ExternalLink } from 'lucide-react'
+import { getExperienceTypeLabel, getCleanDescription } from './template-utils'
 
 interface TemplateProps {
   content: PortfolioContent
@@ -83,15 +84,38 @@ export function ProfessionalTemplate({ content, theme, items }: TemplateProps) {
               <Briefcase className="h-5 w-5 text-blue-600" /> Professional Experience
             </h2>
             <div className="space-y-6">
-              {experience.map((exp) => (
-                <div key={exp.id} className="space-y-2">
-                  <div className="flex justify-between items-baseline">
-                    <h3 className="font-bold text-base text-slate-900 dark:text-slate-100">{exp.role} <span className="font-medium text-slate-600 dark:text-slate-300">— {exp.company}</span></h3>
-                    <span className="text-xs text-slate-500 font-semibold">{exp.period}</span>
+              {experience.map((exp) => {
+                const typeLabel = getExperienceTypeLabel(exp)
+                const cleanDesc = getCleanDescription(exp.description, exp.bullets)
+                return (
+                  <div key={exp.id} className="space-y-2 pb-4 border-b border-slate-100 dark:border-slate-700/50 last:border-0 last:pb-0">
+                    <div className="flex justify-between items-baseline flex-wrap gap-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-bold text-base text-slate-900 dark:text-slate-100">
+                          {exp.role} <span className="font-medium text-slate-600 dark:text-slate-300">— {exp.company}{exp.location ? `, ${exp.location}` : ''}</span>
+                        </h3>
+                        {typeLabel && (
+                          <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300">
+                            {typeLabel}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-xs text-slate-500 font-semibold">{exp.period}</span>
+                    </div>
+                    {cleanDesc && <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{cleanDesc}</p>}
+                    {exp.bullets && exp.bullets.length > 0 && (
+                      <ul className="space-y-1.5 pt-1 text-sm text-slate-600 dark:text-slate-300">
+                        {exp.bullets.map((bullet, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="h-1.5 w-1.5 rounded-full bg-blue-600 mt-2 flex-shrink-0" />
+                            <span>{bullet}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
-                  <p className="text-sm text-slate-600 dark:text-slate-300">{exp.description}</p>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </section>
         )}

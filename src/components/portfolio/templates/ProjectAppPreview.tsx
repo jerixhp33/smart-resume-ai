@@ -95,11 +95,22 @@ export function ProjectAppPreview({ project, accentColor = 'purple' }: ProjectAp
             {/* Mockup Footer Code / Tech Pill Bar */}
             <div className="relative z-10 flex items-center justify-between text-[10px] text-slate-400 border-t border-white/10 pt-2 font-mono">
               <span className="flex items-center gap-1 text-purple-300 truncate max-w-[200px]">
-                <Terminal className="h-3 w-3 flex-shrink-0" /> {technologies.slice(0, 3).join(' • ')}
+                <Terminal className="h-3 w-3 flex-shrink-0" /> {technologies.slice(0, 3).join(' • ') || 'HTML • CSS • JavaScript'}
               </span>
-              <span className="group-hover/preview:text-white transition-colors flex items-center gap-1">
-                Preview <ExternalLink className="h-2.5 w-2.5" />
-              </span>
+              {live_url ? (
+                <a
+                  href={live_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-purple-300 hover:text-white transition-colors flex items-center gap-1 font-semibold hover:underline"
+                >
+                  Preview <ExternalLink className="h-2.5 w-2.5" />
+                </a>
+              ) : (
+                <span className="group-hover/preview:text-white transition-colors flex items-center gap-1">
+                  Preview <ExternalLink className="h-2.5 w-2.5" />
+                </span>
+              )}
             </div>
           </div>
         )}

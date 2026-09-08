@@ -9,6 +9,7 @@ import { StaggerItem } from '@/components/motion/StaggerItem'
 import { Sparkles, ArrowUpRight, Mail, Briefcase, GraduationCap, Code, Award, ExternalLink } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { ProjectAppPreview } from './ProjectAppPreview'
+import { getExperienceTypeLabel, getCleanDescription } from './template-utils'
 
 interface TemplateProps {
   content: PortfolioContent
@@ -161,30 +162,41 @@ export function CreativeTemplate({ content, theme, items }: TemplateProps) {
                 <Briefcase className="h-7 w-7 text-purple-400" /> Experience
               </h2>
               <StaggerContainer className="space-y-6">
-                {experience.map((exp) => (
-                  <StaggerItem key={exp.id}>
-                    <div className="bg-white/5 border border-white/10 backdrop-blur-md rounded-3xl p-8 space-y-3 hover:border-purple-500/30 transition-colors">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <div>
-                          <h3 className="text-xl font-bold text-white">{exp.role}</h3>
-                          <p className="text-purple-300 font-medium text-sm">{exp.company}</p>
+                {experience.map((exp) => {
+                  const typeLabel = getExperienceTypeLabel(exp)
+                  const cleanDesc = getCleanDescription(exp.description, exp.bullets)
+                  return (
+                    <StaggerItem key={exp.id}>
+                      <div className="bg-white/5 border border-white/10 backdrop-blur-md rounded-3xl p-8 space-y-3 hover:border-purple-500/30 transition-colors">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="text-xl font-bold text-white">{exp.role}</h3>
+                              {typeLabel && (
+                                <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                  {typeLabel}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-purple-300 font-medium text-sm">{exp.company}{exp.location ? `, ${exp.location}` : ''}</p>
+                          </div>
+                          <span className="text-xs px-3 py-1 rounded-full bg-white/10 text-slate-300 font-mono w-fit">{exp.period}</span>
                         </div>
-                        <span className="text-xs px-3 py-1 rounded-full bg-white/10 text-slate-300 font-mono w-fit">{exp.period}</span>
+                        {cleanDesc && <p className="text-slate-300 text-sm leading-relaxed">{cleanDesc}</p>}
+                        {exp.bullets && exp.bullets.length > 0 && (
+                          <ul className="space-y-2 pt-2 border-t border-white/10">
+                            {exp.bullets.map((bullet, i) => (
+                              <li key={i} className="text-sm text-slate-300 flex items-start gap-2">
+                                <span className="h-1.5 w-1.5 rounded-full bg-purple-400 mt-2 flex-shrink-0" />
+                                <span>{bullet}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
                       </div>
-                      {exp.description && <p className="text-slate-300 text-sm leading-relaxed">{exp.description}</p>}
-                      {exp.bullets && exp.bullets.length > 0 && (
-                        <ul className="space-y-2 pt-2 border-t border-white/10">
-                          {exp.bullets.map((bullet, i) => (
-                            <li key={i} className="text-sm text-slate-300 flex items-start gap-2">
-                              <span className="h-1.5 w-1.5 rounded-full bg-purple-400 mt-2 flex-shrink-0" />
-                              <span>{bullet}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  </StaggerItem>
-                ))}
+                    </StaggerItem>
+                  )
+                })}
               </StaggerContainer>
             </div>
           </SectionReveal>

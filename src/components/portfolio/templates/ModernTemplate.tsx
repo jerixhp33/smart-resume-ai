@@ -10,6 +10,7 @@ import { StaggerItem } from '@/components/motion/StaggerItem'
 import { Briefcase, GraduationCap, Award, ExternalLink, Mail, MapPin, CheckCircle2 } from 'lucide-react'
 import { GithubIcon } from '@/components/ui/icons'
 import { ProjectAppPreview } from './ProjectAppPreview'
+import { getExperienceTypeLabel, getCleanDescription } from './template-utils'
 
 interface TemplateProps {
   content: PortfolioContent
@@ -175,33 +176,44 @@ export function ModernTemplate({ content, theme, items }: TemplateProps) {
               <p className="text-muted-foreground mt-2">Career history and contributions.</p>
             </div>
             <div className="space-y-6">
-              {experience.map((exp) => (
-                <div key={exp.id} className="bg-card border border-border/60 rounded-2xl p-6 shadow-sm">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-                    <div>
-                      <h3 className="text-lg font-bold text-foreground">{exp.role}</h3>
-                      <p className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
-                        <Briefcase className="h-3.5 w-3.5" />
-                        {exp.company}
-                      </p>
+              {experience.map((exp) => {
+                const typeLabel = getExperienceTypeLabel(exp)
+                const cleanDesc = getCleanDescription(exp.description, exp.bullets)
+                return (
+                  <div key={exp.id} className="bg-card border border-border/60 rounded-2xl p-6 shadow-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="text-lg font-bold text-foreground">{exp.role}</h3>
+                          {typeLabel && (
+                            <span className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full ${themeConfig.badgeBg}`}>
+                              {typeLabel}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm font-medium text-muted-foreground flex items-center gap-1.5 mt-0.5">
+                          <Briefcase className="h-3.5 w-3.5" />
+                          {exp.company}{exp.location ? `, ${exp.location}` : ''}
+                        </p>
+                      </div>
+                      <span className="text-xs font-semibold px-3 py-1 rounded-full bg-muted text-muted-foreground w-fit">
+                        {exp.period}
+                      </span>
                     </div>
-                    <span className="text-xs font-semibold px-3 py-1 rounded-full bg-muted text-muted-foreground w-fit">
-                      {exp.period}
-                    </span>
+                    {cleanDesc && <p className="text-sm text-muted-foreground mb-3 leading-relaxed">{cleanDesc}</p>}
+                    {exp.bullets && exp.bullets.length > 0 && (
+                      <ul className="space-y-2 pt-2 border-t border-border/40">
+                        {exp.bullets.map((bullet, i) => (
+                          <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                            <span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                            <span>{bullet}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
-                  {exp.description && <p className="text-sm text-muted-foreground mb-3">{exp.description}</p>}
-                  {exp.bullets && exp.bullets.length > 0 && (
-                    <ul className="space-y-2 pt-2 border-t border-border/40">
-                      {exp.bullets.map((bullet, i) => (
-                        <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                          <span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
-                          <span>{bullet}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         </SectionReveal>

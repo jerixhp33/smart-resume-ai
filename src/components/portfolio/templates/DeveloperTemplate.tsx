@@ -9,6 +9,8 @@ import { StaggerItem } from '@/components/motion/StaggerItem'
 import { Terminal, Code, GitBranch, ExternalLink, Mail, FolderGit2, GraduationCap, Award } from 'lucide-react'
 import { GithubIcon } from '@/components/ui/icons'
 import { motion } from 'framer-motion'
+import { ProjectAppPreview } from './ProjectAppPreview'
+import { getExperienceTypeLabel, getCleanDescription } from './template-utils'
 
 interface TemplateProps {
   content: PortfolioContent
@@ -114,6 +116,7 @@ export function DeveloperTemplate({ content, theme, items }: TemplateProps) {
                       className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-4 hover:border-emerald-500/50 transition-all flex flex-col justify-between h-full shadow-lg"
                     >
                       <div>
+                        <ProjectAppPreview project={p} />
                         <div className="flex items-center justify-between gap-4 mb-2">
                           <h3 className="font-bold text-white text-lg font-mono flex items-center gap-2">
                             <GitBranch className="h-4 w-4 text-emerald-400" />
@@ -152,30 +155,41 @@ export function DeveloperTemplate({ content, theme, items }: TemplateProps) {
                 <span>git log --experience --oneline</span>
               </div>
               <StaggerContainer className="space-y-4 pl-4 border-l-2 border-emerald-500/20">
-                {experience.map((exp) => (
-                  <StaggerItem key={exp.id}>
-                    <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3 hover:border-slate-700 transition-colors">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <div>
-                          <h3 className="font-bold text-white text-base">{exp.role}</h3>
-                          <p className="text-emerald-400 text-xs">{`@ ${exp.company}`}</p>
+                {experience.map((exp) => {
+                  const typeLabel = getExperienceTypeLabel(exp)
+                  const cleanDesc = getCleanDescription(exp.description, exp.bullets)
+                  return (
+                    <StaggerItem key={exp.id}>
+                      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3 hover:border-slate-700 transition-colors">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-bold text-white text-base">{exp.role}</h3>
+                              {typeLabel && (
+                                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
+                                  {typeLabel}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-emerald-400 text-xs">{`@ ${exp.company}${exp.location ? `, ${exp.location}` : ''}`}</p>
+                          </div>
+                          <span className="text-[11px] font-mono px-3 py-1 rounded bg-slate-800 text-slate-300 w-fit">{exp.period}</span>
                         </div>
-                        <span className="text-[11px] font-mono px-3 py-1 rounded bg-slate-800 text-slate-300 w-fit">{exp.period}</span>
+                        {cleanDesc && <p className="text-slate-300 text-xs font-sans leading-relaxed">{cleanDesc}</p>}
+                        {exp.bullets && exp.bullets.length > 0 && (
+                          <ul className="space-y-1.5 pt-2 border-t border-slate-800/60 font-sans text-xs">
+                            {exp.bullets.map((bullet, i) => (
+                              <li key={i} className="text-slate-300 flex items-start gap-2">
+                                <span className="text-emerald-400 font-mono">$</span>
+                                <span>{bullet}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
                       </div>
-                      {exp.description && <p className="text-slate-300 text-xs font-sans leading-relaxed">{exp.description}</p>}
-                      {exp.bullets && exp.bullets.length > 0 && (
-                        <ul className="space-y-1.5 pt-2 border-t border-slate-800/60 font-sans text-xs">
-                          {exp.bullets.map((bullet, i) => (
-                            <li key={i} className="text-slate-300 flex items-start gap-2">
-                              <span className="text-emerald-400 font-mono">$</span>
-                              <span>{bullet}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  </StaggerItem>
-                ))}
+                    </StaggerItem>
+                  )
+                })}
               </StaggerContainer>
             </section>
           </SectionReveal>

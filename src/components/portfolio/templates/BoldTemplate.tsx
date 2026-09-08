@@ -9,6 +9,8 @@ import { StaggerItem } from '@/components/motion/StaggerItem'
 import { Briefcase, GraduationCap, Award, ExternalLink, Mail, Code } from 'lucide-react'
 import { GithubIcon } from '@/components/ui/icons'
 import { motion } from 'framer-motion'
+import { ProjectAppPreview } from './ProjectAppPreview'
+import { getExperienceTypeLabel, getCleanDescription } from './template-utils'
 
 interface TemplateProps {
   content: PortfolioContent
@@ -101,6 +103,7 @@ export function BoldTemplate({ content, theme, items }: TemplateProps) {
                     className="group bg-zinc-900 border-2 border-zinc-800 p-8 rounded-3xl hover:border-white transition-all duration-300 flex flex-col justify-between h-full"
                   >
                     <div>
+                      <ProjectAppPreview project={p} />
                       <div className="flex items-center justify-between gap-4 mb-4">
                         <h3 className="text-2xl font-black uppercase group-hover:text-rose-400 transition-colors">{p.title}</h3>
                         {p.live_url && (
@@ -139,30 +142,41 @@ export function BoldTemplate({ content, theme, items }: TemplateProps) {
               <Briefcase className="h-4 w-4" /> EXPERIENCE
             </h2>
             <StaggerContainer className="space-y-6">
-              {experience.map((exp) => (
-                <StaggerItem key={exp.id}>
-                  <div className="bg-zinc-900 border-2 border-zinc-800 p-8 rounded-3xl space-y-4 hover:border-zinc-700 transition-colors">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <div>
-                        <h3 className="text-xl font-black uppercase text-white">{exp.role}</h3>
-                        <p className={`font-bold text-sm uppercase ${themeConfig.accentText}`}>{exp.company}</p>
+              {experience.map((exp) => {
+                const typeLabel = getExperienceTypeLabel(exp)
+                const cleanDesc = getCleanDescription(exp.description, exp.bullets)
+                return (
+                  <StaggerItem key={exp.id}>
+                    <div className="bg-zinc-900 border-2 border-zinc-800 p-8 rounded-3xl space-y-4 hover:border-zinc-700 transition-colors">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="text-xl font-black uppercase text-white">{exp.role}</h3>
+                            {typeLabel && (
+                              <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                                {typeLabel}
+                              </span>
+                            )}
+                          </div>
+                          <p className={`font-bold text-sm uppercase ${themeConfig.accentText}`}>{exp.company}{exp.location ? `, ${exp.location}` : ''}</p>
+                        </div>
+                        <span className="text-xs px-4 py-1.5 rounded-full bg-zinc-800 font-mono font-bold w-fit text-zinc-300">{exp.period}</span>
                       </div>
-                      <span className="text-xs px-4 py-1.5 rounded-full bg-zinc-800 font-mono font-bold w-fit text-zinc-300">{exp.period}</span>
+                      {cleanDesc && <p className="text-zinc-400 text-sm font-medium">{cleanDesc}</p>}
+                      {exp.bullets && exp.bullets.length > 0 && (
+                        <ul className="space-y-2 pt-3 border-t border-zinc-800">
+                          {exp.bullets.map((b, i) => (
+                            <li key={i} className="text-sm text-zinc-300 font-medium flex items-start gap-2">
+                              <span className="h-2 w-2 rounded-full bg-rose-500 mt-1.5 flex-shrink-0" />
+                              <span>{b}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
-                    {exp.description && <p className="text-zinc-400 text-sm font-medium">{exp.description}</p>}
-                    {exp.bullets && exp.bullets.length > 0 && (
-                      <ul className="space-y-2 pt-3 border-t border-zinc-800">
-                        {exp.bullets.map((b, i) => (
-                          <li key={i} className="text-sm text-zinc-300 font-medium flex items-start gap-2">
-                            <span className="h-2 w-2 rounded-full bg-rose-500 mt-1.5 flex-shrink-0" />
-                            <span>{b}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                </StaggerItem>
-              ))}
+                  </StaggerItem>
+                )
+              })}
             </StaggerContainer>
           </section>
         </SectionReveal>

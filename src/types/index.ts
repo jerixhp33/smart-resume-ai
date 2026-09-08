@@ -485,6 +485,7 @@ export interface PortfolioExperienceItem {
   is_current?: boolean
   description: string
   bullets: string[]
+  type?: 'full-time' | 'internship' | 'contract' | 'part-time' | 'freelance' | 'leadership' | string
 }
 
 export interface PortfolioEducationItem {
