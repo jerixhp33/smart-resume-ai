@@ -28,36 +28,52 @@ export function ModernTemplate({ content, theme, items }: TemplateProps) {
       {/* Hero Section */}
       {!hidden.hero && (
         <SectionReveal className="py-20 md:py-32 max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="max-w-3xl space-y-6">
-            {hero.availability && (
-              <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${themeConfig.badgeBg}`}>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                {hero.availability}
-              </span>
-            )}
-            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1]">
-              {hero.full_name}
-            </h1>
-            <p className={`text-xl sm:text-2xl font-semibold bg-gradient-to-r ${themeConfig.gradient} bg-clip-text text-transparent`}>
-              {hero.title}
-            </p>
-            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl">
-              {hero.summary}
-            </p>
-            <div className="flex flex-wrap items-center gap-4 pt-4">
-              <a
-                href={hero.cta_primary_url || '#projects'}
-                className={`px-6 py-3 rounded-xl font-medium shadow-sm transition-all duration-200 ${themeConfig.primary} ${themeConfig.primaryHover} hover:-translate-y-0.5`}
-              >
-                {hero.cta_primary_label || 'View Projects'}
-              </a>
-              <a
-                href={hero.cta_secondary_url || '#contact'}
-                className="px-6 py-3 rounded-xl font-medium border border-border bg-card hover:bg-muted transition-all duration-200 hover:-translate-y-0.5"
-              >
-                {hero.cta_secondary_label || 'Contact Me'}
-              </a>
+          <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-10">
+            <div className="max-w-3xl space-y-6 flex-1">
+              {hero.availability && (
+                <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${themeConfig.badgeBg}`}>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  {hero.availability}
+                </span>
+              )}
+              <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1]">
+                {hero.full_name}
+              </h1>
+              <p className={`text-xl sm:text-2xl font-semibold bg-gradient-to-r ${themeConfig.gradient} bg-clip-text text-transparent`}>
+                {hero.title}
+              </p>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl">
+                {hero.summary}
+              </p>
+              <div className="flex flex-wrap items-center gap-4 pt-4">
+                <a
+                  href={hero.cta_primary_url || '#projects'}
+                  className={`px-6 py-3 rounded-xl font-medium shadow-sm transition-all duration-200 ${themeConfig.primary} ${themeConfig.primaryHover} hover:-translate-y-0.5`}
+                >
+                  {hero.cta_primary_label || 'View Projects'}
+                </a>
+                <a
+                  href={hero.cta_secondary_url || '#contact'}
+                  className="px-6 py-3 rounded-xl font-medium border border-border bg-card hover:bg-muted transition-all duration-200 hover:-translate-y-0.5"
+                >
+                  {hero.cta_secondary_label || 'Contact Me'}
+                </a>
+              </div>
             </div>
+
+            {/* Hero Profile Photo Avatar */}
+            {hero.avatar_url && (
+              <div className="relative group flex-shrink-0">
+                <div className="absolute -inset-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl blur-md opacity-50 group-hover:opacity-80 transition-opacity duration-300 animate-pulse" />
+                <div className="relative w-52 h-52 sm:w-60 sm:h-60 rounded-3xl p-1.5 bg-card border border-border/80 shadow-xl overflow-hidden transition-transform duration-300 group-hover:scale-105">
+                  <img
+                    src={hero.avatar_url}
+                    alt={hero.full_name}
+                    className="w-full h-full object-cover rounded-2xl drop-shadow-md"
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </SectionReveal>
       )}

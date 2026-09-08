@@ -18,7 +18,13 @@ import {
   Mail,
   Plus,
   Trash2,
+  Upload,
+  Wand2,
+  Loader2,
+  Check,
+  Image as ImageIcon,
 } from 'lucide-react'
+import { removeImageBackground } from '@/utils/removeBackground'
 
 const SECTIONS = [
   { id: 'hero', title: 'Hero Section', icon: User },
@@ -40,6 +46,35 @@ export function LeftNavigationPanel() {
   const updateAbout = usePortfolioStore((s) => s.updateAbout)
   const updateContact = usePortfolioStore((s) => s.updateContact)
   
+  const [isRemovingBg, setIsRemovingBg] = React.useState(false)
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const result = event.target?.result as string
+      if (result) {
+        updateHero({ avatar_url: result })
+      }
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleAutoRemoveBg = async () => {
+    if (!content?.hero?.avatar_url) return
+    try {
+      setIsRemovingBg(true)
+      const cleanPhoto = await removeImageBackground(content.hero.avatar_url)
+      updateHero({ avatar_url: cleanPhoto })
+    } catch (err) {
+      console.error('Failed to remove background:', err)
+    } finally {
+      setIsRemovingBg(false)
+    }
+  }
+
   const updateProjectItem = usePortfolioStore((s) => s.updateProjectItem)
   const addProjectItem = usePortfolioStore((s) => s.addProjectItem)
   const deleteProjectItem = usePortfolioStore((s) => s.deleteProjectItem)
@@ -133,6 +168,81 @@ export function LeftNavigationPanel() {
                 className="mt-1 h-8 text-xs"
                 placeholder="e.g. Senior Full Stack Engineer"
               />
+            </div>
+
+            {/* Profile Photo / Avatar Upload */}
+            <div className="space-y-2 pt-2 border-t border-border/60">
+              <div className="flex items-center justify-between">
+                <label className="font-semibold text-muted-foreground">Profile Photo / Headshot</label>
+                {content.hero.avatar_url && (
+                  <span className="text-[10px] text-emerald-500 font-bold flex items-center gap-1">
+                    <Check className="h-3 w-3" /> Attached
+                  </span>
+                )}
+              </div>
+
+              {content.hero.avatar_url ? (
+                <div className="flex items-center gap-3 p-2.5 rounded-xl border border-border bg-muted/20">
+                  <img
+                    src={content.hero.avatar_url}
+                    alt="Avatar preview"
+                    className="h-12 w-12 rounded-xl object-cover border border-border shadow-xs bg-slate-900"
+                  />
+                  <div className="flex-1 space-y-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={isRemovingBg}
+                      onClick={handleAutoRemoveBg}
+                      className="w-full h-7 text-[11px] gap-1.5 text-purple-600 dark:text-purple-400 border-purple-500/30 hover:bg-purple-500/10 font-medium"
+                    >
+                      {isRemovingBg ? (
+                        <>
+                          <Loader2 className="h-3 w-3 animate-spin" /> Auto Removing BG...
+                        </>
+                      ) : (
+                        <>
+                          <Wand2 className="h-3 w-3 text-purple-500" /> Auto Remove BG
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => updateHero({ avatar_url: '' })}
+                      className="w-full h-6 text-[10px] text-destructive hover:bg-destructive/10"
+                    >
+                      Remove Photo
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <label className="flex flex-col items-center justify-center p-3.5 border-2 border-dashed border-border rounded-xl cursor-pointer hover:bg-muted/30 transition-colors text-center">
+                    <Upload className="h-4 w-4 text-primary mb-1" />
+                    <span className="text-xs font-bold text-primary">Upload Profile Photo</span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">JPG, PNG, WebP up to 5MB</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      className="hidden"
+                    />
+                  </label>
+
+                  <div>
+                    <label className="text-[10px] text-muted-foreground">Or Paste Image URL</label>
+                    <Input
+                      value={content.hero.avatar_url || ''}
+                      onChange={(e) => updateHero({ avatar_url: e.target.value })}
+                      className="mt-0.5 h-7 text-xs"
+                      placeholder="https://..."
+                    />
+                  </div>
+                </div>
+              )}
             </div>
             <div>
               <label className="font-semibold text-muted-foreground">Hero Summary</label>

@@ -27,28 +27,49 @@ export function CreativeTemplate({ content, theme, items }: TemplateProps) {
       <div className="max-w-6xl mx-auto px-6 py-20 relative z-10 space-y-24">
         {/* Creative Hero */}
         {!hidden.hero && (
-          <section className="space-y-8 max-w-4xl">
-            {hero.availability && (
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-xs font-semibold text-purple-300">
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>{hero.availability}</span>
+          <section className="flex flex-col md:flex-row items-center md:items-start justify-between gap-10">
+            <div className="space-y-8 max-w-2xl flex-1">
+              {hero.availability && (
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-xs font-semibold text-purple-300">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>{hero.availability}</span>
+                </div>
+              )}
+              <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight bg-gradient-to-r from-white via-purple-100 to-purple-400 bg-clip-text text-transparent leading-[1.08]">
+                {hero.full_name}
+              </h1>
+              <p className="text-2xl font-medium text-purple-200/90">{hero.title}</p>
+              <p className="text-lg text-slate-300 leading-relaxed">{hero.summary}</p>
+              <div className="flex flex-wrap gap-4 pt-4">
+                <a href={hero.cta_primary_url || '#projects'} className="px-7 py-3.5 rounded-2xl bg-white text-slate-950 font-bold hover:bg-purple-100 transition-all hover:scale-105 shadow-lg shadow-purple-500/10">
+                  {hero.cta_primary_label || 'View Work'}
+                </a>
+                {contact.email && (
+                  <a href={hero.cta_secondary_url || `mailto:${contact.email}`} className="px-7 py-3.5 rounded-2xl bg-white/10 text-white font-bold hover:bg-white/20 transition-all hover:scale-105 border border-white/10">
+                    {hero.cta_secondary_label || "Let's Talk"}
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {/* Profile Avatar / Photo Container with Animated Glow & Edge Matching */}
+            {hero.avatar_url && (
+              <div className="relative group flex-shrink-0 mt-4 md:mt-0">
+                {/* Outer Glow Aura */}
+                <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600 rounded-3xl blur-xl opacity-60 group-hover:opacity-90 transition-opacity duration-500 animate-pulse" />
+                
+                {/* Glassmorphism Border Frame */}
+                <div className="relative w-56 h-56 sm:w-64 sm:h-64 rounded-3xl p-2 bg-slate-900/90 border border-purple-500/40 backdrop-blur-2xl shadow-2xl overflow-hidden transition-all duration-500 group-hover:scale-[1.04] group-hover:rotate-1">
+                  <img
+                    src={hero.avatar_url}
+                    alt={hero.full_name}
+                    className="w-full h-full object-cover rounded-2xl transition-all duration-700 filter group-hover:brightness-110 drop-shadow-2xl"
+                  />
+                  {/* Ambient Lighting Overlay */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-purple-950/40 via-transparent to-transparent opacity-80 pointer-events-none" />
+                </div>
               </div>
             )}
-            <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight bg-gradient-to-r from-white via-purple-100 to-purple-400 bg-clip-text text-transparent leading-[1.08]">
-              {hero.full_name}
-            </h1>
-            <p className="text-2xl font-medium text-purple-200/90">{hero.title}</p>
-            <p className="text-lg text-slate-300 leading-relaxed max-w-2xl">{hero.summary}</p>
-            <div className="flex flex-wrap gap-4 pt-4">
-              <a href={hero.cta_primary_url || '#projects'} className="px-7 py-3.5 rounded-2xl bg-white text-slate-950 font-bold hover:bg-purple-100 transition-colors shadow-lg shadow-purple-500/10">
-                {hero.cta_primary_label || 'View Work'}
-              </a>
-              {contact.email && (
-                <a href={hero.cta_secondary_url || `mailto:${contact.email}`} className="px-7 py-3.5 rounded-2xl bg-white/10 text-white font-bold hover:bg-white/20 transition-colors border border-white/10">
-                  {hero.cta_secondary_label || "Let's Talk"}
-                </a>
-              )}
-            </div>
           </section>
         )}
 
