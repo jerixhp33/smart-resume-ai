@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { FileText, ExternalLink, Briefcase, GraduationCap, Code, Award, Mail, ChevronDown } from 'lucide-react'
 import { format } from 'date-fns'
+import Link from 'next/link'
+import Image from 'next/image'
 
 export function PortfolioClient({ profile, resume, items }: { profile: any, resume: any, items: any[] }) {
   const [activeSection, setActiveSection] = useState('hero')
@@ -293,7 +295,7 @@ export function PortfolioClient({ profile, resume, items }: { profile: any, resu
                   >
                     <div className="aspect-video bg-muted flex items-center justify-center relative overflow-hidden">
                       {isImage && item.public_url ? (
-                        <img src={item.public_url} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <Image src={item.public_url} alt={item.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                       ) : (
                         <FileText className="h-12 w-12 text-slate-400 group-hover:scale-110 transition-transform duration-500" />
                       )}

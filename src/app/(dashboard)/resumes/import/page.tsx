@@ -5,10 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Upload, FileText, Loader2, Sparkles, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { importResumeFromText } from '@/features/resume/actions'
-import * as pdfjsLib from 'pdfjs-dist'
 
-// Set worker source for pdf.js to use the local copy in the public folder
-pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
 
 export default function ImportResumePage() {
   const router = useRouter()
@@ -42,6 +39,9 @@ export default function ImportResumePage() {
 
   async function extractTextFromPDF(file: File): Promise<string> {
     try {
+      const pdfjsLib = await import('pdfjs-dist')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
+
       const arrayBuffer = await file.arrayBuffer()
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
       let fullText = ''
