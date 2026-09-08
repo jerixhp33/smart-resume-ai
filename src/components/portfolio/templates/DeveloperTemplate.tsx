@@ -49,15 +49,19 @@ export function DeveloperTemplate({ content, theme, items }: TemplateProps) {
               <p className="text-xl text-emerald-400 font-semibold">{`// ${hero.title}`}</p>
               <p className="text-slate-300 text-sm leading-relaxed max-w-2xl font-sans">{hero.summary}</p>
               
-              <div className="flex flex-wrap gap-4 pt-4">
+              <div className="flex flex-wrap gap-4 pt-4 font-sans">
+                <a href={hero.cta_primary_url || '#projects'} className="px-5 py-2.5 rounded-lg bg-emerald-500 text-slate-950 font-bold text-xs hover:bg-emerald-400 transition-colors flex items-center gap-2">
+                  <Code className="h-4 w-4" />
+                  {hero.cta_primary_label || 'View Projects'}
+                </a>
                 {contact.email && (
-                  <a href={`mailto:${contact.email}`} className="px-5 py-2.5 rounded-lg bg-emerald-600 text-slate-950 font-bold text-xs hover:bg-emerald-500 transition-colors flex items-center gap-2 font-sans">
+                  <a href={hero.cta_secondary_url || `mailto:${contact.email}`} className="px-5 py-2.5 rounded-lg bg-slate-800 text-slate-200 font-bold text-xs hover:bg-slate-700 transition-colors flex items-center gap-2">
                     <Mail className="h-4 w-4" />
-                    Contact Developer
+                    {hero.cta_secondary_label || 'Contact Developer'}
                   </a>
                 )}
                 {contact.github_url && (
-                  <a href={contact.github_url} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 rounded-lg bg-slate-800 text-slate-200 font-bold text-xs hover:bg-slate-700 transition-colors flex items-center gap-2 font-sans">
+                  <a href={contact.github_url} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 rounded-lg bg-slate-800 text-slate-200 font-bold text-xs hover:bg-slate-700 transition-colors flex items-center gap-2">
                     <GithubIcon className="h-4 w-4" />
                     GitHub Profile
                   </a>

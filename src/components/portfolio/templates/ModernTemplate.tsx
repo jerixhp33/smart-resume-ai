@@ -23,22 +23,7 @@ export function ModernTemplate({ content, theme, items }: TemplateProps) {
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 selection:text-primary font-sans antialiased">
-      {/* Navigation Header */}
-      <header className="sticky top-0 z-30 backdrop-blur-md bg-background/80 border-b border-border/50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <span className="font-bold text-lg tracking-tight flex items-center gap-2">
-            <span className={`w-2.5 h-2.5 rounded-full ${themeConfig.primary}`} />
-            {hero.full_name}
-          </span>
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
-            {!hidden.about && <a href="#about" className="hover:text-foreground transition-colors">About</a>}
-            {!hidden.projects && <a href="#projects" className="hover:text-foreground transition-colors">Projects</a>}
-            {!hidden.experience && <a href="#experience" className="hover:text-foreground transition-colors">Experience</a>}
-            {!hidden.skills && <a href="#skills" className="hover:text-foreground transition-colors">Skills</a>}
-            {!hidden.contact && <a href="#contact" className="hover:text-foreground transition-colors">Contact</a>}
-          </nav>
-        </div>
-      </header>
+
 
       {/* Hero Section */}
       {!hidden.hero && (

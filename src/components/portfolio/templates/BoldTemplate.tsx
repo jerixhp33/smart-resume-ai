@@ -34,12 +34,18 @@ export function BoldTemplate({ content, theme, items }: TemplateProps) {
           <p className="text-xl text-zinc-300 font-medium max-w-3xl leading-relaxed">{hero.summary}</p>
 
           <div className="flex flex-wrap items-center gap-4 pt-4">
+            <a
+              href={hero.cta_primary_url || '#projects'}
+              className={`px-8 py-4 rounded-2xl text-black font-black uppercase tracking-wider text-sm transition-all hover:scale-105 ${themeConfig.primary}`}
+            >
+              {hero.cta_primary_label || "View My Work"}
+            </a>
             {contact.email && (
               <a
-                href={`mailto:${contact.email}`}
-                className={`px-8 py-4 rounded-2xl text-black font-black uppercase tracking-wider text-sm transition-all hover:scale-105 ${themeConfig.primary}`}
+                href={hero.cta_secondary_url || `mailto:${contact.email}`}
+                className="px-8 py-4 rounded-2xl bg-zinc-900 border-2 border-zinc-800 text-white font-black uppercase tracking-wider text-sm hover:border-white transition-all flex items-center gap-2"
               >
-                {hero.cta_primary_label || "Get In Touch"}
+                <Mail className="h-4 w-4" /> {hero.cta_secondary_label || "Get In Touch"}
               </a>
             )}
             {contact.github_url && (

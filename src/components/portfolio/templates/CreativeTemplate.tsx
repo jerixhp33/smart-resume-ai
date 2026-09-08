@@ -40,9 +40,12 @@ export function CreativeTemplate({ content, theme, items }: TemplateProps) {
             <p className="text-2xl font-medium text-purple-200/90">{hero.title}</p>
             <p className="text-lg text-slate-300 leading-relaxed max-w-2xl">{hero.summary}</p>
             <div className="flex flex-wrap gap-4 pt-4">
+              <a href={hero.cta_primary_url || '#projects'} className="px-7 py-3.5 rounded-2xl bg-white text-slate-950 font-bold hover:bg-purple-100 transition-colors shadow-lg shadow-purple-500/10">
+                {hero.cta_primary_label || 'View Work'}
+              </a>
               {contact.email && (
-                <a href={`mailto:${contact.email}`} className="px-7 py-3.5 rounded-2xl bg-white text-slate-950 font-bold hover:bg-purple-100 transition-colors shadow-lg shadow-purple-500/10">
-                  {hero.cta_primary_label || "Let's Talk"}
+                <a href={hero.cta_secondary_url || `mailto:${contact.email}`} className="px-7 py-3.5 rounded-2xl bg-white/10 text-white font-bold hover:bg-white/20 transition-colors border border-white/10">
+                  {hero.cta_secondary_label || "Let's Talk"}
                 </a>
               )}
             </div>

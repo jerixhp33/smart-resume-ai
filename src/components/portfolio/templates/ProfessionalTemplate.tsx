@@ -27,11 +27,16 @@ export function ProfessionalTemplate({ content, theme, items }: TemplateProps) {
               <p className="text-lg text-blue-400 font-medium mt-1">{hero.title}</p>
               {hero.location && <p className="text-xs text-slate-400 mt-2 flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" />{hero.location}</p>}
             </div>
-            {contact.email && (
-              <a href={`mailto:${contact.email}`} className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors shadow-sm">
-                Connect via Email
+            <div className="flex flex-wrap items-center gap-3">
+              <a href={hero.cta_primary_url || '#projects'} className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors shadow-sm">
+                {hero.cta_primary_label || 'View Projects'}
               </a>
-            )}
+              {contact.email && (
+                <a href={hero.cta_secondary_url || `mailto:${contact.email}`} className="px-6 py-3 rounded-lg border border-slate-700 text-slate-200 font-semibold text-sm hover:bg-slate-800 transition-colors">
+                  {hero.cta_secondary_label || 'Connect via Email'}
+                </a>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -39,7 +44,7 @@ export function ProfessionalTemplate({ content, theme, items }: TemplateProps) {
       <div className="max-w-5xl mx-auto px-6 py-12 space-y-12">
         {/* Executive Summary / About */}
         {!hidden.about && (
-          <section className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm">
+          <section id="about" className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Executive Summary</h2>
             <p className="text-base text-slate-700 dark:text-slate-200 leading-relaxed">
               {about?.biography && about.biography.trim() !== hero.summary?.trim()
@@ -51,7 +56,7 @@ export function ProfessionalTemplate({ content, theme, items }: TemplateProps) {
 
         {/* Projects */}
         {!hidden.projects && projects && projects.length > 0 && (
-          <section className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm space-y-6">
+          <section id="projects" className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm space-y-6">
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-4">
               <FolderGit2 className="h-5 w-5 text-blue-600" /> Key Projects & Initiatives
             </h2>
@@ -73,7 +78,7 @@ export function ProfessionalTemplate({ content, theme, items }: TemplateProps) {
 
         {/* Experience Timeline */}
         {!hidden.experience && experience && experience.length > 0 && (
-          <section className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm space-y-6">
+          <section id="experience" className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm space-y-6">
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-4">
               <Briefcase className="h-5 w-5 text-blue-600" /> Professional Experience
             </h2>
@@ -93,7 +98,7 @@ export function ProfessionalTemplate({ content, theme, items }: TemplateProps) {
 
         {/* Skills */}
         {!hidden.skills && skills && skills.length > 0 && (
-          <section className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm space-y-6">
+          <section id="skills" className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm space-y-6">
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-4">
               <Code className="h-5 w-5 text-blue-600" /> Technical Capabilities
             </h2>
@@ -114,7 +119,7 @@ export function ProfessionalTemplate({ content, theme, items }: TemplateProps) {
 
         {/* Education */}
         {!hidden.education && education && education.length > 0 && (
-          <section className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm space-y-6">
+          <section id="education" className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm space-y-6">
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-4">
               <GraduationCap className="h-5 w-5 text-blue-600" /> Education
             </h2>
@@ -132,7 +137,7 @@ export function ProfessionalTemplate({ content, theme, items }: TemplateProps) {
 
         {/* Uploaded Verified Certificate Files */}
         {items && items.length > 0 && (
-          <section className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm space-y-6">
+          <section id="certificates" className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm space-y-6">
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-4">
               <Award className="h-5 w-5 text-blue-600" /> Verified Credentials & Certificates
             </h2>
@@ -154,6 +159,21 @@ export function ProfessionalTemplate({ content, theme, items }: TemplateProps) {
           </section>
         )}
       </div>
+
+      {/* Contact Section */}
+      {!hidden.contact && contact && (
+        <footer id="contact" className="max-w-5xl mx-auto px-6 pb-16 text-center space-y-4">
+          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-8 shadow-sm space-y-4">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{contact.heading}</h2>
+            <p className="text-sm text-slate-600 dark:text-slate-300 max-w-xl mx-auto">{contact.subheading}</p>
+            {contact.email && (
+              <a href={`mailto:${contact.email}`} className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors shadow-sm">
+                <Mail className="h-4 w-4" /> {contact.email}
+              </a>
+            )}
+          </div>
+        </footer>
+      )}
     </div>
   )
 }
