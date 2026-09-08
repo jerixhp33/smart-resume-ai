@@ -21,7 +21,7 @@ export function StaggerContainer({ children, className }: { children: ReactNode;
       variants={staggerContainer}
       initial="initial"
       whileInView="animate"
-      viewport={{ once: true, margin: "-50px" }}
+      viewport={{ once: true, amount: 0.1 }}
       className={className}
     >
       {children}
@@ -34,7 +34,7 @@ export function ScrollReveal({ children, className }: { children: ReactNode; cla
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
+      viewport={{ once: true, amount: 0.1 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
       className={className}
     >
