@@ -6,6 +6,7 @@
 import Groq from 'groq-sdk'
 import { getKeyManager } from './key-manager'
 import { selectModel, getTemperature, getMaxTokens } from './models'
+import { checkAIRateLimit, recordAIUsageForRateLimit } from './rate-limiter'
 import type { AITaskType } from '@/types'
 import { z } from 'zod'
 
@@ -48,6 +49,21 @@ export async function callAI(options: AIRequestOptions): Promise<AIResponse> {
     )
   }
 
+  // Per-user rate limiting
+  if (options.userId) {
+    const rateCheck = checkAIRateLimit(options.userId)
+    if (!rateCheck.allowed) {
+      const waitSec = rateCheck.retryAfterMs ? Math.ceil(rateCheck.retryAfterMs / 1000) : 60
+      throw new AIError(
+        rateCheck.dailyRemaining === 0
+          ? `Daily AI limit reached (${100} calls). Resets at midnight. Your content is safe.`
+          : `Too many requests. Please wait ${waitSec} seconds before trying again.`,
+        'RATE_LIMITED',
+        true
+      )
+    }
+  }
+
   const model = selectModel(options.taskType)
   const temperature = getTemperature(options.taskType)
   const maxTokens = getMaxTokens(options.taskType)
@@ -79,6 +95,11 @@ export async function callAI(options: AIRequestOptions): Promise<AIResponse> {
       })
 
       manager.reportSuccess(apiKey)
+
+      // Record usage for rate limiting
+      if (options.userId) {
+        recordAIUsageForRateLimit(options.userId)
+      }
 
       const content = completion.choices[0]?.message?.content ?? ''
       const usage = completion.usage
