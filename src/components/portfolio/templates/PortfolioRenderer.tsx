@@ -19,7 +19,27 @@ interface PortfolioRendererProps {
   items?: UserFile[]
 }
 
+function getTemplateBgClass(template: PortfolioTemplateId): string {
+  switch (template) {
+    case 'bold':
+      return 'bg-black text-white'
+    case 'editorial':
+      return 'bg-[#faf8f5] text-[#1c1917]'
+    case 'minimal':
+      return 'bg-background text-foreground'
+    case 'developer':
+    case 'creative':
+    case 'elegant':
+    case 'professional':
+    case 'modern':
+    default:
+      return 'bg-slate-950 text-slate-100'
+  }
+}
+
 export function PortfolioRenderer({ content, template, theme, items }: PortfolioRendererProps) {
+  const bgClass = getTemplateBgClass(template)
+
   const renderTemplate = () => {
     switch (template) {
       case 'minimal':
@@ -43,7 +63,7 @@ export function PortfolioRenderer({ content, template, theme, items }: Portfolio
   }
 
   return (
-    <div id="top" className="relative min-h-screen">
+    <div id="top" className={`relative min-h-screen w-full transition-colors duration-300 ${bgClass}`}>
       <PortfolioNavbar content={content} template={template} theme={theme} items={items} />
       {renderTemplate()}
     </div>
