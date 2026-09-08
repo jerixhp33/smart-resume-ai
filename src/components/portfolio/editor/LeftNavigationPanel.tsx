@@ -151,38 +151,21 @@ export function LeftNavigationPanel() {
         {/* HERO SECTION */}
         {activeSection === 'hero' && (
           <div className="space-y-3 text-xs">
-            <div>
-              <label className="font-semibold text-muted-foreground">Full Name</label>
-              <Input
-                value={content.hero.full_name || ''}
-                onChange={(e) => updateHero({ full_name: e.target.value })}
-                className="mt-1 h-8 text-xs"
-                placeholder="e.g. Manikandan U"
-              />
-            </div>
-            <div>
-              <label className="font-semibold text-muted-foreground">Professional Title</label>
-              <Input
-                value={content.hero.title || ''}
-                onChange={(e) => updateHero({ title: e.target.value })}
-                className="mt-1 h-8 text-xs"
-                placeholder="e.g. Senior Full Stack Engineer"
-              />
-            </div>
-
             {/* Profile Photo / Avatar Upload */}
-            <div className="space-y-2 pt-2 border-t border-border/60">
+            <div className="space-y-2 pb-3 border-b border-border/60 bg-primary/5 p-3 rounded-xl border border-primary/20">
               <div className="flex items-center justify-between">
-                <label className="font-semibold text-muted-foreground">Profile Photo / Headshot</label>
+                <label className="font-bold text-xs text-primary flex items-center gap-1.5">
+                  <ImageIcon className="h-3.5 w-3.5 text-primary" /> Profile Photo / Headshot
+                </label>
                 {content.hero.avatar_url && (
                   <span className="text-[10px] text-emerald-500 font-bold flex items-center gap-1">
-                    <Check className="h-3 w-3" /> Attached
+                    <Check className="h-3 w-3" /> Photo Attached
                   </span>
                 )}
               </div>
 
               {content.hero.avatar_url ? (
-                <div className="flex items-center gap-3 p-2.5 rounded-xl border border-border bg-muted/20">
+                <div className="flex items-center gap-3 p-2.5 rounded-xl border border-border bg-card">
                   <img
                     src={content.hero.avatar_url}
                     alt="Avatar preview"
@@ -220,7 +203,7 @@ export function LeftNavigationPanel() {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <label className="flex flex-col items-center justify-center p-3.5 border-2 border-dashed border-border rounded-xl cursor-pointer hover:bg-muted/30 transition-colors text-center">
+                  <label className="flex flex-col items-center justify-center p-3 border-2 border-dashed border-primary/40 bg-card hover:bg-primary/5 rounded-xl cursor-pointer transition-colors text-center">
                     <Upload className="h-4 w-4 text-primary mb-1" />
                     <span className="text-xs font-bold text-primary">Upload Profile Photo</span>
                     <span className="text-[10px] text-muted-foreground mt-0.5">JPG, PNG, WebP up to 5MB</span>
@@ -233,16 +216,35 @@ export function LeftNavigationPanel() {
                   </label>
 
                   <div>
-                    <label className="text-[10px] text-muted-foreground">Or Paste Image URL</label>
+                    <label className="text-[10px] text-muted-foreground font-medium">Or Paste Image URL</label>
                     <Input
                       value={content.hero.avatar_url || ''}
                       onChange={(e) => updateHero({ avatar_url: e.target.value })}
-                      className="mt-0.5 h-7 text-xs"
+                      className="mt-0.5 h-7 text-xs bg-card"
                       placeholder="https://..."
                     />
                   </div>
                 </div>
               )}
+            </div>
+
+            <div>
+              <label className="font-semibold text-muted-foreground">Full Name</label>
+              <Input
+                value={content.hero.full_name || ''}
+                onChange={(e) => updateHero({ full_name: e.target.value })}
+                className="mt-1 h-8 text-xs"
+                placeholder="e.g. Manikandan U"
+              />
+            </div>
+            <div>
+              <label className="font-semibold text-muted-foreground">Professional Title</label>
+              <Input
+                value={content.hero.title || ''}
+                onChange={(e) => updateHero({ title: e.target.value })}
+                className="mt-1 h-8 text-xs"
+                placeholder="e.g. Senior Full Stack Engineer"
+              />
             </div>
             <div>
               <label className="font-semibold text-muted-foreground">Hero Summary</label>
