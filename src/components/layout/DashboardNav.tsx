@@ -115,7 +115,7 @@ export function DashboardNav({ userId, isCollapsed = false, onToggleCollapse }: 
       {/* Bottom Actions */}
       <div className="p-2 border-t border-border space-y-1">
         <div className={cn('flex items-center py-1', isCollapsed ? 'justify-center' : 'px-2')}>
-          <NotificationBell userId={userId} />
+          <NotificationBell userId={userId} isCollapsed={isCollapsed} />
         </div>
 
         <Link

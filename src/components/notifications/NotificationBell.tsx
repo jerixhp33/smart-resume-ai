@@ -9,9 +9,10 @@ import { cn } from '@/utils/cn'
 
 interface NotificationBellProps {
   userId: string
+  isCollapsed?: boolean
 }
 
-export function NotificationBell({ userId }: NotificationBellProps) {
+export function NotificationBell({ userId, isCollapsed = false }: NotificationBellProps) {
   const [open, setOpen] = useState(false)
   const [notifications, setNotifications] = useState<Notification[]>([])
   const supabase = getSupabaseBrowserClient()
@@ -85,15 +86,28 @@ export function NotificationBell({ userId }: NotificationBellProps) {
   }
 
   return (
-    <div className="relative w-full">
+    <div className={cn('relative', isCollapsed ? 'w-auto' : 'w-full')}>
       <button
         onClick={() => setOpen(!open)}
-        className="relative flex items-center gap-3 w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
+        title={isCollapsed ? `Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}` : undefined}
+        className={cn(
+          'relative flex items-center rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all',
+          isCollapsed ? 'justify-center p-2.5' : 'gap-3 px-3 py-2.5 w-full'
+        )}
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
       >
-        <Bell className="h-4 w-4" />
-        <span className="font-medium">Notifications</span>
-        {unreadCount > 0 && (
+        <div className="relative flex items-center justify-center">
+          <Bell className="h-4 w-4 flex-shrink-0" />
+          {unreadCount > 0 && isCollapsed && (
+            <span className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-primary text-primary-foreground text-[9px] font-extrabold flex items-center justify-center shadow-xs">
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </span>
+          )}
+        </div>
+
+        {!isCollapsed && <span className="font-medium truncate">Notifications</span>}
+
+        {!isCollapsed && unreadCount > 0 && (
           <span className="ml-auto h-5 w-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
@@ -106,7 +120,12 @@ export function NotificationBell({ userId }: NotificationBellProps) {
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
 
           {/* Panel */}
-          <div className="absolute bottom-full left-0 mb-2 w-80 bg-popover border border-border rounded-xl shadow-xl z-50 animate-in">
+          <div
+            className={cn(
+              'absolute bg-popover border border-border rounded-2xl shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150 w-80',
+              isCollapsed ? 'left-full bottom-0 ml-3' : 'bottom-full left-0 mb-2'
+            )}
+          >
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
               <h3 className="text-sm font-semibold">Notifications</h3>
               <div className="flex items-center gap-2">
