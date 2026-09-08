@@ -35,7 +35,7 @@ export function CreativeTemplate({ content, theme, items }: TemplateProps) {
                   <span>{hero.availability}</span>
                 </div>
               )}
-              <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight bg-gradient-to-r from-white via-purple-100 to-purple-400 bg-clip-text text-transparent leading-[1.08]">
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight bg-gradient-to-r from-white via-purple-100 to-purple-400 bg-clip-text text-transparent leading-[1.08] break-words">
                 {hero.full_name}
               </h1>
               <p className="text-2xl font-medium text-purple-200/90">{hero.title}</p>
