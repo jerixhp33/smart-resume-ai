@@ -27,7 +27,6 @@ import {
 import { removeImageBackground } from '@/utils/removeBackground'
 
 const SECTIONS = [
-  { id: 'ai-builder', title: '✨ AI Template Studio', icon: Wand2 },
   { id: 'hero', title: 'Hero Section', icon: User },
   { id: 'about', title: 'About Bio', icon: Layout },
   { id: 'projects', title: 'Projects', icon: FolderGit2 },
@@ -157,29 +156,6 @@ export function LeftNavigationPanel() {
             Editing: {SECTIONS.find((s) => s.id === activeSection)?.title || activeSection}
           </p>
         </div>
-
-        {/* AI TEMPLATE STUDIO SECTION */}
-        {activeSection === 'ai-builder' && (
-          <div className="space-y-4 text-xs bg-slate-950 text-white p-4 rounded-2xl border border-slate-800">
-            <div className="flex items-center gap-2 text-purple-400 font-bold text-sm">
-              <Wand2 className="h-4 w-4" /> AI Dynamic Template Studio
-            </div>
-            <p className="text-slate-300 text-xs leading-relaxed">
-              Type any prompt to generate a brand-new custom portfolio template, write custom CSS live, and visualize in 60fps real-time.
-            </p>
-            <div className="pt-2">
-              <Button
-                onClick={() => {
-                  const btn = document.querySelector('[data-ai-prompt-studio-btn]') as HTMLButtonElement
-                  if (btn) btn.click()
-                }}
-                className="w-full bg-gradient-to-r from-primary via-indigo-600 to-purple-600 text-white font-bold text-xs py-2.5 rounded-xl shadow-md hover:scale-[1.01] transition-transform"
-              >
-                Launch Prompt & Code Studio 🚀
-              </Button>
-            </div>
-          </div>
-        )}
 
         {/* HERO SECTION */}
         {activeSection === 'hero' && (
