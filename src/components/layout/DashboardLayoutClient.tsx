@@ -38,8 +38,8 @@ export function DashboardLayoutClient({
 
   if (isStudioPage) {
     return (
-      <div className="h-screen w-screen bg-background overflow-hidden">
-        <main className="h-full w-full overflow-hidden p-0">
+      <div className="h-screen w-screen bg-background overflow-hidden flex flex-col">
+        <main className="flex-1 w-full overflow-hidden p-0 min-h-0 flex flex-col">
           {children}
         </main>
         <Toaster />
