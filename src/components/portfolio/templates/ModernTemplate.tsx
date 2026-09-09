@@ -9,6 +9,7 @@ import { StaggerContainer } from '@/components/motion/StaggerContainer'
 import { StaggerItem } from '@/components/motion/StaggerItem'
 import { Briefcase, GraduationCap, Award, ExternalLink, Mail, MapPin, CheckCircle2 } from 'lucide-react'
 import { GithubIcon } from '@/components/ui/icons'
+import { TiltCard } from '@/components/motion/TiltCard'
 import { ProjectAppPreview } from './ProjectAppPreview'
 import { getExperienceTypeLabel, getCleanDescription } from './template-utils'
 
@@ -25,7 +26,6 @@ export function ModernTemplate({ content, theme, items }: TemplateProps) {
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 selection:text-primary font-sans antialiased">
-
 
       {/* Hero Section */}
       {!hidden.hero && (
@@ -63,18 +63,20 @@ export function ModernTemplate({ content, theme, items }: TemplateProps) {
               </div>
             </div>
 
-            {/* Hero Profile Photo Avatar */}
+            {/* Hero Profile Photo Avatar with TiltCard */}
             {hero.avatar_url && (
-              <div className="relative group flex-shrink-0">
-                <div className="absolute -inset-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl blur-md opacity-50 group-hover:opacity-80 transition-opacity duration-300 animate-pulse" />
-                <div className="relative w-52 h-52 sm:w-60 sm:h-60 rounded-3xl p-1.5 bg-card border border-border/80 shadow-xl overflow-hidden transition-transform duration-300 group-hover:scale-105">
-                  <img
-                    src={hero.avatar_url}
-                    alt={hero.full_name}
-                    className="w-full h-full object-cover rounded-2xl drop-shadow-md"
-                  />
+              <TiltCard className="rounded-3xl flex-shrink-0">
+                <div className="relative group flex-shrink-0">
+                  <div className="absolute -inset-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl blur-md opacity-50 group-hover:opacity-80 transition-opacity duration-300 animate-pulse" />
+                  <div className="relative w-52 h-52 sm:w-60 sm:h-60 rounded-3xl p-1.5 bg-card border border-border/80 shadow-xl overflow-hidden transition-transform duration-300 group-hover:scale-105">
+                    <img
+                      src={hero.avatar_url}
+                      alt={hero.full_name}
+                      className="w-full h-full object-cover rounded-2xl drop-shadow-md"
+                    />
+                  </div>
                 </div>
-              </div>
+              </TiltCard>
             )}
           </div>
         </SectionReveal>
@@ -126,41 +128,43 @@ export function ModernTemplate({ content, theme, items }: TemplateProps) {
           <StaggerContainer className="grid md:grid-cols-2 gap-6">
             {projects.map((proj) => (
               <StaggerItem key={proj.id}>
-                <div className="group bg-card border border-border/60 rounded-2xl p-6 hover:shadow-xl hover:border-primary/40 transition-all duration-300 flex flex-col justify-between h-full">
-                  <div>
-                    {/* App Preview Mockup Window */}
-                    <ProjectAppPreview project={proj} />
+                <TiltCard className="rounded-2xl h-full">
+                  <div className="group bg-card border border-border/60 rounded-2xl p-6 hover:shadow-xl hover:border-primary/40 transition-all duration-300 flex flex-col justify-between h-full">
+                    <div>
+                      {/* App Preview Mockup Window */}
+                      <ProjectAppPreview project={proj} />
 
-                    <div className="flex items-center justify-between gap-4 mb-3">
-                      <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                        {proj.title}
-                      </h3>
-                      <div className="flex items-center gap-2">
-                        {proj.github_url && (
-                          <a href={proj.github_url} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                            <GithubIcon className="h-4 w-4" />
-                          </a>
-                        )}
-                        {proj.live_url && (
-                          <a href={proj.live_url} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                            <ExternalLink className="h-4 w-4" />
-                          </a>
-                        )}
+                      <div className="flex items-center justify-between gap-4 mb-3">
+                        <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                          {proj.title}
+                        </h3>
+                        <div className="flex items-center gap-2">
+                          {proj.github_url && (
+                            <a href={proj.github_url} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                              <GithubIcon className="h-4 w-4" />
+                            </a>
+                          )}
+                          {proj.live_url && (
+                            <a href={proj.live_url} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                              <ExternalLink className="h-4 w-4" />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-xs font-semibold text-primary/80 mb-3">{proj.tagline}</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed mb-4">{proj.description}</p>
+                    </div>
+                    <div>
+                      <div className="flex flex-wrap gap-1.5 pt-4 border-t border-border/40">
+                        {proj.technologies.map((tech, i) => (
+                          <span key={i} className={`px-2.5 py-0.5 rounded-md text-xs font-medium ${themeConfig.badgeBg}`}>
+                            {tech}
+                          </span>
+                        ))}
                       </div>
                     </div>
-                    <p className="text-xs font-semibold text-primary/80 mb-3">{proj.tagline}</p>
-                    <p className="text-sm text-muted-foreground leading-relaxed mb-4">{proj.description}</p>
                   </div>
-                  <div>
-                    <div className="flex flex-wrap gap-1.5 pt-4 border-t border-border/40">
-                      {proj.technologies.map((tech, i) => (
-                        <span key={i} className={`px-2.5 py-0.5 rounded-md text-xs font-medium ${themeConfig.badgeBg}`}>
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                </TiltCard>
               </StaggerItem>
             ))}
           </StaggerContainer>
