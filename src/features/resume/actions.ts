@@ -218,6 +218,26 @@ export async function restoreResumeVersion(params: {
   return { success: true, data: version.data }
 }
 
+// ── Get Version Content for Diff Comparison ──────────────
+export async function getResumeVersionContentAction(params: {
+  resumeId: string
+  versionId: string
+}) {
+  const user = await requireAuth()
+  const serviceClient = getSupabaseServiceClient()
+
+  const { data: version, error } = await serviceClient
+    .from('resume_versions')
+    .select('id, version_number, description, data, created_at')
+    .eq('id', params.versionId)
+    .eq('resume_id', params.resumeId)
+    .single()
+
+  if (error || !version) return { error: 'Version content not found' }
+  return { version }
+}
+
+
 // ── Get User Resumes ─────────────────────────────────────
 export async function getUserResumes() {
   const user = await requireAuth()

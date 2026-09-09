@@ -566,6 +566,7 @@ export interface PortfolioSEOMetadata {
   description: string
   keywords: string[]
   og_image?: string
+  accent_color?: string
 }
 
 export interface PortfolioSite {
