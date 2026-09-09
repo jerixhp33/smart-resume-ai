@@ -18,6 +18,7 @@ import {
   Globe,
   PanelLeftClose,
   PanelLeftOpen,
+  Wand2,
 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import { getSupabaseBrowserClient } from '@/lib/supabase/client'
@@ -33,6 +34,7 @@ const NAV_ITEMS = [
   { href: '/ai-tools', label: 'AI Tools', icon: Sparkles },
   { href: '/ab-test', label: 'A/B Test', icon: FlaskConical },
   { href: '/files', label: 'Files', icon: FolderOpen },
+  { href: '/portfolio/create', label: 'AI Code Studio', icon: Wand2 },
 ]
 
 interface DashboardNavProps {

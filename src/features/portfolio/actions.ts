@@ -73,6 +73,12 @@ export async function createPortfolioFromResumeAction(params: {
   template?: PortfolioTemplateId
   motionLevel?: MotionLevel
   theme?: PortfolioThemeId
+  aiConfig?: {
+    accentHex?: string
+    layoutType?: string
+    customCss?: string
+    prompt?: string
+  }
 }) {
   const supabase = await getSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -112,8 +118,11 @@ export async function createPortfolioFromResumeAction(params: {
 
   // 3. Generate portfolio content using Groq AI (with Zod schema & fallback)
   const portfolioContent = await generateAIPortfolio(resumeData, profile, user.id)
+  if (params.aiConfig) {
+    portfolioContent.aiConfig = params.aiConfig
+  }
 
-  const template = params.template || 'modern'
+  const template = params.template || (params.aiConfig ? 'ai-generated' as any : 'modern')
   const motionLevel = params.motionLevel || 'smooth'
   const theme = params.theme || 'indigo'
   const title = `${portfolioContent.hero.full_name} | Portfolio`

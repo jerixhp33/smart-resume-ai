@@ -13,8 +13,9 @@ import { GithubIcon } from '@/components/ui/icons'
 
 interface AITemplateConfig {
   accentHex?: string
-  layoutType?: 'matrix-terminal' | 'glass-cards' | 'gold-serif' | 'cyberpunk-neon' | 'standard'
+  layoutType?: 'matrix-terminal' | 'glass-cards' | 'gold-serif' | 'cyberpunk-neon' | 'standard' | string
   customCss?: string
+  prompt?: string
 }
 
 interface TemplateProps {

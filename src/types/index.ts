@@ -559,6 +559,12 @@ export interface PortfolioContent {
   contact: PortfolioContactSection
   section_order?: string[]
   hidden_sections?: Record<string, boolean>
+  aiConfig?: {
+    accentHex?: string
+    layoutType?: 'matrix-terminal' | 'glass-cards' | 'gold-serif' | 'cyberpunk-neon' | 'standard' | string
+    customCss?: string
+    prompt?: string
+  }
 }
 
 export interface PortfolioSEOMetadata {
