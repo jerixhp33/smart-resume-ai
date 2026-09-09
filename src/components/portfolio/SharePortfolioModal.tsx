@@ -132,9 +132,9 @@ export function SharePortfolioModal({
     if (!shareUrl) return
     setGeneratingQr(true)
 
-    // Generate high-resolution clean PNG Data URL locally in client
+    // High-Resolution 1200px QR Code for 4K Retina output
     QRCode.toDataURL(shareUrl, {
-      width: 600,
+      width: 1200,
       margin: 2,
       color: {
         dark: '#0f172a',
@@ -158,7 +158,7 @@ export function SharePortfolioModal({
     setTimeout(() => setCopied(false), 2000)
   }
 
-  // Generate 1200x630 HD Aesthetic Fixed-Size Share Card
+  // Generate 3840×2016 4K Ultra HD Executive Matte Share Card
   const handleDownloadFullCard = () => {
     if (!qrDataUrl) return
     setDownloadingCard(true)
@@ -170,11 +170,14 @@ export function SharePortfolioModal({
       return
     }
 
-    // Standard HD OpenGraph / Social Share Dimensions
-    canvas.width = 1200
-    canvas.height = 630
+    // 4K Ultra HD Dimensions (3840×2016 - 3.2x Retina HD scaling)
+    const scaleFactor = 3.2
+    canvas.width = 3840
+    canvas.height = 2016
 
     const renderCanvas = (bgImg?: HTMLImageElement) => {
+      ctx.save()
+      ctx.scale(scaleFactor, scaleFactor)
       // 1. Matte Background Layering
       if (bgImg) {
         const imgRatio = bgImg.width / bgImg.height
@@ -364,15 +367,16 @@ export function SharePortfolioModal({
         ctx.fillText('SCAN TO VIEW PORTFOLIO', qrBoxX + qrBoxW / 2, qrBoxY + 254)
         ctx.textAlign = 'left'
 
-        // Export clean high quality PNG
+        // Export ultra high quality 4K PNG
+        ctx.restore()
         const a = document.createElement('a')
         a.href = canvas.toDataURL('image/png', 1.0)
-        a.download = `resunio-portfolio-${username}.png`
+        a.download = `resunio-portfolio-4k-${username}.png`
         document.body.appendChild(a)
         a.click()
         document.body.removeChild(a)
         setDownloadingCard(false)
-        toast({ title: 'Full Share Card Downloaded!', description: 'High resolution 1200×630 matte share card saved to device.', variant: 'success' })
+        toast({ title: '4K Ultra HD Card Downloaded!', description: 'Ultra sharp 3840×2016 matte share card saved to device.', variant: 'success' })
       }
     }
 
@@ -592,7 +596,7 @@ export function SharePortfolioModal({
               <div>
                 <h4 className="text-sm font-semibold text-foreground">In-Person & Digital Networking</h4>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Download your branded 1200×630px Share Card with embedded QR code ready for social media & print.
+                  Download your executive 4K Ultra HD (3840×2016px) Share Card with embedded QR code ready for social media & crisp print.
                 </p>
               </div>
 
@@ -602,14 +606,14 @@ export function SharePortfolioModal({
                   onClick={handleDownloadFullCard}
                   disabled={generatingQr || downloadingCard || !qrDataUrl}
                   size="sm"
-                  className="gap-2 shadow-sm bg-primary text-primary-foreground font-medium text-xs h-9 px-4"
+                  className="gap-2 shadow-md bg-primary text-primary-foreground font-semibold text-xs h-9 px-4 hover:brightness-110"
                 >
                   {downloadingCard ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     <Download className="h-4 w-4" />
                   )}
-                  {downloadingCard ? 'Generating Card...' : 'Download Full Card with QR'}
+                  {downloadingCard ? 'Rendering 4K Card...' : 'Download 4K Ultra HD Card with QR'}
                 </Button>
               </div>
             </div>
