@@ -16,7 +16,6 @@ import {
   Copy, 
   Check, 
   Share2, 
-  Sparkles, 
   QrCode as QrIcon, 
   Download,
   Mail,
@@ -57,6 +56,44 @@ function WhatsAppIcon({ className }: { className?: string }) {
   )
 }
 
+// Canvas helper to cleanly wrap text across lines without cutting off words
+function getWrappedLines(
+  ctx: CanvasRenderingContext2D, 
+  text: string, 
+  maxWidth: number, 
+  maxLines: number
+): string[] {
+  const words = text.trim().split(/\s+/)
+  const lines: string[] = []
+  let currentLine = ''
+
+  for (let i = 0; i < words.length; i++) {
+    const testLine = currentLine ? `${currentLine} ${words[i]}` : words[i]
+    const metrics = ctx.measureText(testLine)
+    if (metrics.width > maxWidth && currentLine) {
+      lines.push(currentLine)
+      currentLine = words[i]
+      if (lines.length === maxLines - 1) {
+        const remaining = words.slice(i).join(' ')
+        let lastLine = remaining
+        while (ctx.measureText(`${lastLine}...`).width > maxWidth && lastLine.length > 0) {
+          lastLine = lastLine.slice(0, -1)
+        }
+        lines.push(`${lastLine}${lastLine.length < remaining.length ? '...' : ''}`)
+        return lines
+      }
+    } else {
+      currentLine = testLine
+    }
+  }
+
+  if (currentLine && lines.length < maxLines) {
+    lines.push(currentLine)
+  }
+
+  return lines
+}
+
 export function SharePortfolioModal({
   open,
   onOpenChange,
@@ -74,18 +111,66 @@ export function SharePortfolioModal({
   const origin = typeof window !== 'undefined' ? window.location.origin : 'https://resunio.ai'
   const shareUrl = `${origin}/portfolio/${username}`
 
-  // Lock body scroll 100% when modal is open (prevents background scrolling on trackpad/mouse)
+  // 100% Rigid Body Scroll Lock for Trackpad two-finger scroll, touch, and mouse wheel
   useEffect(() => {
-    if (open) {
-      const origOverflow = document.body.style.overflow
-      const origTouch = document.body.style.touchAction
-      document.body.style.overflow = 'hidden'
-      document.body.style.touchAction = 'none'
+    if (!open) return
 
-      return () => {
-        document.body.style.overflow = origOverflow
-        document.body.style.touchAction = origTouch
+    const scrollY = window.scrollY
+    const originalStyle = {
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+      overflow: document.body.style.overflow,
+      touchAction: document.body.style.touchAction,
+    }
+
+    // Freeze main body in fixed position so background can NEVER scroll underneath
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${scrollY}px`
+    document.body.style.width = '100%'
+    document.body.style.overflow = 'hidden'
+    document.body.style.touchAction = 'none'
+
+    const handleScrollPrevent = (e: WheelEvent | TouchEvent) => {
+      const modalContent = document.querySelector('[data-share-modal-content]')
+      if (!modalContent) {
+        if (e.cancelable) e.preventDefault()
+        return
       }
+
+      if (!modalContent.contains(e.target as Node)) {
+        if (e.cancelable) e.preventDefault()
+        return
+      }
+
+      const el = modalContent as HTMLElement
+      const canScroll = el.scrollHeight > el.clientHeight
+      if (!canScroll) {
+        if (e.cancelable) e.preventDefault()
+        return
+      }
+
+      if (e instanceof WheelEvent) {
+        const isAtTop = el.scrollTop <= 0 && e.deltaY < 0
+        const isAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1 && e.deltaY > 0
+        if ((isAtTop || isAtBottom) && e.cancelable) {
+          e.preventDefault()
+        }
+      }
+    }
+
+    window.addEventListener('wheel', handleScrollPrevent, { passive: false })
+    window.addEventListener('touchmove', handleScrollPrevent, { passive: false })
+
+    return () => {
+      document.body.style.position = originalStyle.position
+      document.body.style.top = originalStyle.top
+      document.body.style.width = originalStyle.width
+      document.body.style.overflow = originalStyle.overflow
+      document.body.style.touchAction = originalStyle.touchAction
+      window.scrollTo(0, scrollY)
+      window.removeEventListener('wheel', handleScrollPrevent)
+      window.removeEventListener('touchmove', handleScrollPrevent)
     }
   }, [open])
 
@@ -119,7 +204,7 @@ export function SharePortfolioModal({
     setTimeout(() => setCopied(false), 2000)
   }
 
-  // 1 Single Download Button: High-res Full Share Card with embedded QR Code & custom background/accent
+  // Generate 1200x630 HD Aesthetic Fixed-Size Share Card
   const handleDownloadFullCard = () => {
     if (!qrDataUrl) return
     setDownloadingCard(true)
@@ -131,84 +216,179 @@ export function SharePortfolioModal({
       return
     }
 
+    // Standard HD OpenGraph / Social Share Dimensions
     canvas.width = 1200
     canvas.height = 630
 
-    const renderCanvasContent = (bgImg?: HTMLImageElement) => {
-      // 1. Draw uploaded image as background or fallback solid base
+    const renderCanvas = (bgImg?: HTMLImageElement, logoImg?: HTMLImageElement) => {
+      // 1. Background Fill / Background Image with Dark Accent Gradient Overlay
       if (bgImg) {
-        ctx.drawImage(bgImg, 0, 0, 1200, 630)
-        // Accent color overlay gradient for maximum contrast and legibility
+        const imgRatio = bgImg.width / bgImg.height
+        const canvasRatio = 1200 / 630
+        let renderW = 1200
+        let renderH = 630
+        let offsetX = 0
+        let offsetY = 0
+
+        if (imgRatio > canvasRatio) {
+          renderW = 630 * imgRatio
+          offsetX = (1200 - renderW) / 2
+        } else {
+          renderH = 1200 / imgRatio
+          offsetY = (630 - renderH) / 2
+        }
+
+        ctx.drawImage(bgImg, offsetX, offsetY, renderW, renderH)
+
+        // Dark accent gradient overlay for pristine legibility
         const grad = ctx.createLinearGradient(0, 0, 1200, 630)
-        grad.addColorStop(0, `${accentColor}E6`)
-        grad.addColorStop(1, '#0f172aFA')
+        grad.addColorStop(0, `${accentColor}D9`)
+        grad.addColorStop(0.55, '#0f172aEE')
+        grad.addColorStop(1, '#090d16FA')
         ctx.fillStyle = grad
         ctx.fillRect(0, 0, 1200, 630)
       } else {
         const grad = ctx.createLinearGradient(0, 0, 1200, 630)
         grad.addColorStop(0, accentColor || '#6366f1')
-        grad.addColorStop(1, '#0f172a')
+        grad.addColorStop(0.5, '#1e1b4b')
+        grad.addColorStop(1, '#090d16')
         ctx.fillStyle = grad
+        ctx.fillRect(0, 0, 1200, 630)
+
+        // Subtle ambient radial glow
+        const glow = ctx.createRadialGradient(250, 180, 50, 250, 180, 500)
+        glow.addColorStop(0, 'rgba(255, 255, 255, 0.14)')
+        glow.addColorStop(1, 'rgba(255, 255, 255, 0)')
+        ctx.fillStyle = glow
         ctx.fillRect(0, 0, 1200, 630)
       }
 
-      // 2. Header Branding
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
-      ctx.font = 'bold 24px sans-serif'
-      ctx.fillText('✨ RESUNIO PORTFOLIO', 60, 80)
-
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
-      ctx.roundRect(980, 50, 160, 42, 10)
+      // 2. Top Bar: Resunio Logo Pill & @Username Badge
+      // Logo Chip (Top Left)
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.14)'
+      ctx.beginPath()
+      ctx.roundRect(60, 55, 270, 48, 14)
       ctx.fill()
-      ctx.fillStyle = '#ffffff'
-      ctx.font = '18px monospace'
-      ctx.fillText(`@${username}`, 1000, 77)
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
+      ctx.lineWidth = 1.5
+      ctx.stroke()
 
-      // 3. Title & Summary
-      ctx.fillStyle = '#ffffff'
-      ctx.font = 'bold 50px sans-serif'
-      ctx.fillText(portfolioTitle.slice(0, 36), 60, 220)
+      if (logoImg) {
+        ctx.drawImage(logoImg, 74, 64, 30, 30)
+      }
 
+      ctx.fillStyle = '#ffffff'
+      ctx.font = 'bold 20px system-ui, -apple-system, sans-serif'
+      ctx.fillText('RESUNIO PORTFOLIO', logoImg ? 114 : 85, 87)
+
+      // @Username Chip (Top Right)
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.14)'
+      ctx.beginPath()
+      ctx.roundRect(940, 55, 200, 48, 24)
+      ctx.fill()
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
+      ctx.stroke()
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)'
+      ctx.font = '500 19px monospace'
+      ctx.textAlign = 'center'
+      ctx.fillText(`@${username}`, 1040, 86)
+      ctx.textAlign = 'left'
+
+      // 3. Main Body: Title & Summary (Clean dynamic text wrapping)
+      const maxTextWidth = 730
+      ctx.fillStyle = '#ffffff'
+      ctx.font = 'bold 44px system-ui, -apple-system, sans-serif'
+      
+      const titleLines = getWrappedLines(ctx, portfolioTitle, maxTextWidth, 2)
+      let currentY = 210
+      titleLines.forEach((line) => {
+        ctx.fillText(line, 60, currentY)
+        currentY += 54
+      })
+
+      // Summary lines
+      currentY += 12
       ctx.fillStyle = 'rgba(255, 255, 255, 0.88)'
-      ctx.font = '24px sans-serif'
-      const summaryText = portfolioSummary.slice(0, 95) + (portfolioSummary.length > 95 ? '...' : '')
-      ctx.fillText(summaryText, 60, 285)
+      ctx.font = '22px system-ui, -apple-system, sans-serif'
+      const summaryLines = getWrappedLines(ctx, portfolioSummary, maxTextWidth, 2)
+      summaryLines.forEach((line) => {
+        ctx.fillText(line, 60, currentY)
+        currentY += 34
+      })
 
-      // 4. Footer link
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.75)'
-      ctx.font = '22px monospace'
-      ctx.fillText(`resunio.ai/portfolio/${username}`, 60, 560)
+      // 4. Bottom Footer: Domain Pill Badge
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.12)'
+      ctx.beginPath()
+      ctx.roundRect(60, 520, 440, 52, 14)
+      ctx.fill()
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
+      ctx.stroke()
 
-      // 5. Embedded QR Code Box on bottom right
+      ctx.fillStyle = '#ffffff'
+      ctx.font = '600 20px monospace'
+      ctx.fillText(`resunio.ai/portfolio/${username}`, 88, 553)
+
+      // 5. Embedded High-Res QR Code Card (Bottom Right)
+      const qrBoxX = 880
+      const qrBoxY = 310
+      const qrBoxW = 260
+      const qrBoxH = 265
+
+      ctx.fillStyle = '#ffffff'
+      ctx.beginPath()
+      ctx.roundRect(qrBoxX, qrBoxY, qrBoxW, qrBoxH, 22)
+      ctx.fill()
+
       const qrImg = new Image()
       qrImg.crossOrigin = 'anonymous'
       qrImg.src = qrDataUrl
       qrImg.onload = () => {
-        ctx.fillStyle = '#ffffff'
-        ctx.roundRect(870, 330, 270, 250, 16)
-        ctx.fill()
+        ctx.drawImage(qrImg, qrBoxX + 25, qrBoxY + 20, 210, 210)
 
-        ctx.drawImage(qrImg, 895, 345, 220, 210)
+        ctx.fillStyle = '#475569'
+        ctx.font = 'bold 11px system-ui, -apple-system, sans-serif'
+        ctx.textAlign = 'center'
+        ctx.fillText('SCAN TO VIEW PORTFOLIO', qrBoxX + qrBoxW / 2, qrBoxY + 248)
+        ctx.textAlign = 'left'
 
+        // Export clean high quality PNG
         const a = document.createElement('a')
-        a.href = canvas.toDataURL('image/png')
-        a.download = `portfolio-full-card-${username}.png`
+        a.href = canvas.toDataURL('image/png', 1.0)
+        a.download = `resunio-portfolio-${username}.png`
         document.body.appendChild(a)
         a.click()
         document.body.removeChild(a)
         setDownloadingCard(false)
-        toast({ title: 'Full Share Card Downloaded!', description: '1200x630 share card with QR code saved to device.', variant: 'success' })
+        toast({ title: 'Full Share Card Downloaded!', description: 'High resolution 1200×630 share card with QR code saved to device.', variant: 'success' })
       }
     }
 
-    if (ogImage) {
-      const bg = new Image()
-      bg.crossOrigin = 'anonymous'
-      bg.src = ogImage
-      bg.onload = () => renderCanvasContent(bg)
-      bg.onerror = () => renderCanvasContent()
-    } else {
-      renderCanvasContent()
+    // Load logo image for canvas drawing
+    const logoImg = new Image()
+    logoImg.crossOrigin = 'anonymous'
+    logoImg.src = '/logo.png'
+    logoImg.onload = () => {
+      if (ogImage) {
+        const bg = new Image()
+        bg.crossOrigin = 'anonymous'
+        bg.src = ogImage
+        bg.onload = () => renderCanvas(bg, logoImg)
+        bg.onerror = () => renderCanvas(undefined, logoImg)
+      } else {
+        renderCanvas(undefined, logoImg)
+      }
+    }
+    logoImg.onerror = () => {
+      if (ogImage) {
+        const bg = new Image()
+        bg.crossOrigin = 'anonymous'
+        bg.src = ogImage
+        bg.onload = () => renderCanvas(bg)
+        bg.onerror = () => renderCanvas()
+      } else {
+        renderCanvas()
+      }
     }
   }
 
@@ -241,7 +421,10 @@ export function SharePortfolioModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md sm:max-w-lg p-6 gap-5 max-h-[85vh] overflow-y-auto overscroll-contain">
+      <DialogContent 
+        data-share-modal-content
+        className="max-w-md sm:max-w-lg p-6 gap-5 max-h-[85vh] overflow-y-auto overscroll-contain"
+      >
         <DialogHeader className="space-y-1 text-left">
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
             <Share2 className="h-5 w-5 text-primary" /> Share Portfolio
@@ -251,14 +434,14 @@ export function SharePortfolioModal({
           </DialogDescription>
         </DialogHeader>
 
-        {/* Visual Share Card Preview with Uploaded Background & Accent Overlay */}
+        {/* Visual Aesthetic Share Card Preview */}
         <div className="space-y-2">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Share Card Preview
+            Share Card Preview (1200×630 HD)
           </p>
           <div
-            className="rounded-xl p-5 text-white shadow-md relative overflow-hidden flex flex-col justify-between min-h-[150px]"
-            style={{ background: `linear-gradient(135deg, ${accentColor} 0%, #0f172a 100%)` }}
+            className="rounded-xl p-5 text-white shadow-lg relative overflow-hidden flex flex-col justify-between min-h-[160px]"
+            style={{ background: `linear-gradient(135deg, ${accentColor} 0%, #090d16 100%)` }}
           >
             {ogImage && (
               <>
@@ -269,33 +452,33 @@ export function SharePortfolioModal({
                   className="absolute inset-0 w-full h-full object-cover z-0"
                 />
                 <div
-                  className="absolute inset-0 z-0 opacity-85"
-                  style={{ background: `linear-gradient(135deg, ${accentColor}D9 0%, #0f172aF2 100%)` }}
+                  className="absolute inset-0 z-0"
+                  style={{ background: `linear-gradient(135deg, ${accentColor}D9 0%, #090d16FA 100%)` }}
                 />
               </>
             )}
 
             <div className="flex justify-between items-center z-10">
-              <span className="text-[11px] font-semibold uppercase tracking-wider opacity-90 flex items-center gap-1.5 drop-shadow-xs">
-                <span className="w-4 h-4 rounded-md overflow-hidden bg-slate-950 inline-block border border-white/20 shrink-0">
+              <span className="text-xs font-bold uppercase tracking-wider text-white/95 flex items-center gap-1.5 bg-white/15 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/20">
+                <span className="w-4 h-4 rounded overflow-hidden bg-slate-950 inline-block shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
                 </span>
                 Resunio Portfolio
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-white/20 backdrop-blur-xs font-mono drop-shadow-xs">
+              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-white/15 backdrop-blur-md font-mono text-white/90 border border-white/20">
                 @{username}
               </span>
             </div>
 
-            <div className="space-y-1 z-10 my-2">
-              <h3 className="text-lg font-bold leading-tight line-clamp-1 drop-shadow-xs">{portfolioTitle}</h3>
-              <p className="text-xs opacity-90 line-clamp-2 drop-shadow-xs">{portfolioSummary}</p>
+            <div className="space-y-1 z-10 my-3">
+              <h3 className="text-base font-bold leading-snug line-clamp-2 text-white drop-shadow-xs">{portfolioTitle}</h3>
+              <p className="text-xs text-white/80 line-clamp-2 leading-relaxed drop-shadow-xs">{portfolioSummary}</p>
             </div>
 
-            <div className="flex justify-between items-end z-10 text-[10px] opacity-80 font-mono drop-shadow-xs">
-              <span>resunio.ai/portfolio/{username}</span>
-              <span className="capitalize">{username}</span>
+            <div className="flex justify-between items-center z-10 text-[10px] font-mono text-white/80 border-t border-white/15 pt-2">
+              <span className="bg-white/10 px-2 py-0.5 rounded border border-white/10">resunio.ai/portfolio/{username}</span>
+              <span className="capitalize text-white/60">1200×630 Card Banner</span>
             </div>
           </div>
         </div>
@@ -423,3 +606,4 @@ export function SharePortfolioModal({
     </Dialog>
   )
 }
+
