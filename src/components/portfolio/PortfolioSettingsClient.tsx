@@ -107,7 +107,7 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
     const formData = new FormData()
     formData.append('file', file)
 
-    const res = await uploadPortfolioOGImageAction(formData)
+    const res = await uploadPortfolioOGImageAction(formData, portfolio.id)
     setUploadingImage(false)
 
     if (res.error) {

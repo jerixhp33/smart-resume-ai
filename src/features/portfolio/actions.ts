@@ -363,8 +363,8 @@ export async function updatePortfolioSEOSettingsAction(params: {
     title: params.title,
     description: params.description,
     keywords: params.keywords,
-    og_image: params.ogImage || undefined,
-    accent_color: params.accentColor || undefined,
+    og_image: params.ogImage ?? '',
+    accent_color: params.accentColor ?? '#6366f1',
   }
 
   const { error } = await supabase
@@ -383,7 +383,7 @@ export async function updatePortfolioSEOSettingsAction(params: {
 }
 
 // ── Upload Portfolio OG Image Direct ────────────────────
-export async function uploadPortfolioOGImageAction(formData: FormData) {
+export async function uploadPortfolioOGImageAction(formData: FormData, portfolioId?: string) {
   const supabase = await getSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Unauthorized' }
@@ -415,9 +415,36 @@ export async function uploadPortfolioOGImageAction(formData: FormData) {
     return { error: 'Failed to upload image. Please try again.' }
   }
 
-  // Return proxied native asset URL (masks Supabase infrastructure URL)
-  return { publicUrl: `/api/assets/${storagePath}` }
+  const publicUrl = `/api/assets/${storagePath}`
+
+  // Persist image URL directly to database if portfolioId is provided
+  if (portfolioId) {
+    const { data: site } = await supabase
+      .from('portfolio_sites')
+      .select('seo_metadata')
+      .eq('id', portfolioId)
+      .eq('user_id', user.id)
+      .single()
+
+    if (site) {
+      const updatedSeo = {
+        ...(site.seo_metadata || {}),
+        og_image: publicUrl,
+      }
+      await supabase
+        .from('portfolio_sites')
+        .update({ seo_metadata: updatedSeo })
+        .eq('id', portfolioId)
+        .eq('user_id', user.id)
+
+      revalidatePath('/portfolio')
+      revalidatePath(`/portfolio/settings/${portfolioId}`)
+    }
+  }
+
+  return { publicUrl }
 }
+
 
 
 
