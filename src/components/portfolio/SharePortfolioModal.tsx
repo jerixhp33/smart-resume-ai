@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import QRCode from 'qrcode'
 import {
   Dialog,
   DialogContent,
@@ -15,12 +16,12 @@ import {
   Copy, 
   Check, 
   Share2, 
-  ExternalLink, 
   Sparkles, 
-  QrCode, 
+  QrCode as QrIcon, 
   Download,
-  Send,
-  Mail
+  Mail,
+  Loader2,
+  Image as ImageIcon
 } from 'lucide-react'
 
 interface SharePortfolioModalProps {
@@ -65,17 +66,114 @@ export function SharePortfolioModal({
   accentColor = '#6366f1',
 }: SharePortfolioModalProps) {
   const [copied, setCopied] = useState(false)
-  const [showQr, setShowQr] = useState(false)
+  const [qrDataUrl, setQrDataUrl] = useState<string>('')
+  const [generatingQr, setGeneratingQr] = useState(true)
 
   const origin = typeof window !== 'undefined' ? window.location.origin : 'https://smartresume.ai'
   const shareUrl = `${origin}/portfolio/${username}`
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(shareUrl)}`
+
+  useEffect(() => {
+    if (!shareUrl) return
+    setGeneratingQr(true)
+
+    // Generate high-resolution clean PNG Data URL locally in client
+    QRCode.toDataURL(shareUrl, {
+      width: 600,
+      margin: 2,
+      color: {
+        dark: '#0f172a',
+        light: '#ffffff',
+      },
+    })
+      .then((url) => {
+        setQrDataUrl(url)
+        setGeneratingQr(false)
+      })
+      .catch((err) => {
+        console.error('Failed to generate QR code:', err)
+        setGeneratingQr(false)
+      })
+  }, [shareUrl])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shareUrl)
     setCopied(true)
     toast({ title: 'Link Copied!', description: 'Portfolio URL copied to clipboard.', variant: 'success' })
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleDownloadQr = () => {
+    if (!qrDataUrl) return
+    const link = document.createElement('a')
+    link.href = qrDataUrl
+    link.download = `portfolio-qr-${username}.png`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    toast({ title: 'QR Code Downloaded!', description: 'High-res QR code PNG saved to device.', variant: 'success' })
+  }
+
+  const handleDownloadCard = () => {
+    if (!qrDataUrl) return
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    canvas.width = 1200
+    canvas.height = 630
+
+    // Draw gradient background
+    const grad = ctx.createLinearGradient(0, 0, 1200, 630)
+    grad.addColorStop(0, accentColor || '#6366f1')
+    grad.addColorStop(1, '#0f172a')
+    ctx.fillStyle = grad
+    ctx.fillRect(0, 0, 1200, 630)
+
+    // Header branding
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'
+    ctx.font = 'bold 24px sans-serif'
+    ctx.fillText('✨ SMARTRESUME AI PORTFOLIO', 60, 80)
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
+    ctx.roundRect(1000, 50, 140, 40, 8)
+    ctx.fill()
+    ctx.fillStyle = '#ffffff'
+    ctx.font = '18px monospace'
+    ctx.fillText(`@${username}`, 1015, 76)
+
+    // Title & Summary
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 52px sans-serif'
+    ctx.fillText(portfolioTitle.slice(0, 35), 60, 220)
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
+    ctx.font = '26px sans-serif'
+    const summaryText = portfolioSummary.slice(0, 90) + (portfolioSummary.length > 90 ? '...' : '')
+    ctx.fillText(summaryText, 60, 290)
+
+    // Public link footer
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
+    ctx.font = '22px monospace'
+    ctx.fillText(`https://smartresume.ai/portfolio/${username}`, 60, 560)
+
+    // Draw QR Code into Canvas
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.src = qrDataUrl
+    img.onload = () => {
+      ctx.fillStyle = '#ffffff'
+      ctx.roundRect(860, 340, 280, 240, 16)
+      ctx.fill()
+      ctx.drawImage(img, 880, 350, 240, 220)
+
+      const a = document.createElement('a')
+      a.href = canvas.toDataURL('image/png')
+      a.download = `portfolio-share-card-${username}.png`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      toast({ title: 'Share Card Downloaded!', description: 'Branded 1200x630 share card saved.', variant: 'success' })
+    }
   }
 
   const shareText = `Check out my interactive AI portfolio: ${portfolioTitle}`
@@ -107,7 +205,7 @@ export function SharePortfolioModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md sm:max-w-lg p-6 gap-6">
+      <DialogContent className="max-w-md sm:max-w-lg p-6 gap-6 max-h-[90vh] overflow-y-auto">
         <DialogHeader className="space-y-1 text-left">
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
             <Share2 className="h-5 w-5 text-primary" /> Share Portfolio
@@ -211,40 +309,63 @@ export function SharePortfolioModal({
           </div>
         </div>
 
-        {/* QR Code Section Toggle */}
-        <div className="pt-2 border-t border-border flex flex-col items-center">
-          {!showQr ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowQr(true)}
-              className="gap-2 text-xs text-muted-foreground hover:text-foreground"
-            >
-              <QrCode className="h-4 w-4" /> Show QR Code for In-Person Networking
-            </Button>
-          ) : (
-            <div className="flex flex-col items-center space-y-3 py-2 bg-muted/20 w-full rounded-xl border border-border">
-              <div className="p-2 bg-white rounded-lg shadow-xs">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={qrCodeUrl} alt="Portfolio QR Code" className="w-36 h-36 object-contain" />
+        {/* High-Resolution Client-Generated QR Code Card */}
+        <div className="pt-3 border-t border-border space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+              <QrIcon className="h-4 w-4 text-primary" /> Networking QR Code
+            </span>
+            <span className="text-[11px] text-muted-foreground">Scan with phone camera</span>
+          </div>
+
+          <div className="bg-card border border-border rounded-xl p-4 flex flex-col sm:flex-row items-center gap-5 shadow-xs">
+            <div className="w-36 h-36 bg-white rounded-lg p-2 border border-border flex items-center justify-center shrink-0 shadow-inner">
+              {generatingQr ? (
+                <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  <span className="text-[10px]">Generating...</span>
+                </div>
+              ) : qrDataUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={qrDataUrl}
+                  alt={`QR Code for ${shareUrl}`}
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <div className="text-[10px] text-destructive text-center">Failed to load QR</div>
+              )}
+            </div>
+
+            <div className="space-y-3 text-center sm:text-left flex-1">
+              <div>
+                <h4 className="text-sm font-semibold text-foreground">In-Person & Resume Print QR</h4>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Print this high-res QR code on your resume or business card for instant portfolio scans.
+                </p>
               </div>
-              <div className="flex items-center gap-2">
-                <a href={qrCodeUrl} download={`portfolio-qr-${username}.png`} target="_blank" rel="noreferrer">
-                  <Button variant="outline" size="sm" className="gap-1.5 text-xs h-7">
-                    <Download className="h-3.5 w-3.5" /> Download QR Code
-                  </Button>
-                </a>
+
+              <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
                 <Button
-                  variant="ghost"
+                  onClick={handleDownloadQr}
+                  disabled={generatingQr || !qrDataUrl}
                   size="sm"
-                  onClick={() => setShowQr(false)}
-                  className="text-xs h-7 text-muted-foreground"
+                  className="gap-1.5 text-xs shadow-xs"
                 >
-                  Hide QR
+                  <Download className="h-3.5 w-3.5" /> Download QR (PNG)
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleDownloadCard}
+                  disabled={generatingQr || !qrDataUrl}
+                  size="sm"
+                  className="gap-1.5 text-xs"
+                >
+                  <ImageIcon className="h-3.5 w-3.5 text-primary" /> Share Banner
                 </Button>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
