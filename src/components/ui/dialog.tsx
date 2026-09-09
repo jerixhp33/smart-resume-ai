@@ -15,8 +15,10 @@ const DialogOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
+    onWheel={(e) => e.preventDefault()}
+    onTouchMove={(e) => e.preventDefault()}
     className={cn(
-      'fixed inset-0 z-50 bg-black/60 backdrop-blur-xs overscroll-contain',
+      'fixed inset-0 z-50 bg-black/60 backdrop-blur-xs overscroll-contain touch-none',
       'data-[state=open]:animate-in data-[state=closed]:animate-out',
       'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
       className
@@ -34,9 +36,10 @@ const DialogContent = React.forwardRef<
     <DialogOverlay />
     <DialogPrimitive.Content
       ref={ref}
+      onWheel={(e) => e.stopPropagation()}
       className={cn(
         'fixed left-[50%] top-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%]',
-        'bg-card border border-border rounded-2xl p-6 shadow-xl max-h-[85vh] overflow-y-auto overscroll-contain',
+        'bg-card border border-border rounded-2xl p-6 shadow-xl max-h-[85vh] overflow-y-auto overscroll-contain touch-pan-y',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
         'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
         'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',

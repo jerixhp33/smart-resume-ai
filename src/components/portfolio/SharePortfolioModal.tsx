@@ -111,66 +111,19 @@ export function SharePortfolioModal({
   const origin = typeof window !== 'undefined' ? window.location.origin : 'https://resunio.ai'
   const shareUrl = `${origin}/portfolio/${username}`
 
-  // 100% Rigid Body Scroll Lock for Trackpad two-finger scroll, touch, and mouse wheel
+  // Lock document scrollbars when modal is open
   useEffect(() => {
     if (!open) return
 
-    const scrollY = window.scrollY
-    const originalStyle = {
-      position: document.body.style.position,
-      top: document.body.style.top,
-      width: document.body.style.width,
-      overflow: document.body.style.overflow,
-      touchAction: document.body.style.touchAction,
-    }
+    const origBodyOverflow = document.body.style.overflow
+    const origHtmlOverflow = document.documentElement.style.overflow
 
-    // Freeze main body in fixed position so background can NEVER scroll underneath
-    document.body.style.position = 'fixed'
-    document.body.style.top = `-${scrollY}px`
-    document.body.style.width = '100%'
     document.body.style.overflow = 'hidden'
-    document.body.style.touchAction = 'none'
-
-    const handleScrollPrevent = (e: WheelEvent | TouchEvent) => {
-      const modalContent = document.querySelector('[data-share-modal-content]')
-      if (!modalContent) {
-        if (e.cancelable) e.preventDefault()
-        return
-      }
-
-      if (!modalContent.contains(e.target as Node)) {
-        if (e.cancelable) e.preventDefault()
-        return
-      }
-
-      const el = modalContent as HTMLElement
-      const canScroll = el.scrollHeight > el.clientHeight
-      if (!canScroll) {
-        if (e.cancelable) e.preventDefault()
-        return
-      }
-
-      if (e instanceof WheelEvent) {
-        const isAtTop = el.scrollTop <= 0 && e.deltaY < 0
-        const isAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1 && e.deltaY > 0
-        if ((isAtTop || isAtBottom) && e.cancelable) {
-          e.preventDefault()
-        }
-      }
-    }
-
-    window.addEventListener('wheel', handleScrollPrevent, { passive: false })
-    window.addEventListener('touchmove', handleScrollPrevent, { passive: false })
+    document.documentElement.style.overflow = 'hidden'
 
     return () => {
-      document.body.style.position = originalStyle.position
-      document.body.style.top = originalStyle.top
-      document.body.style.width = originalStyle.width
-      document.body.style.overflow = originalStyle.overflow
-      document.body.style.touchAction = originalStyle.touchAction
-      window.scrollTo(0, scrollY)
-      window.removeEventListener('wheel', handleScrollPrevent)
-      window.removeEventListener('touchmove', handleScrollPrevent)
+      document.body.style.overflow = origBodyOverflow
+      document.documentElement.style.overflow = origHtmlOverflow
     }
   }, [open])
 
