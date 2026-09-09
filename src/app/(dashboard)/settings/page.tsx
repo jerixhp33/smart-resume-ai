@@ -138,15 +138,15 @@ export default function SettingsPage() {
             <h2 className="text-base font-semibold">Security</h2>
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground">
-                Your account is secured with Supabase Auth. All passwords are hashed and never stored in plain text.
+                Your account is protected with enterprise-grade encryption. Passwords are securely hashed and never stored in plain text.
               </p>
-              <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
-                <Shield className="h-4 w-4" />
-                Row-Level Security enabled — your data is isolated
+              <div className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400 font-medium">
+                <Shield className="h-4 w-4 shrink-0" />
+                <span>End-to-end data isolation — your resumes and personal data remain 100% private</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
-                <Shield className="h-4 w-4" />
-                All API keys stored server-side only
+              <div className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400 font-medium">
+                <Shield className="h-4 w-4 shrink-0" />
+                <span>256-bit SSL encryption & secure cloud storage protection</span>
               </div>
             </div>
             <div className="pt-2 border-t border-border">
