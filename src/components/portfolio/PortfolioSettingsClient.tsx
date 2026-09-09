@@ -70,9 +70,15 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
   const [activeTab, setActiveTab] = useState<'social' | 'twitter' | 'google'>('social')
   const [saving, setSaving] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [imageError, setImageError] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const publicUrl = `smartresume.ai/portfolio/${portfolio.username}`
+
+  // Reset image error state whenever ogImage changes
+  React.useEffect(() => {
+    setImageError(false)
+  }, [ogImage])
 
   const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -87,6 +93,11 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
       toast({ title: 'File Too Large', description: 'Image size must be under 5MB.', variant: 'error' })
       return
     }
+
+    // Instant local preview
+    const localPreviewUrl = URL.createObjectURL(file)
+    setOgImage(localPreviewUrl)
+    setImageError(false)
 
     setUploadingImage(true)
     const formData = new FormData()
@@ -280,9 +291,20 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
 
                 {ogImage ? (
                   <div className="border border-border rounded-xl p-3 bg-muted/20 flex flex-col sm:flex-row items-center gap-4">
-                    <div className="w-full sm:w-40 aspect-[1200/630] rounded-lg overflow-hidden border border-border bg-slate-900 shrink-0 relative">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={ogImage} alt="OG Thumbnail" className="w-full h-full object-cover" />
+                    <div className="w-full sm:w-40 aspect-[1200/630] rounded-lg overflow-hidden border border-border bg-slate-900 shrink-0 relative flex items-center justify-center">
+                      {!imageError ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={ogImage}
+                          alt="OG Thumbnail"
+                          className="w-full h-full object-cover"
+                          onError={() => setImageError(true)}
+                        />
+                      ) : (
+                        <div className="p-2 text-center text-[10px] text-amber-500 font-medium">
+                          Failed to load image
+                        </div>
+                      )}
                     </div>
                     <div className="flex-1 space-y-2 text-xs w-full">
                       <p className="font-medium text-foreground truncate max-w-[280px]">{ogImage}</p>
@@ -392,9 +414,14 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
             {activeTab === 'social' && (
               <div className="border border-border rounded-xl overflow-hidden bg-card shadow-sm">
                 <div className="aspect-[1200/630] bg-slate-900 relative overflow-hidden flex items-center justify-center p-6 text-center">
-                  {ogImage ? (
+                  {ogImage && !imageError ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={ogImage} alt="OG Preview" className="w-full h-full object-cover" />
+                    <img
+                      src={ogImage}
+                      alt="OG Preview"
+                      className="w-full h-full object-cover"
+                      onError={() => setImageError(true)}
+                    />
                   ) : (
                     <div 
                       className="w-full h-full rounded-lg p-6 flex flex-col justify-between text-left text-white shadow-inner relative overflow-hidden"
@@ -437,9 +464,14 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
             {activeTab === 'twitter' && (
               <div className="border border-border rounded-2xl overflow-hidden bg-card shadow-sm p-3 space-y-3">
                 <div className="aspect-[2/1] rounded-xl bg-slate-900 relative overflow-hidden flex items-center justify-center">
-                  {ogImage ? (
+                  {ogImage && !imageError ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={ogImage} alt="OG Preview" className="w-full h-full object-cover" />
+                    <img
+                      src={ogImage}
+                      alt="OG Preview"
+                      className="w-full h-full object-cover"
+                      onError={() => setImageError(true)}
+                    />
                   ) : (
                     <div 
                       className="w-full h-full p-5 flex flex-col justify-between text-left text-white relative overflow-hidden"
