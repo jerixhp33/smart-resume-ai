@@ -205,7 +205,7 @@ export function SharePortfolioModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md sm:max-w-lg p-6 gap-6 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-md sm:max-w-lg p-6 gap-5 max-h-[85vh] overflow-y-auto overscroll-contain">
         <DialogHeader className="space-y-1 text-left">
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
             <Share2 className="h-5 w-5 text-primary" /> Share Portfolio
