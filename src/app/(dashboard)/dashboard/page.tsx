@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getSupabaseServerClient } from '@/lib/supabase/server'
 import { checkResumeCreationEligibility } from '@/lib/payments/payment-service'
-import { Plus, Sparkles, Upload, ScanSearch, Zap, TrendingUp, ArrowRight, Clock, Globe } from 'lucide-react'
+import { Plus, Sparkles, Upload, ScanSearch, Zap, TrendingUp, ArrowRight, Clock, Globe, Wand2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -38,7 +38,7 @@ export default async function DashboardPage() {
     : null
 
   const QUICK_ACTIONS = [
-    { label: 'Build Portfolio', href: '/portfolio/create', icon: Globe, color: 'text-indigo-500 bg-indigo-50 dark:bg-indigo-950/30' },
+    { label: 'AI Code Studio', href: '/code-studio', icon: Wand2, color: 'text-purple-500 bg-purple-50 dark:bg-purple-950/30' },
     { label: 'Create with AI', href: '/resumes/new', icon: Sparkles, color: 'text-purple-500 bg-purple-50 dark:bg-purple-950/30' },
     { label: 'Upload Resume', href: '/resumes/import', icon: Upload, color: 'text-blue-500 bg-blue-50 dark:bg-blue-950/30' },
     { label: 'Analyze Job', href: '/analyzer', icon: ScanSearch, color: 'text-green-500 bg-green-50 dark:bg-green-950/30' },

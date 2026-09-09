@@ -29,12 +29,12 @@ const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/resumes', label: 'My Resumes', icon: FileText },
   { href: '/portfolio', label: 'AI Portfolio', icon: Globe },
+  { href: '/code-studio', label: 'AI Code Studio', icon: Wand2 },
   { href: '/analyzer', label: 'ATS Analyzer', icon: ScanSearch },
   { href: '/applications', label: 'Applications', icon: Briefcase },
   { href: '/ai-tools', label: 'AI Tools', icon: Sparkles },
   { href: '/ab-test', label: 'A/B Test', icon: FlaskConical },
   { href: '/files', label: 'Files', icon: FolderOpen },
-  { href: '/portfolio/create', label: 'AI Code Studio', icon: Wand2 },
 ]
 
 interface DashboardNavProps {
@@ -79,7 +79,16 @@ export function DashboardNav({ userId, isCollapsed = false, onToggleCollapse }: 
       {/* Navigation Links */}
       <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-          const isActive = href === '/dashboard' ? pathname === href : pathname.startsWith(href)
+          const isActive =
+            href === '/dashboard'
+              ? pathname === href
+              : href === '/portfolio'
+              ? pathname === '/portfolio' ||
+                pathname.startsWith('/portfolio/editor') ||
+                pathname.startsWith('/portfolio/settings') ||
+                pathname.startsWith('/portfolio/analytics') ||
+                pathname.startsWith('/portfolio/preview')
+              : pathname.startsWith(href)
           return (
             <Link
               key={href}

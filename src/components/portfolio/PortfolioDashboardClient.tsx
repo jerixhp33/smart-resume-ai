@@ -57,9 +57,9 @@ export function PortfolioDashboardClient({ portfolio, profile }: PortfolioDashbo
             Generate an elite personal website in seconds from your resume data.
           </p>
         </div>
-        <Link href="/portfolio/create">
+        <Link href="/code-studio">
           <Button size="lg" className="gap-2 shadow-md">
-            <Sparkles className="h-4 w-4" /> Build My Portfolio
+            <Sparkles className="h-4 w-4" /> Launch AI Code Studio
           </Button>
         </Link>
       </div>
