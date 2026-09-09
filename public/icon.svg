@@ -1,52 +1,52 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" width="100%" height="100%">
   <defs>
-    <linearGradient id="resunio-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0f172a" />
-      <stop offset="100%" stop-color="#020617" />
+    <linearGradient id="r-grad-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090c15" />
+      <stop offset="100%" stop-color="#04060c" />
     </linearGradient>
 
-    <linearGradient id="grad-cyan-blue" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="r-grad-top" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#38bdf8" />
-      <stop offset="50%" stop-color="#06b6d4" />
+      <stop offset="45%" stop-color="#06b6d4" />
       <stop offset="100%" stop-color="#2563eb" />
     </linearGradient>
 
-    <linearGradient id="grad-blue-purple" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="r-grad-leg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#3b82f6" />
       <stop offset="50%" stop-color="#6366f1" />
       <stop offset="100%" stop-color="#a855f7" />
     </linearGradient>
 
-    <linearGradient id="grad-cyan-fold" x1="0%" y1="100%" x2="100%" y2="0%">
+    <linearGradient id="r-grad-fold" x1="0%" y1="100%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#00f2fe" />
-      <stop offset="100%" stop-color="#4facfe" />
+      <stop offset="100%" stop-color="#38bdf8" />
     </linearGradient>
   </defs>
 
-  <rect width="512" height="512" rx="128" fill="url(#resunio-bg-grad)" />
+  <rect width="512" height="512" rx="128" fill="url(#r-grad-bg)" />
 
-  <g transform="translate(16, 16)">
+  <g transform="translate(-49, 6)">
     <path 
-      d="M140 100 C140 70, 165 48, 205 48 H310 C370 48, 420 95, 420 160 C420 225, 370 272, 310 272 H240 V380 C240 405, 220 425, 195 425 H185 C160 425, 140 405, 140 380 V100 Z" 
-      fill="url(#grad-cyan-blue)"
+      d="M140 90 C140 60, 168 40, 215 40 H315 C380 40, 430 90, 430 160 C430 230, 380 275, 315 275 H240 V385 C240 410, 220 430, 195 430 H185 C160 430, 140 410, 140 385 V90 Z" 
+      fill="url(#r-grad-top)"
     />
 
     <path 
-      d="M210 220 L370 380 C390 400, 420 400, 440 380 L445 375 C465 355, 465 325, 445 305 L310 170 Z" 
-      fill="url(#grad-blue-purple)"
+      d="M210 220 L375 385 C395 405, 425 405, 445 385 L450 380 C470 360, 470 330, 450 310 L315 175 Z" 
+      fill="url(#r-grad-leg)"
     />
 
     <path 
-      d="M140 310 L260 430 C280 450, 310 450, 330 430 L340 420 C360 400, 360 370, 340 350 L200 210 Z" 
-      fill="url(#grad-cyan-fold)"
+      d="M140 315 L265 440 C285 460, 315 460, 335 440 L345 430 C365 410, 365 380, 345 360 L205 220 Z" 
+      fill="url(#r-grad-fold)"
     />
 
-    <g transform="translate(200, 105)">
-      <rect width="130" height="100" rx="14" fill="#ffffff" fill-opacity="0.95" />
-      <circle cx="28" cy="30" r="9" fill="#0284c7" />
-      <rect x="48" y="25" width="56" height="10" rx="5" fill="#0284c7" />
-      <rect x="24" y="52" width="80" height="10" rx="5" fill="#0f172a" opacity="0.75" />
-      <rect x="24" y="70" width="56" height="10" rx="5" fill="#0f172a" opacity="0.75" />
+    <g transform="translate(205, 98)">
+      <rect width="125" height="98" rx="14" fill="#ffffff" fill-opacity="0.96" />
+      <circle cx="28" cy="28" r="9" fill="#0284c7" />
+      <rect x="46" y="23" width="56" height="10" rx="5" fill="#0284c7" />
+      <rect x="24" y="50" width="78" height="10" rx="5" fill="#0f172a" opacity="0.75" />
+      <rect x="24" y="68" width="54" height="10" rx="5" fill="#0f172a" opacity="0.75" />
     </g>
   </g>
 </svg>

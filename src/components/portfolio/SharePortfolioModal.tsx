@@ -414,7 +414,7 @@ export function SharePortfolioModal({
 
             <div className="flex justify-between items-center z-10">
               <span className="text-xs font-bold uppercase tracking-wider text-white/95 flex items-center gap-1.5 bg-white/15 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/20">
-                <ResunioLogo size="sm" variant="mark" className="!h-4 !w-4 border-0 p-0 shadow-none bg-transparent" />
+                <ResunioLogo size="sm" variant="mark" showBg={false} className="!h-4 !w-4 border-0 p-0 shadow-none" />
                 Resunio Portfolio
               </span>
               <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-white/15 backdrop-blur-md font-mono text-white/90 border border-white/20">

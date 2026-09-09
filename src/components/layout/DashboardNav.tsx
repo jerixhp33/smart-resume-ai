@@ -61,7 +61,7 @@ export function DashboardNav({ userId, isCollapsed = false, onToggleCollapse }: 
     >
       {/* Logo Header & Expand/Close Toggle */}
       <div className={cn('flex items-center border-b border-border py-4 px-3', isCollapsed ? 'justify-center flex-col gap-2' : 'justify-between px-4')}>
-        <ResunioLogo className="h-8 w-8 rounded-xl overflow-hidden shadow-xs border border-border/40" showText={!isCollapsed} textSize="sm" />
+        <ResunioLogo size="md" variant={isCollapsed ? 'mark' : 'horizontal'} showBg={isCollapsed} showText={!isCollapsed} />
 
         {onToggleCollapse && (
           <button
