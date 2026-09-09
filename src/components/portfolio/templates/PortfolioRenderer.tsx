@@ -11,11 +11,13 @@ import { EditorialTemplate } from './EditorialTemplate'
 import { BoldTemplate } from './BoldTemplate'
 import { ElegantTemplate } from './ElegantTemplate'
 import { PortfolioNavbar } from './PortfolioNavbar'
+import { getThemeConfig } from './theme-config'
 
 interface PortfolioRendererProps {
   content: PortfolioContent
   template: PortfolioTemplateId
   theme: PortfolioThemeId
+  customAccentColor?: string
   items?: UserFile[]
 }
 
@@ -37,8 +39,10 @@ function getTemplateBgClass(template: PortfolioTemplateId): string {
   }
 }
 
-export function PortfolioRenderer({ content, template, theme, items }: PortfolioRendererProps) {
+export function PortfolioRenderer({ content, template, theme, customAccentColor, items }: PortfolioRendererProps) {
   const bgClass = getTemplateBgClass(template)
+  const themeConfig = getThemeConfig(theme, customAccentColor)
+  const accentHex = customAccentColor || (themeConfig.customHex ?? '#6366f1')
 
   const renderTemplate = () => {
     switch (template) {
@@ -63,7 +67,13 @@ export function PortfolioRenderer({ content, template, theme, items }: Portfolio
   }
 
   return (
-    <div id="top" className={`relative min-h-screen w-full transition-colors duration-300 ${bgClass}`}>
+    <div 
+      id="top" 
+      className={`relative min-h-screen w-full transition-colors duration-300 ${bgClass}`}
+      style={{
+        '--accent-color': accentHex,
+      } as React.CSSProperties}
+    >
       <PortfolioNavbar content={content} template={template} theme={theme} items={items} />
       {renderTemplate()}
     </div>

@@ -1,7 +1,7 @@
 import type { PortfolioThemeId } from '@/types'
 
 export interface ThemeConfig {
-  id: PortfolioThemeId
+  id: string
   name: string
   primary: string
   primaryHover: string
@@ -10,6 +10,7 @@ export interface ThemeConfig {
   borderAccent: string
   badgeBg: string
   gradient: string
+  customHex?: string
 }
 
 export const THEMES: Record<PortfolioThemeId, ThemeConfig> = {
@@ -90,4 +91,26 @@ export const THEMES: Record<PortfolioThemeId, ThemeConfig> = {
     badgeBg: 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300',
     gradient: 'from-amber-600 to-orange-500',
   },
+}
+
+export function getThemeConfig(themeId: string = 'indigo', customHex?: string): ThemeConfig {
+  if (customHex && /^#[0-9A-Fa-f]{6}$/.test(customHex)) {
+    return {
+      id: 'custom',
+      name: 'Custom Accent',
+      primary: 'bg-[var(--accent-color)] text-white',
+      primaryHover: 'hover:brightness-110',
+      accentBg: 'bg-[var(--accent-color)]/10',
+      accentText: 'text-[var(--accent-color)]',
+      borderAccent: 'border-[var(--accent-color)]/30',
+      badgeBg: 'bg-[var(--accent-color)]/10 text-[var(--accent-color)] border border-[var(--accent-color)]/20',
+      gradient: 'from-[var(--accent-color)] to-purple-500',
+      customHex,
+    }
+  }
+
+  const preset = THEMES[themeId as PortfolioThemeId]
+  if (preset) return preset
+
+  return THEMES.indigo
 }

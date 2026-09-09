@@ -23,7 +23,9 @@ import {
   Minimize2,
   Globe,
   ExternalLink,
+  Wand2,
 } from 'lucide-react'
+import { AICodePromptModal } from '@/components/portfolio/AICodePromptModal'
 
 interface PortfolioStudioEditorProps {
   portfolio: PortfolioSite
@@ -38,6 +40,12 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
   const [isLeftOpen, setIsLeftOpen] = useState(true)
   const [isRightOpen, setIsRightOpen] = useState(true)
   const [isNavigatingHub, setIsNavigatingHub] = useState(false)
+  const [showAiCodeModal, setShowAiCodeModal] = useState(false)
+
+  const template = usePortfolioStore((s) => s.template)
+  const theme = usePortfolioStore((s) => s.theme)
+  const setTheme = usePortfolioStore((s) => s.setTheme)
+  const setTemplate = usePortfolioStore((s) => s.setTemplate)
 
   useEffect(() => {
     initialize(portfolio)
@@ -132,6 +140,16 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Unlimited AI Code & Design Prompt Studio Button */}
+          <Button
+            onClick={() => setShowAiCodeModal(true)}
+            size="sm"
+            className="gap-1.5 text-xs h-8 bg-gradient-to-r from-primary via-indigo-600 to-purple-600 text-white font-bold shadow-md hover:scale-[1.02] transition-all"
+          >
+            <Wand2 className="h-3.5 w-3.5" />
+            <span>AI Design Prompt Studio</span>
+          </Button>
+
           {/* Toggle Full Screen Canvas Focus Mode */}
           <Button
             variant="outline"
@@ -201,6 +219,17 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
           <RightDesignPanel />
         </aside>
       </div>
+
+      {/* AI Code & Design Prompt Studio Modal */}
+      <AICodePromptModal
+        isOpen={showAiCodeModal}
+        onClose={() => setShowAiCodeModal(false)}
+        currentTemplate={template}
+        currentTheme={theme}
+        onApplyTheme={(hex, newTmpl) => {
+          if (newTmpl) setTemplate(newTmpl as any)
+        }}
+      />
     </div>
   )
 }
