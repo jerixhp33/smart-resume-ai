@@ -25,6 +25,7 @@ import {
   Trash2,
   CheckCircle2
 } from 'lucide-react'
+import { ResunioLogo } from '@/components/brand/ResunioLogo'
 
 function LinkedinIcon({ className }: { className?: string }) {
   return (
@@ -528,9 +529,7 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
             {activeTab === 'google' && (
               <div className="border border-border rounded-xl p-4 bg-card shadow-sm space-y-2">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-600 flex items-center justify-center font-bold text-[10px]">
-                    G
-                  </span>
+                  <ResunioLogo size="sm" variant="mark" className="!h-4 !w-4 border-0 p-0 shadow-none bg-transparent" />
                   <div className="flex flex-col">
                     <span className="text-foreground text-xs font-medium">Resunio Portfolio</span>
                     <span className="text-[11px] text-muted-foreground font-mono truncate">
