@@ -335,3 +335,50 @@ export async function getPortfolioAnalyticsAction(portfolioId: string) {
     topReferrers: referrersList.slice(0, 10),
   }
 }
+
+// ── Update Portfolio SEO & Social Settings ───────────────
+export async function updatePortfolioSEOSettingsAction(params: {
+  portfolioId: string
+  title: string
+  description: string
+  keywords: string[]
+  ogImage?: string
+  accentColor?: string
+}) {
+  const supabase = await getSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+
+  const { data: site } = await supabase
+    .from('portfolio_sites')
+    .select('seo_metadata')
+    .eq('id', params.portfolioId)
+    .eq('user_id', user.id)
+    .single()
+
+  if (!site) return { error: 'Portfolio not found' }
+
+  const updatedSeo = {
+    ...(site.seo_metadata || {}),
+    title: params.title,
+    description: params.description,
+    keywords: params.keywords,
+    og_image: params.ogImage || undefined,
+    accent_color: params.accentColor || undefined,
+  }
+
+  const { error } = await supabase
+    .from('portfolio_sites')
+    .update({
+      title: params.title,
+      seo_metadata: updatedSeo,
+    })
+    .eq('id', params.portfolioId)
+    .eq('user_id', user.id)
+
+  if (error) return { error: error.message }
+  revalidatePath('/portfolio')
+  revalidatePath(`/portfolio/settings/${params.portfolioId}`)
+  return { success: true }
+}
+
