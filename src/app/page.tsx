@@ -528,94 +528,180 @@ export default function LandingPage() {
 
       {/* --- PRICING SECTION --- */}
       <section className="py-24 px-4 sm:px-6 relative z-10" id="pricing">
-        <div className="max-w-4xl mx-auto space-y-12 text-center">
+        <div className="max-w-6xl mx-auto space-y-12 text-center">
           
           <div className="space-y-3">
             <span className="text-xs font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-              Transparent Pricing
+              Flexible Plans & Pricing
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black tracking-tight">Start free. Unlock only when needed.</h2>
-            <p className="text-muted-foreground text-base max-w-lg mx-auto">
-              No hidden subscriptions. No credit card traps. Full access to ATS features from day one.
+            <h2 className="text-3xl sm:text-5xl font-black tracking-tight">Pick the plan that fits your career goals</h2>
+            <p className="text-muted-foreground text-base max-w-xl mx-auto">
+              Start 100% free. Pay only when you need extra resumes or unlimited AI superpowers.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
             
-            {/* Free Tier */}
-            <div className="bg-card border border-border/80 rounded-3xl p-8 space-y-6 relative hover:border-border transition-all shadow-sm">
-              <div className="space-y-1">
-                <h3 className="text-xl font-bold">Free Forever</h3>
-                <p className="text-xs text-muted-foreground">Perfect for students and active job seekers.</p>
-              </div>
+            {/* Plan 1: Free Starter */}
+            <div className="bg-card border border-border/80 rounded-3xl p-6 space-y-6 relative hover:border-border transition-all shadow-sm flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted px-2.5 py-0.5 rounded-full border border-border/50">Starter</span>
+                  <h3 className="text-xl font-bold pt-1">Free Forever</h3>
+                  <p className="text-xs text-muted-foreground">For students & fresh job seekers.</p>
+                </div>
 
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-black">₹0</span>
-                <span className="text-xs text-muted-foreground">/ free forever</span>
-              </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black">₹0</span>
+                  <span className="text-xs text-muted-foreground">/ free forever</span>
+                </div>
 
-              <ul className="space-y-3 text-sm text-muted-foreground pt-2">
-                {[
-                  '3 full resume slots',
-                  '1-click AI bullet enhancement',
-                  'Deterministic ATS score breakdown',
-                  'Live 3D web portfolio link',
-                  'High-res vector PDF exports',
-                  'Kanban application tracker',
-                ].map(item => (
-                  <li key={item} className="flex items-center gap-2.5">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+                <ul className="space-y-2.5 text-xs text-muted-foreground border-t border-border/60 pt-4">
+                  {[
+                    '3 full resume slots',
+                    'Basic AI bullet enhancement',
+                    'Deterministic ATS score check',
+                    '3D web portfolio link',
+                    'Vector PDF exports',
+                    'Application tracker',
+                  ].map(item => (
+                    <li key={item} className="flex items-center gap-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
               <Link 
                 href="/signup" 
-                className="block text-center w-full bg-muted hover:bg-muted/80 text-foreground font-bold py-3 rounded-xl transition-colors border border-border"
+                className="block text-center w-full bg-muted hover:bg-muted/80 text-foreground font-bold py-2.5 rounded-xl transition-colors border border-border text-xs mt-4"
               >
                 Get Started Free
               </Link>
             </div>
 
-            {/* Paid Unlock Tier */}
-            <div className="bg-card border-2 border-primary rounded-3xl p-8 space-y-6 relative shadow-xl shadow-primary/10">
-              <div className="absolute -top-3.5 right-6 bg-gradient-to-r from-primary to-indigo-600 text-white text-[11px] font-black uppercase tracking-wider px-3.5 py-1 rounded-full shadow-md">
-                One-Time Payment
-              </div>
+            {/* Plan 2: Pay-Per-Resume Unlock */}
+            <div className="bg-card border border-border/90 rounded-3xl p-6 space-y-6 relative hover:border-primary/40 transition-all shadow-md flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-0.5 rounded-full border border-primary/20">Pay As You Go</span>
+                  <h3 className="text-xl font-bold pt-1">Slot Unlock</h3>
+                  <p className="text-xs text-muted-foreground">Unlock 1 extra resume slot instantly.</p>
+                </div>
 
-              <div className="space-y-1">
-                <h3 className="text-xl font-bold">Extra Resume Slot</h3>
-                <p className="text-xs text-muted-foreground">Instant unlock via UPI (GPay, PhonePe, Paytm).</p>
-              </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black text-foreground">₹99</span>
+                  <span className="text-xs text-muted-foreground">/ one-time pay</span>
+                </div>
 
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-black text-foreground">₹99</span>
-                <span className="text-xs text-muted-foreground">/ per extra slot</span>
+                <ul className="space-y-2.5 text-xs text-muted-foreground border-t border-border/60 pt-4">
+                  {[
+                    'Unlock 1 extra resume slot',
+                    'Permanent access (no subscription)',
+                    'Instant UPI (GPay, PhonePe, Paytm)',
+                    'Unlimited PDF downloads',
+                    'Custom handle priority',
+                    'Full ATS re-checks',
+                  ].map(item => (
+                    <li key={item} className="flex items-center gap-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
+                      <span className="text-foreground font-medium">{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-
-              <ul className="space-y-3 text-sm text-muted-foreground pt-2">
-                {[
-                  'Unlock 1 additional resume slot',
-                  'Permanent access — zero monthly subscription',
-                  'Instant UPI payment activation',
-                  'Unlimited PDF downloads & ATS re-checks',
-                  'Custom domain handle claim priority',
-                ].map(item => (
-                  <li key={item} className="flex items-center gap-2.5">
-                    <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                    <span className="text-foreground font-medium">{item}</span>
-                  </li>
-                ))}
-              </ul>
 
               <Link 
                 href="/signup" 
-                className="block text-center w-full bg-gradient-to-r from-primary via-indigo-600 to-violet-600 text-white font-bold py-3 rounded-xl shadow-md hover:scale-[1.01] transition-all"
+                className="block text-center w-full bg-primary/10 hover:bg-primary/20 text-primary font-bold py-2.5 rounded-xl transition-colors border border-primary/30 text-xs mt-4"
               >
-                Start Free & Unlock Anytime
+                Unlock Slot for ₹99
               </Link>
             </div>
+
+            {/* Plan 3: Pro Unlimited Pass (Highlighted) */}
+            <div className="bg-slate-950 text-white border-2 border-primary rounded-3xl p-6 space-y-6 relative shadow-2xl shadow-primary/20 flex flex-col justify-between">
+              <div className="absolute -top-3.5 right-4 bg-gradient-to-r from-primary via-indigo-600 to-violet-600 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full shadow-md">
+                ⭐ Most Popular
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/20 px-2.5 py-0.5 rounded-full border border-purple-500/30">Pro Unlimited</span>
+                  <h3 className="text-xl font-black text-white pt-1">Career Pass</h3>
+                  <p className="text-xs text-slate-300">Unlimited resumes & AI superpowers.</p>
+                </div>
+
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black text-white">₹299</span>
+                  <span className="text-xs text-slate-400">/ month</span>
+                </div>
+
+                <ul className="space-y-2.5 text-xs text-slate-300 border-t border-slate-800 pt-4">
+                  {[
+                    'UNLIMITED Resume Slots',
+                    'UNLIMITED AI Bullet Enhancer',
+                    'UNLIMITED ATS Match Scoring',
+                    '4K Share Card Exporter',
+                    '3D Web Portfolio Studio',
+                    'Priority 24/7 AI Career Assistant',
+                  ].map(item => (
+                    <li key={item} className="flex items-center gap-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
+                      <span className="text-white font-medium">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <Link 
+                href="/signup" 
+                className="block text-center w-full bg-gradient-to-r from-primary via-indigo-600 to-violet-600 text-white font-black py-2.5 rounded-xl shadow-lg hover:scale-[1.02] transition-all text-xs mt-4"
+              >
+                Get Pro Unlimited
+              </Link>
+            </div>
+
+            {/* Plan 4: Institutional / Enterprise */}
+            <div className="bg-card border border-border/80 rounded-3xl p-6 space-y-6 relative hover:border-border transition-all shadow-sm flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">Institutional</span>
+                  <h3 className="text-xl font-bold pt-1">Campus Pass</h3>
+                  <p className="text-xs text-muted-foreground">For colleges & placement cells.</p>
+                </div>
+
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black">₹4,999</span>
+                  <span className="text-xs text-muted-foreground">/ year</span>
+                </div>
+
+                <ul className="space-y-2.5 text-xs text-muted-foreground border-t border-border/60 pt-4">
+                  {[
+                    '50 Student Licenses included',
+                    'Centralized Placement Analytics',
+                    'Bulk ATS Resume Audits',
+                    'Custom Campus Branding',
+                    'Dedicated Account Manager',
+                    'Custom Domain Subdomains',
+                  ].map(item => (
+                    <li key={item} className="flex items-center gap-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <a 
+                href="mailto:support@resunio.ai?subject=Institutional%20Campus%20Pass%20Inquiry" 
+                className="block text-center w-full bg-muted hover:bg-muted/80 text-foreground font-bold py-2.5 rounded-xl transition-colors border border-border text-xs mt-4"
+              >
+                Contact Campus Sales
+              </a>
+            </div>
+
           </div>
         </div>
       </section>

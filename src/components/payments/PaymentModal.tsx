@@ -16,6 +16,7 @@ type PaymentState = 'idle' | 'creating' | 'awaiting' | 'success' | 'failed'
 
 export function PaymentModal({ open, onClose }: PaymentModalProps) {
   const [state, setState] = useState<PaymentState>('idle')
+  const [selectedPlan, setSelectedPlan] = useState<'slot_99' | 'pro_299'>('slot_99')
   const [orderId, setOrderId] = useState<string>('')
   const [gatewayOrderId, setGatewayOrderId] = useState<string>('')
   const [upiLink, setUpiLink] = useState<string>('')
@@ -23,8 +24,10 @@ export function PaymentModal({ open, onClose }: PaymentModalProps) {
   const [copiedUpi, setCopiedUpi] = useState(false)
   const isDev = process.env.NODE_ENV !== 'production'
 
+  const selectedAmount = selectedPlan === 'pro_299' ? 299 : 99
+  const planTitle = selectedPlan === 'pro_299' ? 'Pro Career Pass (Unlimited)' : 'Single Resume Slot Unlock'
   const upiVpa = 'resunio@upi'
-  const effectiveUpiUri = upiLink || `upi://pay?pa=${upiVpa}&pn=Resunio%20AI&am=99&cu=INR&tn=Resume%20Unlock%20Slot`
+  const effectiveUpiUri = upiLink || `upi://pay?pa=${upiVpa}&pn=Resunio%20AI&am=${selectedAmount}&cu=INR&tn=Resunio%20${encodeURIComponent(planTitle)}`
 
   useEffect(() => {
     if (state !== 'awaiting') return
@@ -47,7 +50,7 @@ export function PaymentModal({ open, onClose }: PaymentModalProps) {
       const res = await fetch('/api/payments/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ plan: selectedPlan, amount: selectedAmount }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -97,40 +100,82 @@ export function PaymentModal({ open, onClose }: PaymentModalProps) {
       <DialogContent className="max-w-md p-6">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
-            <QrIcon className="h-5 w-5 text-primary" /> Unlock Resume #4
+            <QrIcon className="h-5 w-5 text-primary" /> Unlock Resunio Access
           </DialogTitle>
           <DialogDescription className="text-xs">
-            Pay ₹99 via UPI to unlock your next resume slot. Existing resumes remain 100% safe.
+            Choose your preferred plan and complete payment via instant UPI QR scanner.
           </DialogDescription>
         </DialogHeader>
 
         {state === 'idle' && (
           <div className="space-y-4 pt-1">
+            
+            {/* Plan Selector Buttons */}
+            <div className="grid grid-cols-2 gap-2 p-1 bg-muted rounded-xl border border-border/60">
+              <button
+                type="button"
+                onClick={() => setSelectedPlan('slot_99')}
+                className={`py-2 px-3 rounded-lg text-xs font-bold transition-all text-center flex flex-col items-center gap-0.5 ${
+                  selectedPlan === 'slot_99'
+                    ? 'bg-background shadow-xs text-primary border border-border'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <span>Single Slot</span>
+                <span className="text-sm font-black">₹99</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedPlan('pro_299')}
+                className={`py-2 px-3 rounded-lg text-xs font-bold transition-all text-center flex flex-col items-center gap-0.5 relative ${
+                  selectedPlan === 'pro_299'
+                    ? 'bg-slate-950 text-white shadow-md border border-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <span className="text-[9px] bg-primary text-white px-1.5 py-0.2 rounded-full uppercase font-black tracking-wider">Unlimited</span>
+                <span>Pro Pass</span>
+                <span className="text-sm font-black">₹299/mo</span>
+              </button>
+            </div>
+
+            {/* Selected Plan Details Card */}
             <div className="bg-card border border-border/80 rounded-2xl p-5 space-y-3 shadow-xs">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold">Resume Unlock Slot</span>
-                <span className="text-xl font-black text-primary">₹99</span>
+                <div>
+                  <span className="text-sm font-bold text-foreground">{planTitle}</span>
+                  <p className="text-[11px] text-muted-foreground">Instant activation via UPI QR Scanner</p>
+                </div>
+                <span className="text-2xl font-black text-primary">₹{selectedAmount}</span>
               </div>
-              <ul className="space-y-2 text-xs text-muted-foreground pt-1 border-t border-border/60">
-                {[
+
+              <ul className="space-y-2 text-xs text-muted-foreground pt-2 border-t border-border/60">
+                {(selectedPlan === 'pro_299' ? [
+                  'UNLIMITED Resume Slots & PDF Exports',
+                  'UNLIMITED AI Bullet Point Enhancements',
+                  'UNLIMITED ATS Keyword Match Analysis',
+                  'Live 3D Web Portfolio & 4K Share Cards',
+                  'Priority 24/7 AI Resume Assistant',
+                ] : [
                   'Unlock 1 additional resume slot',
                   'Permanent unlock — zero monthly subscription',
-                  'Instant UPI payment — GPay, PhonePe, Paytm supported',
-                  'Automatic verification & instant unlock',
-                ].map(item => (
+                  'Instant UPI payment (GPay, PhonePe, Paytm)',
+                  'Automatic verification & instant activation',
+                ]).map(item => (
                   <li key={item} className="flex items-center gap-2">
                     <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                    <span>{item}</span>
+                    <span className="text-foreground font-medium">{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
             <Button className="w-full h-11 text-sm font-bold shadow-md gap-2" onClick={startPayment}>
-              <Smartphone className="h-4 w-4" /> Generate UPI QR Scanner (₹99)
+              <Smartphone className="h-4 w-4" /> Pay ₹{selectedAmount} via UPI Scanner
             </Button>
             <p className="text-xs text-center text-muted-foreground">
-              Or wait <span className="font-semibold text-foreground">5 hours</span> for free cooldown
+              Or wait <span className="font-semibold text-foreground">5 hours</span> for free cooldown reset
             </p>
           </div>
         )}
