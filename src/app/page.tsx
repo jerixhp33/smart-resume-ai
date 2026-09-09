@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ResunioLogo } from '@/components/brand/ResunioLogo'
 import { ArrowRight, CheckCircle2, Sparkles, ScanSearch, FileText, Briefcase, Zap, Shield } from 'lucide-react'
 
 const FEATURES = [
@@ -60,13 +61,7 @@ export default function LandingPage() {
       {/* Nav */}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
         <div className="container-app flex items-center justify-between h-14">
-          <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-lg overflow-hidden flex items-center justify-center bg-slate-950 border border-border/40">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="Resunio Logo" className="w-full h-full object-cover" />
-            </div>
-            <span className="font-bold text-base bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500">Resunio</span>
-          </div>
+          <ResunioLogo className="h-8 w-8 rounded-lg overflow-hidden border border-border/40" showText textSize="md" />
           <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
             <a href="#how-it-works" className="hover:text-foreground transition-colors">How it works</a>

@@ -17,9 +17,13 @@ export const metadata: Metadata = {
     'Build ATS-compatible resumes, generate interactive AI portfolios, tailor applications to any job, and get hired faster with Resunio.',
   keywords: ['Resunio', 'AI Resume Builder', 'Portfolio Builder', 'ATS checker', 'AI career tools'],
   icons: {
-    icon: '/logo.png',
-    shortcut: '/logo.png',
-    apple: '/logo.png',
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/icon.png', type: 'image/png', sizes: '32x32' },
+      { url: '/logo-mark.png', type: 'image/png', sizes: '192x192' },
+    ],
+    shortcut: '/icon.svg',
+    apple: '/icon.png',
   },
   openGraph: {
     type: 'website',

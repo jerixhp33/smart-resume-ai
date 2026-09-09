@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" width="100%" height="100%">
+  <defs>
+    <linearGradient id="resunio-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+
+    <linearGradient id="grad-cyan-blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+
+    <linearGradient id="grad-blue-purple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+
+    <linearGradient id="grad-cyan-fold" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f2fe" />
+      <stop offset="100%" stop-color="#4facfe" />
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="128" fill="url(#resunio-bg-grad)" />
+
+  <g transform="translate(16, 16)">
+    <path 
+      d="M140 100 C140 70, 165 48, 205 48 H310 C370 48, 420 95, 420 160 C420 225, 370 272, 310 272 H240 V380 C240 405, 220 425, 195 425 H185 C160 425, 140 405, 140 380 V100 Z" 
+      fill="url(#grad-cyan-blue)"
+    />
+
+    <path 
+      d="M210 220 L370 380 C390 400, 420 400, 440 380 L445 375 C465 355, 465 325, 445 305 L310 170 Z" 
+      fill="url(#grad-blue-purple)"
+    />
+
+    <path 
+      d="M140 310 L260 430 C280 450, 310 450, 330 430 L340 420 C360 400, 360 370, 340 350 L200 210 Z" 
+      fill="url(#grad-cyan-fold)"
+    />
+
+    <g transform="translate(200, 105)">
+      <rect width="130" height="100" rx="14" fill="#ffffff" fill-opacity="0.95" />
+      <circle cx="28" cy="30" r="9" fill="#0284c7" />
+      <rect x="48" y="25" width="56" height="10" rx="5" fill="#0284c7" />
+      <rect x="24" y="52" width="80" height="10" rx="5" fill="#0f172a" opacity="0.75" />
+      <rect x="24" y="70" width="56" height="10" rx="5" fill="#0f172a" opacity="0.75" />
+    </g>
+  </g>
+</svg>

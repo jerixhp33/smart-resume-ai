@@ -22,6 +22,7 @@ import {
 import { cn } from '@/utils/cn'
 import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 import { NotificationBell } from '@/components/notifications/NotificationBell'
+import { ResunioLogo } from '@/components/brand/ResunioLogo'
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -60,18 +61,7 @@ export function DashboardNav({ userId, isCollapsed = false, onToggleCollapse }: 
     >
       {/* Logo Header & Expand/Close Toggle */}
       <div className={cn('flex items-center border-b border-border py-4 px-3', isCollapsed ? 'justify-center flex-col gap-2' : 'justify-between px-4')}>
-        <div className="flex items-center gap-2.5 overflow-hidden">
-          <div className="h-8 w-8 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0 shadow-xs border border-border/40 bg-slate-950">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Resunio Logo" className="w-full h-full object-cover" />
-          </div>
-          {!isCollapsed && (
-            <div className="truncate">
-              <p className="text-sm font-bold leading-none truncate bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500">Resunio</p>
-              <p className="text-[10px] text-muted-foreground mt-0.5 font-medium truncate">AI Resume & Portfolio</p>
-            </div>
-          )}
-        </div>
+        <ResunioLogo className="h-8 w-8 rounded-xl overflow-hidden shadow-xs border border-border/40" showText={!isCollapsed} textSize="sm" />
 
         {onToggleCollapse && (
           <button
