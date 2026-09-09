@@ -78,7 +78,9 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
   const [shareModalOpen, setShareModalOpen] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const publicUrl = `resunio.ai/portfolio/${portfolio.username}`
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://resunio.ai'
+  const hostName = origin.replace(/^https?:\/\//, '')
+  const publicUrl = `${hostName}/portfolio/${portfolio.username}`
 
   // Reset image error state whenever ogImage changes
   React.useEffect(() => {
@@ -437,48 +439,62 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
             </div>
 
             {/* LinkedIn Preview Card */}
+            {/* Social Share Card Preview (LinkedIn / OpenGraph) */}
             {activeTab === 'social' && (
-              <div className="border border-border rounded-xl overflow-hidden bg-card shadow-sm">
-                <div className="aspect-[1200/630] bg-slate-900 relative overflow-hidden flex items-center justify-center p-6 text-center">
-                  {ogImage && !imageError ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={ogImage}
-                      alt="OG Preview"
-                      className="w-full h-full object-cover"
-                      onError={() => setImageError(true)}
-                    />
-                  ) : (
-                    <div 
-                      className="w-full h-full rounded-lg p-6 flex flex-col justify-between text-left text-white shadow-inner relative overflow-hidden"
-                      style={{ background: `linear-gradient(135deg, ${accentColor} 0%, #0f172a 100%)` }}
-                    >
-                      <div className="flex justify-between items-center z-10">
-                        <span className="text-xs font-semibold uppercase tracking-wider opacity-80 flex items-center gap-1.5">
-                          <span className="w-3.5 h-3.5 rounded-md overflow-hidden bg-slate-950 inline-block border border-white/20 shrink-0">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
-                          </span>
-                          Resunio
-                        </span>
-                        <span className="text-[10px] px-2 py-0.5 rounded bg-white/20 backdrop-blur-xs font-mono">
-                          {portfolio.username}
-                        </span>
-                      </div>
-                      <div className="space-y-2 z-10">
-                        <h3 className="text-xl font-extrabold leading-snug drop-shadow-xs line-clamp-2">
-                          {title || 'Your Name | Interactive Portfolio'}
-                        </h3>
-                        <p className="text-xs opacity-90 line-clamp-2">
-                          {description || 'Showcasing verified skills, career milestones, and AI-curated project achievements.'}
-                        </p>
-                      </div>
-                    </div>
+              <div className="border border-border rounded-2xl overflow-hidden bg-card shadow-sm">
+                <div
+                  className="aspect-[1200/630] relative overflow-hidden flex flex-col justify-between p-5 text-white shadow-md"
+                  style={{ background: `linear-gradient(135deg, ${accentColor} 0%, #090d16 100%)` }}
+                >
+                  {ogImage && !imageError && (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={ogImage}
+                        alt="OG Preview"
+                        className="absolute inset-0 w-full h-full object-cover z-0"
+                        onError={() => setImageError(true)}
+                      />
+                      <div
+                        className="absolute inset-0 z-0"
+                        style={{ background: `linear-gradient(135deg, ${accentColor}D9 0%, #090d16FA 100%)` }}
+                      />
+                    </>
                   )}
+
+                  {/* Top Bar */}
+                  <div className="flex justify-between items-center z-10">
+                    <span className="text-xs font-bold uppercase tracking-wider text-white/95 flex items-center gap-1.5 bg-white/15 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/20">
+                      <ResunioLogo size="sm" variant="mark" showBg={false} className="!h-4 !w-4 border-0 p-0 shadow-none" />
+                      Resunio Portfolio
+                    </span>
+                    <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-white/15 backdrop-blur-md font-mono text-white/90 border border-white/20">
+                      @{portfolio.username}
+                    </span>
+                  </div>
+
+                  {/* Title & Summary */}
+                  <div className="space-y-1 z-10 my-3">
+                    <h3 className="text-base font-bold leading-snug line-clamp-2 text-white drop-shadow-xs">
+                      {title || `${portfolio.username} | Interactive Portfolio`}
+                    </h3>
+                    <p className="text-xs text-white/85 line-clamp-2 leading-relaxed drop-shadow-xs">
+                      {description || 'Check out my interactive AI portfolio showcasing skills, projects, and career milestones.'}
+                    </p>
+                  </div>
+
+                  {/* Footer Domain Badge */}
+                  <div className="flex justify-between items-center z-10 text-[10px] font-mono text-white/80 border-t border-white/15 pt-2">
+                    <span className="bg-white/10 px-2 py-0.5 rounded border border-white/10">
+                      {hostName}/portfolio/{portfolio.username}
+                    </span>
+                    <span className="text-[10px] text-white/60">1200×630 HD Banner</span>
+                  </div>
                 </div>
+
                 <div className="p-3 bg-muted/30 border-t border-border space-y-1">
                   <p className="text-[11px] font-mono text-muted-foreground uppercase tracking-tight">
-                    resunio.ai
+                    {hostName}
                   </p>
                   <h4 className="text-sm font-semibold line-clamp-1 text-foreground">
                     {title || 'Portfolio Title'}
@@ -493,29 +509,36 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
             {/* Twitter / X Preview Card */}
             {activeTab === 'twitter' && (
               <div className="border border-border rounded-2xl overflow-hidden bg-card shadow-sm p-3 space-y-3">
-                <div className="aspect-[2/1] rounded-xl bg-slate-900 relative overflow-hidden flex items-center justify-center">
-                  {ogImage && !imageError ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={ogImage}
-                      alt="OG Preview"
-                      className="w-full h-full object-cover"
-                      onError={() => setImageError(true)}
-                    />
-                  ) : (
-                    <div 
-                      className="w-full h-full p-5 flex flex-col justify-between text-left text-white relative overflow-hidden"
-                      style={{ background: `linear-gradient(135deg, ${accentColor} 0%, #1e293b 100%)` }}
-                    >
-                      <span className="text-xs font-bold tracking-wide uppercase opacity-80">
-                        Interactive Portfolio
-                      </span>
-                      <div>
-                        <h3 className="text-lg font-bold line-clamp-1">{title || 'Portfolio Page'}</h3>
-                        <p className="text-xs opacity-85 line-clamp-1">{description || 'Professional portfolio card preview'}</p>
-                      </div>
-                    </div>
+                <div 
+                  className="aspect-[2/1] rounded-xl relative overflow-hidden flex flex-col justify-between p-4 text-white shadow-md"
+                  style={{ background: `linear-gradient(135deg, ${accentColor} 0%, #090d16 100%)` }}
+                >
+                  {ogImage && !imageError && (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={ogImage}
+                        alt="OG Preview"
+                        className="absolute inset-0 w-full h-full object-cover z-0"
+                        onError={() => setImageError(true)}
+                      />
+                      <div
+                        className="absolute inset-0 z-0"
+                        style={{ background: `linear-gradient(135deg, ${accentColor}D9 0%, #090d16FA 100%)` }}
+                      />
+                    </>
                   )}
+                  <div className="flex justify-between items-center z-10">
+                    <span className="text-[11px] font-bold tracking-wide uppercase opacity-90 flex items-center gap-1.5">
+                      <ResunioLogo size="sm" variant="mark" showBg={false} className="!h-3.5 !w-3.5" />
+                      Resunio
+                    </span>
+                    <span className="text-[10px] font-mono opacity-80">@{portfolio.username}</span>
+                  </div>
+                  <div className="z-10 space-y-0.5">
+                    <h3 className="text-base font-bold line-clamp-1 text-white">{title || 'Portfolio Page'}</h3>
+                    <p className="text-xs opacity-85 line-clamp-1 text-white/90">{description || 'Professional portfolio card preview'}</p>
+                  </div>
                 </div>
                 <div className="space-y-0.5 px-1">
                   <p className="text-xs text-muted-foreground font-mono">{publicUrl}</p>

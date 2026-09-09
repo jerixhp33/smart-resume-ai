@@ -174,7 +174,7 @@ export function SharePortfolioModal({
     canvas.width = 1200
     canvas.height = 630
 
-    const renderCanvas = (bgImg?: HTMLImageElement, logoImg?: HTMLImageElement) => {
+    const renderCanvas = (bgImg?: HTMLImageElement) => {
       // 1. Background Fill / Background Image with Dark Accent Gradient Overlay
       if (bgImg) {
         const imgRatio = bgImg.width / bgImg.height
@@ -221,19 +221,73 @@ export function SharePortfolioModal({
       // Logo Chip (Top Left)
       ctx.fillStyle = 'rgba(255, 255, 255, 0.14)'
       ctx.beginPath()
-      ctx.roundRect(60, 55, 270, 48, 14)
+      ctx.roundRect(60, 55, 280, 48, 14)
       ctx.fill()
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
       ctx.lineWidth = 1.5
       ctx.stroke()
 
-      if (logoImg) {
-        ctx.drawImage(logoImg, 74, 64, 30, 30)
-      }
+      // Draw Vector 3D Ribbon R Logo Mark directly onto Canvas
+      ctx.save()
+      ctx.translate(72, 63)
+      const scale = 32 / 512
+      ctx.scale(scale, scale)
+
+      const gradTop = ctx.createLinearGradient(0, 0, 512, 512)
+      gradTop.addColorStop(0, '#38bdf8')
+      gradTop.addColorStop(0.45, '#06b6d4')
+      gradTop.addColorStop(1, '#2563eb')
+
+      const gradLeg = ctx.createLinearGradient(0, 0, 512, 512)
+      gradLeg.addColorStop(0, '#3b82f6')
+      gradLeg.addColorStop(0.5, '#6366f1')
+      gradLeg.addColorStop(1, '#a855f7')
+
+      const gradFold = ctx.createLinearGradient(0, 512, 512, 0)
+      gradFold.addColorStop(0, '#00f2fe')
+      gradFold.addColorStop(1, '#38bdf8')
+
+      ctx.translate(-49, 6)
+
+      ctx.fillStyle = gradTop
+      ctx.fill(new Path2D('M140 90 C140 60, 168 40, 215 40 H315 C380 40, 430 90, 430 160 C430 230, 380 275, 315 275 H240 V385 C240 410, 220 430, 195 430 H185 C160 430, 140 410, 140 385 V90 Z'))
+
+      ctx.fillStyle = gradLeg
+      ctx.fill(new Path2D('M210 220 L375 385 C395 405, 425 405, 445 385 L450 380 C470 360, 470 330, 450 310 L315 175 Z'))
+
+      ctx.fillStyle = gradFold
+      ctx.fill(new Path2D('M140 315 L265 440 C285 460, 315 460, 335 440 L345 430 C365 410, 365 380, 345 360 L205 220 Z'))
+
+      ctx.save()
+      ctx.translate(205, 98)
+      ctx.fillStyle = '#ffffff'
+      ctx.beginPath()
+      ctx.roundRect(0, 0, 125, 98, 14)
+      ctx.fill()
+
+      ctx.fillStyle = '#0284c7'
+      ctx.beginPath()
+      ctx.arc(28, 28, 9, 0, Math.PI * 2)
+      ctx.fill()
+
+      ctx.beginPath()
+      ctx.roundRect(46, 23, 56, 10, 5)
+      ctx.fill()
+
+      ctx.fillStyle = '#0f172a'
+      ctx.beginPath()
+      ctx.roundRect(24, 50, 78, 10, 5)
+      ctx.fill()
+
+      ctx.beginPath()
+      ctx.roundRect(24, 68, 54, 10, 5)
+      ctx.fill()
+      ctx.restore()
+      ctx.restore()
 
       ctx.fillStyle = '#ffffff'
       ctx.font = 'bold 20px system-ui, -apple-system, sans-serif'
-      ctx.fillText('RESUNIO PORTFOLIO', logoImg ? 114 : 85, 87)
+      ctx.fillText('RESUNIO PORTFOLIO', 116, 87)
 
       // @Username Chip (Top Right)
       ctx.fillStyle = 'rgba(255, 255, 255, 0.14)'
@@ -272,16 +326,20 @@ export function SharePortfolioModal({
       })
 
       // 4. Bottom Footer: Domain Pill Badge
+      const hostName = origin.replace(/^https?:\/\//, '')
+      const displayUrl = `${hostName}/portfolio/${username}`
+      ctx.font = '600 20px monospace'
+      const textWidth = ctx.measureText(displayUrl).width
+
       ctx.fillStyle = 'rgba(255, 255, 255, 0.12)'
       ctx.beginPath()
-      ctx.roundRect(60, 520, 440, 52, 14)
+      ctx.roundRect(60, 520, Math.max(380, textWidth + 50), 52, 14)
       ctx.fill()
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
       ctx.stroke()
 
       ctx.fillStyle = '#ffffff'
-      ctx.font = '600 20px monospace'
-      ctx.fillText(`resunio.ai/portfolio/${username}`, 88, 553)
+      ctx.fillText(displayUrl, 85, 553)
 
       // 5. Embedded High-Res QR Code Card (Bottom Right)
       const qrBoxX = 880
@@ -318,31 +376,14 @@ export function SharePortfolioModal({
       }
     }
 
-    // Load logo image for canvas drawing
-    const logoImg = new Image()
-    logoImg.crossOrigin = 'anonymous'
-    logoImg.src = '/logo.png'
-    logoImg.onload = () => {
-      if (ogImage) {
-        const bg = new Image()
-        bg.crossOrigin = 'anonymous'
-        bg.src = ogImage
-        bg.onload = () => renderCanvas(bg, logoImg)
-        bg.onerror = () => renderCanvas(undefined, logoImg)
-      } else {
-        renderCanvas(undefined, logoImg)
-      }
-    }
-    logoImg.onerror = () => {
-      if (ogImage) {
-        const bg = new Image()
-        bg.crossOrigin = 'anonymous'
-        bg.src = ogImage
-        bg.onload = () => renderCanvas(bg)
-        bg.onerror = () => renderCanvas()
-      } else {
-        renderCanvas()
-      }
+    if (ogImage) {
+      const bg = new Image()
+      bg.crossOrigin = 'anonymous'
+      bg.src = ogImage
+      bg.onload = () => renderCanvas(bg)
+      bg.onerror = () => renderCanvas()
+    } else {
+      renderCanvas()
     }
   }
 
