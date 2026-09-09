@@ -73,7 +73,7 @@ export function ResumeBuilderClient({ resume, versions, userId }: ResumeBuilderC
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden -m-4 sm:-m-6 lg:-m-8">
+    <div className="flex flex-col h-screen w-full overflow-hidden">
       {/* Global AI Floating Toolbar */}
       <AIFloatingToolbar />
       
@@ -87,10 +87,10 @@ export function ResumeBuilderClient({ resume, versions, userId }: ResumeBuilderC
       />
 
       {/* Body — 3-panel desktop, tabbed mobile */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden min-h-0">
         {/* Left: Section navigation */}
         <aside className={`
-          w-56 flex-shrink-0 border-r border-border bg-card overflow-y-auto
+          w-48 lg:w-56 flex-shrink-0 border-r border-border bg-card overflow-y-auto
           ${mobileView === 'editor' ? 'flex' : 'hidden'} lg:flex flex-col
         `}>
           <SectionNav
@@ -102,23 +102,23 @@ export function ResumeBuilderClient({ resume, versions, userId }: ResumeBuilderC
 
         {/* Center: Editor */}
         <main className={`
-          flex-1 overflow-y-auto bg-background
+          flex-1 overflow-y-auto bg-background min-w-0
           ${mobileView === 'editor' ? 'block' : 'hidden'} lg:block
         `}>
-          <div className="max-w-2xl mx-auto p-6">
+          <div className="max-w-2xl mx-auto p-4 sm:p-6">
             {renderSection()}
           </div>
         </main>
 
         {/* Right: Preview + AI panel */}
         <aside className={`
-          w-[420px] flex-shrink-0 border-l border-border bg-card overflow-y-auto
-          ${mobileView === 'preview' ? 'flex' : 'hidden'} lg:flex flex-col
+          w-80 md:w-96 lg:w-[380px] xl:w-[420px] flex-shrink-0 border-l border-border bg-card flex flex-col overflow-hidden
+          ${mobileView === 'preview' ? 'flex' : 'hidden'} lg:flex
         `}>
           <div className="flex-1 overflow-y-auto">
             <ResumePreview />
           </div>
-          <div className="border-t border-border">
+          <div className="border-t border-border flex-shrink-0 max-h-[45vh] overflow-y-auto">
             <AIPanel resumeId={resume.id} />
           </div>
         </aside>
