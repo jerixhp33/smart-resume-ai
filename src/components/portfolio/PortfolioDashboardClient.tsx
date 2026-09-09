@@ -192,6 +192,7 @@ export function PortfolioDashboardClient({ portfolio, profile }: PortfolioDashbo
         portfolioSummary={portfolio.content?.hero?.summary}
         username={username}
         accentColor={portfolio.seo_metadata?.accent_color || portfolio.theme}
+        ogImage={portfolio.seo_metadata?.og_image}
       />
     </div>
   )

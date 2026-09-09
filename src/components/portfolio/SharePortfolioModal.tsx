@@ -20,8 +20,7 @@ import {
   QrCode as QrIcon, 
   Download,
   Mail,
-  Loader2,
-  Image as ImageIcon
+  Loader2
 } from 'lucide-react'
 
 interface SharePortfolioModalProps {
@@ -31,6 +30,7 @@ interface SharePortfolioModalProps {
   portfolioSummary?: string
   username: string
   accentColor?: string
+  ogImage?: string
 }
 
 function LinkedinIcon({ className }: { className?: string }) {
@@ -64,13 +64,30 @@ export function SharePortfolioModal({
   portfolioSummary = 'Check out my interactive AI portfolio showcasing skills, projects, and career milestones.',
   username,
   accentColor = '#6366f1',
+  ogImage,
 }: SharePortfolioModalProps) {
   const [copied, setCopied] = useState(false)
   const [qrDataUrl, setQrDataUrl] = useState<string>('')
   const [generatingQr, setGeneratingQr] = useState(true)
+  const [downloadingCard, setDownloadingCard] = useState(false)
 
   const origin = typeof window !== 'undefined' ? window.location.origin : 'https://smartresume.ai'
   const shareUrl = `${origin}/portfolio/${username}`
+
+  // Lock body scroll 100% when modal is open (prevents background scrolling on trackpad/mouse)
+  useEffect(() => {
+    if (open) {
+      const origOverflow = document.body.style.overflow
+      const origTouch = document.body.style.touchAction
+      document.body.style.overflow = 'hidden'
+      document.body.style.touchAction = 'none'
+
+      return () => {
+        document.body.style.overflow = origOverflow
+        document.body.style.touchAction = origTouch
+      }
+    }
+  }, [open])
 
   useEffect(() => {
     if (!shareUrl) return
@@ -102,77 +119,96 @@ export function SharePortfolioModal({
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const handleDownloadQr = () => {
+  // 1 Single Download Button: High-res Full Share Card with embedded QR Code & custom background/accent
+  const handleDownloadFullCard = () => {
     if (!qrDataUrl) return
-    const link = document.createElement('a')
-    link.href = qrDataUrl
-    link.download = `portfolio-qr-${username}.png`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    toast({ title: 'QR Code Downloaded!', description: 'High-res QR code PNG saved to device.', variant: 'success' })
-  }
+    setDownloadingCard(true)
 
-  const handleDownloadCard = () => {
-    if (!qrDataUrl) return
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    if (!ctx) {
+      setDownloadingCard(false)
+      return
+    }
 
     canvas.width = 1200
     canvas.height = 630
 
-    // Draw gradient background
-    const grad = ctx.createLinearGradient(0, 0, 1200, 630)
-    grad.addColorStop(0, accentColor || '#6366f1')
-    grad.addColorStop(1, '#0f172a')
-    ctx.fillStyle = grad
-    ctx.fillRect(0, 0, 1200, 630)
+    const renderCanvasContent = (bgImg?: HTMLImageElement) => {
+      // 1. Draw uploaded image as background or fallback solid base
+      if (bgImg) {
+        ctx.drawImage(bgImg, 0, 0, 1200, 630)
+        // Accent color overlay gradient for maximum contrast and legibility
+        const grad = ctx.createLinearGradient(0, 0, 1200, 630)
+        grad.addColorStop(0, `${accentColor}E6`)
+        grad.addColorStop(1, '#0f172aFA')
+        ctx.fillStyle = grad
+        ctx.fillRect(0, 0, 1200, 630)
+      } else {
+        const grad = ctx.createLinearGradient(0, 0, 1200, 630)
+        grad.addColorStop(0, accentColor || '#6366f1')
+        grad.addColorStop(1, '#0f172a')
+        ctx.fillStyle = grad
+        ctx.fillRect(0, 0, 1200, 630)
+      }
 
-    // Header branding
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'
-    ctx.font = 'bold 24px sans-serif'
-    ctx.fillText('✨ SMARTRESUME AI PORTFOLIO', 60, 80)
+      // 2. Header Branding
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
+      ctx.font = 'bold 24px sans-serif'
+      ctx.fillText('✨ SMARTRESUME AI PORTFOLIO', 60, 80)
 
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
-    ctx.roundRect(1000, 50, 140, 40, 8)
-    ctx.fill()
-    ctx.fillStyle = '#ffffff'
-    ctx.font = '18px monospace'
-    ctx.fillText(`@${username}`, 1015, 76)
-
-    // Title & Summary
-    ctx.fillStyle = '#ffffff'
-    ctx.font = 'bold 52px sans-serif'
-    ctx.fillText(portfolioTitle.slice(0, 35), 60, 220)
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
-    ctx.font = '26px sans-serif'
-    const summaryText = portfolioSummary.slice(0, 90) + (portfolioSummary.length > 90 ? '...' : '')
-    ctx.fillText(summaryText, 60, 290)
-
-    // Public link footer
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
-    ctx.font = '22px monospace'
-    ctx.fillText(`https://smartresume.ai/portfolio/${username}`, 60, 560)
-
-    // Draw QR Code into Canvas
-    const img = new Image()
-    img.crossOrigin = 'anonymous'
-    img.src = qrDataUrl
-    img.onload = () => {
-      ctx.fillStyle = '#ffffff'
-      ctx.roundRect(860, 340, 280, 240, 16)
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
+      ctx.roundRect(980, 50, 160, 42, 10)
       ctx.fill()
-      ctx.drawImage(img, 880, 350, 240, 220)
+      ctx.fillStyle = '#ffffff'
+      ctx.font = '18px monospace'
+      ctx.fillText(`@${username}`, 1000, 77)
 
-      const a = document.createElement('a')
-      a.href = canvas.toDataURL('image/png')
-      a.download = `portfolio-share-card-${username}.png`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      toast({ title: 'Share Card Downloaded!', description: 'Branded 1200x630 share card saved.', variant: 'success' })
+      // 3. Title & Summary
+      ctx.fillStyle = '#ffffff'
+      ctx.font = 'bold 50px sans-serif'
+      ctx.fillText(portfolioTitle.slice(0, 36), 60, 220)
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.88)'
+      ctx.font = '24px sans-serif'
+      const summaryText = portfolioSummary.slice(0, 95) + (portfolioSummary.length > 95 ? '...' : '')
+      ctx.fillText(summaryText, 60, 285)
+
+      // 4. Footer link
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.75)'
+      ctx.font = '22px monospace'
+      ctx.fillText(`smartresume.ai/portfolio/${username}`, 60, 560)
+
+      // 5. Embedded QR Code Box on bottom right
+      const qrImg = new Image()
+      qrImg.crossOrigin = 'anonymous'
+      qrImg.src = qrDataUrl
+      qrImg.onload = () => {
+        ctx.fillStyle = '#ffffff'
+        ctx.roundRect(870, 330, 270, 250, 16)
+        ctx.fill()
+
+        ctx.drawImage(qrImg, 895, 345, 220, 210)
+
+        const a = document.createElement('a')
+        a.href = canvas.toDataURL('image/png')
+        a.download = `portfolio-full-card-${username}.png`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        setDownloadingCard(false)
+        toast({ title: 'Full Share Card Downloaded!', description: '1200x630 share card with QR code saved to device.', variant: 'success' })
+      }
+    }
+
+    if (ogImage) {
+      const bg = new Image()
+      bg.crossOrigin = 'anonymous'
+      bg.src = ogImage
+      bg.onload = () => renderCanvasContent(bg)
+      bg.onerror = () => renderCanvasContent()
+    } else {
+      renderCanvasContent()
     }
   }
 
@@ -215,30 +251,45 @@ export function SharePortfolioModal({
           </DialogDescription>
         </DialogHeader>
 
-        {/* Visual Share Card Preview */}
+        {/* Visual Share Card Preview with Uploaded Background & Accent Overlay */}
         <div className="space-y-2">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Share Card Preview
           </p>
           <div
-            className="rounded-xl p-5 text-white shadow-md relative overflow-hidden flex flex-col justify-between min-h-[140px]"
+            className="rounded-xl p-5 text-white shadow-md relative overflow-hidden flex flex-col justify-between min-h-[150px]"
             style={{ background: `linear-gradient(135deg, ${accentColor} 0%, #0f172a 100%)` }}
           >
+            {ogImage && (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={ogImage}
+                  alt="Share Background"
+                  className="absolute inset-0 w-full h-full object-cover z-0"
+                />
+                <div
+                  className="absolute inset-0 z-0 opacity-85"
+                  style={{ background: `linear-gradient(135deg, ${accentColor}D9 0%, #0f172aF2 100%)` }}
+                />
+              </>
+            )}
+
             <div className="flex justify-between items-center z-10">
-              <span className="text-[11px] font-semibold uppercase tracking-wider opacity-90 flex items-center gap-1">
+              <span className="text-[11px] font-semibold uppercase tracking-wider opacity-90 flex items-center gap-1 drop-shadow-xs">
                 <Sparkles className="h-3.5 w-3.5" /> SmartResume AI Portfolio
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-white/20 backdrop-blur-xs font-mono">
+              <span className="text-[10px] px-2 py-0.5 rounded bg-white/20 backdrop-blur-xs font-mono drop-shadow-xs">
                 @{username}
               </span>
             </div>
 
             <div className="space-y-1 z-10 my-2">
-              <h3 className="text-lg font-bold leading-tight line-clamp-1">{portfolioTitle}</h3>
-              <p className="text-xs opacity-85 line-clamp-2">{portfolioSummary}</p>
+              <h3 className="text-lg font-bold leading-tight line-clamp-1 drop-shadow-xs">{portfolioTitle}</h3>
+              <p className="text-xs opacity-90 line-clamp-2 drop-shadow-xs">{portfolioSummary}</p>
             </div>
 
-            <div className="flex justify-between items-end z-10 text-[10px] opacity-75 font-mono">
+            <div className="flex justify-between items-end z-10 text-[10px] opacity-80 font-mono drop-shadow-xs">
               <span>smartresume.ai/portfolio/{username}</span>
               <span className="capitalize">{username}</span>
             </div>
@@ -309,17 +360,17 @@ export function SharePortfolioModal({
           </div>
         </div>
 
-        {/* High-Resolution Client-Generated QR Code Card */}
+        {/* High-Resolution QR & Single Full Card Download Option */}
         <div className="pt-3 border-t border-border space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-              <QrIcon className="h-4 w-4 text-primary" /> Networking QR Code
+              <QrIcon className="h-4 w-4 text-primary" /> Networking QR & Share Banner
             </span>
             <span className="text-[11px] text-muted-foreground">Scan with phone camera</span>
           </div>
 
           <div className="bg-card border border-border rounded-xl p-4 flex flex-col sm:flex-row items-center gap-5 shadow-xs">
-            <div className="w-36 h-36 bg-white rounded-lg p-2 border border-border flex items-center justify-center shrink-0 shadow-inner">
+            <div className="w-32 h-32 bg-white rounded-lg p-2 border border-border flex items-center justify-center shrink-0 shadow-inner">
               {generatingQr ? (
                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                   <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -339,29 +390,26 @@ export function SharePortfolioModal({
 
             <div className="space-y-3 text-center sm:text-left flex-1">
               <div>
-                <h4 className="text-sm font-semibold text-foreground">In-Person & Resume Print QR</h4>
+                <h4 className="text-sm font-semibold text-foreground">In-Person & Digital Networking</h4>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Print this high-res QR code on your resume or business card for instant portfolio scans.
+                  Download your branded 1200×630px Share Card with embedded QR code ready for social media & print.
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
+              {/* ONE Single Primary Download Option */}
+              <div className="flex items-center justify-center sm:justify-start">
                 <Button
-                  onClick={handleDownloadQr}
-                  disabled={generatingQr || !qrDataUrl}
+                  onClick={handleDownloadFullCard}
+                  disabled={generatingQr || downloadingCard || !qrDataUrl}
                   size="sm"
-                  className="gap-1.5 text-xs shadow-xs"
+                  className="gap-2 shadow-sm bg-primary text-primary-foreground font-medium text-xs h-9 px-4"
                 >
-                  <Download className="h-3.5 w-3.5" /> Download QR (PNG)
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleDownloadCard}
-                  disabled={generatingQr || !qrDataUrl}
-                  size="sm"
-                  className="gap-1.5 text-xs"
-                >
-                  <ImageIcon className="h-3.5 w-3.5 text-primary" /> Share Banner
+                  {downloadingCard ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4" />
+                  )}
+                  {downloadingCard ? 'Generating Card...' : 'Download Full Card with QR'}
                 </Button>
               </div>
             </div>

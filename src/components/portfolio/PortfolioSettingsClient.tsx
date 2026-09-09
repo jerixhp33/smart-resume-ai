@@ -565,6 +565,7 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
         portfolioSummary={description}
         username={portfolio.username}
         accentColor={accentColor}
+        ogImage={ogImage}
       />
     </div>
   )
