@@ -3,25 +3,28 @@
 import React from 'react'
 import { usePortfolioStore } from '@/features/portfolio/usePortfolioStore'
 import type { PortfolioTemplateId, PortfolioThemeId, MotionLevel } from '@/types'
-import { THEMES } from '../templates/theme-config'
-import { Palette, Layout, Zap, Check } from 'lucide-react'
+import { Palette, Layout, Zap, Check, Sparkles } from 'lucide-react'
 
 const TEMPLATES: Array<{ id: PortfolioTemplateId | 'ai-generated'; title: string; icon: string }> = [
   { id: 'ai-generated' as any, title: '✨ AI Studio Code', icon: '🤖' },
-  { id: 'developer', title: 'Cyber Matrix', icon: '⚡' },
-  { id: 'creative', title: 'Glassmorphic', icon: '🎨' },
-  { id: 'professional', title: 'Executive Gold', icon: '💎' },
-  { id: 'modern', title: 'Modern SaaS', icon: '✨' },
-  { id: 'editorial', title: 'Obsidian Minimal', icon: '📰' },
-  { id: 'bold', title: 'Neon Pulse', icon: '💥' },
-  { id: 'minimal', title: 'Clean Minimal', icon: '📝' },
+  { id: 'modern', title: 'Modern', icon: '✨' },
+  { id: 'minimal', title: 'Minimal', icon: '📝' },
+  { id: 'developer', title: 'Developer', icon: '⚡' },
+  { id: 'creative', title: 'Creative', icon: '🎨' },
+  { id: 'professional', title: 'Professional', icon: '💼' },
+  { id: 'editorial', title: 'Editorial', icon: '📰' },
+  { id: 'bold', title: 'Bold', icon: '💥' },
+  { id: 'elegant', title: 'Elegant', icon: '💎' },
 ]
 
-const ACCENT_SWATCHES = [
-  '#06b6d4', '#6366f1', '#10b981', '#f43f5e', '#f59e0b', '#8b5cf6', '#ec4899', '#3b82f6'
+const COLOR_PRESETS: Array<{ themeId: PortfolioThemeId; hex: string; label: string }> = [
+  { themeId: 'indigo', hex: '#6366f1', label: 'Indigo' },
+  { themeId: 'blue', hex: '#3b82f6', label: 'Ocean Blue' },
+  { themeId: 'emerald', hex: '#10b981', label: 'Emerald' },
+  { themeId: 'violet', hex: '#8b5cf6', label: 'Royal Violet' },
+  { themeId: 'rose', hex: '#f43f5e', label: 'Rose' },
+  { themeId: 'amber', hex: '#f59e0b', label: 'Amber' },
 ]
-
-const THEME_KEYS: PortfolioThemeId[] = ['indigo', 'blue', 'emerald', 'violet', 'rose', 'amber', 'neutral']
 
 const MOTION_LEVELS: Array<{ id: MotionLevel; title: string }> = [
   { id: 'subtle', title: 'Subtle' },
@@ -40,73 +43,41 @@ export function RightDesignPanel() {
   const setMotionLevel = usePortfolioStore((s) => s.setMotionLevel)
   const updateAiConfig = usePortfolioStore((s) => s.updateAiConfig)
 
-  const currentAccentHex = content?.aiConfig?.accentHex || '#06b6d4'
+  const currentAccentHex = content?.aiConfig?.accentHex || '#6366f1'
 
-  const handleSelectAccent = (hex: string) => {
+  const handleSelectColorPreset = (preset: typeof COLOR_PRESETS[0]) => {
+    setTheme(preset.themeId)
+    updateAiConfig({ accentHex: preset.hex })
+  }
+
+  const handleCustomHexChange = (hex: string) => {
     updateAiConfig({ accentHex: hex })
   }
 
   return (
     <div data-lenis-prevent className="flex flex-col h-full p-4 overflow-y-auto space-y-6 text-foreground">
-      {/* Editable Hex Accent Color Picker (Editable in All Models) */}
+      {/* 1. Visual Models & Templates */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          <span className="flex items-center gap-1.5">
-            <Palette className="h-3.5 w-3.5 text-primary" />
-            <span>Accent Color (Editable)</span>
-          </span>
-          <span className="font-mono text-primary text-[11px] font-bold">{currentAccentHex}</span>
-        </div>
-
-        <div className="grid grid-cols-4 gap-2">
-          {ACCENT_SWATCHES.map((swatch) => (
-            <button
-              key={swatch}
-              onClick={() => handleSelectAccent(swatch)}
-              className={`h-8 rounded-xl transition-all border-2 flex items-center justify-center ${
-                currentAccentHex === swatch ? 'border-primary shadow-md scale-105' : 'border-transparent opacity-80 hover:opacity-100'
-              }`}
-              style={{ backgroundColor: swatch }}
-            >
-              {currentAccentHex === swatch && <Check className="h-3.5 w-3.5 text-white drop-shadow" />}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-2 border border-border rounded-xl px-3 py-1 bg-background text-xs">
-          <span className="w-3.5 h-3.5 rounded-md border" style={{ backgroundColor: currentAccentHex }} />
-          <span className="text-muted-foreground font-mono">Hex:</span>
-          <input
-            type="text"
-            value={currentAccentHex}
-            onChange={(e) => handleSelectAccent(e.target.value)}
-            className="w-full text-xs font-mono bg-transparent focus:outline-none uppercase"
-          />
-        </div>
-      </div>
-
-      {/* Visual Template Selector */}
-      <div className="space-y-3 pt-4 border-t border-border">
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          <Layout className="h-3.5 w-3.5" />
+          <Layout className="h-3.5 w-3.5 text-primary" />
           <span>Visual Models & Templates</span>
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-1.5">
           {TEMPLATES.map((t) => {
             const isSelected = template === t.id
             return (
               <button
                 key={t.id}
                 onClick={() => setTemplate(t.id as any)}
-                className={`p-2.5 rounded-xl text-xs font-semibold border transition-all text-left flex items-center justify-between ${
+                className={`w-full px-3 py-2.5 rounded-xl text-xs font-semibold border transition-all text-left flex items-center justify-between ${
                   isSelected
-                    ? 'border-primary bg-primary/10 text-primary shadow-sm font-bold'
+                    ? 'border-primary bg-primary/10 text-primary shadow-xs font-bold'
                     : 'border-border hover:bg-muted text-muted-foreground'
                 }`}
               >
-                <div className="flex items-center gap-1.5 truncate">
+                <div className="flex items-center gap-2">
                   <span>{t.icon}</span>
-                  <span className="truncate">{t.title}</span>
+                  <span className="font-bold">{t.title}</span>
                 </div>
                 {isSelected && <Check className="h-3.5 w-3.5 text-primary flex-shrink-0" />}
               </button>
@@ -115,40 +86,55 @@ export function RightDesignPanel() {
         </div>
       </div>
 
-      {/* Color Theme Presets */}
+      {/* 2. Color Theme & Accent Picker */}
       <div className="space-y-3 pt-4 border-t border-border">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          <Palette className="h-3.5 w-3.5" />
-          <span>Theme Presets</span>
+        <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <Palette className="h-3.5 w-3.5 text-primary" />
+            <span>Color Theme & Accent</span>
+          </span>
+          <span className="font-mono text-primary text-[11px] font-bold">{currentAccentHex}</span>
         </div>
-        <div className="grid grid-cols-2 gap-2">
-          {THEME_KEYS.map((tKey) => {
-            const tConf = THEMES[tKey]
-            const isSelected = theme === tKey
 
+        {/* Color Presets Grid */}
+        <div className="grid grid-cols-2 gap-2">
+          {COLOR_PRESETS.map((preset) => {
+            const isSelected = theme === preset.themeId || currentAccentHex.toLowerCase() === preset.hex.toLowerCase()
             return (
               <button
-                key={tKey}
-                onClick={() => setTheme(tKey)}
+                key={preset.themeId}
+                onClick={() => handleSelectColorPreset(preset)}
                 className={`p-2.5 rounded-xl border text-xs font-semibold transition-all flex items-center justify-between ${
-                  isSelected ? 'border-primary bg-primary/10 text-foreground' : 'border-border hover:bg-muted text-muted-foreground'
+                  isSelected ? 'border-primary bg-primary/10 text-foreground font-bold' : 'border-border hover:bg-muted text-muted-foreground'
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <span className={`w-3.5 h-3.5 rounded-full ${tConf.primary}`} />
-                  <span className="capitalize">{tConf.name}</span>
+                  <span className="w-3.5 h-3.5 rounded-full border border-white/20" style={{ backgroundColor: preset.hex }} />
+                  <span>{preset.label}</span>
                 </div>
                 {isSelected && <Check className="h-3.5 w-3.5 text-primary" />}
               </button>
             )
           })}
         </div>
+
+        {/* Custom Hex Input */}
+        <div className="flex items-center gap-2 border border-border rounded-xl px-3 py-1.5 bg-background text-xs">
+          <span className="w-4 h-4 rounded-md border" style={{ backgroundColor: currentAccentHex }} />
+          <span className="text-muted-foreground font-mono">Custom Hex:</span>
+          <input
+            type="text"
+            value={currentAccentHex}
+            onChange={(e) => handleCustomHexChange(e.target.value)}
+            className="w-full text-xs font-mono bg-transparent focus:outline-none uppercase font-bold"
+          />
+        </div>
       </div>
 
-      {/* Motion Level */}
+      {/* 3. Motion Level */}
       <div className="space-y-3 pt-4 border-t border-border pb-6">
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          <Zap className="h-3.5 w-3.5" />
+          <Zap className="h-3.5 w-3.5 text-primary" />
           <span>Motion Level</span>
         </div>
         <div className="space-y-1.5">
@@ -158,7 +144,7 @@ export function RightDesignPanel() {
               onClick={() => setMotionLevel(m.id)}
               className={`w-full px-3 py-2 rounded-xl text-xs font-semibold border transition-all text-left flex items-center justify-between ${
                 motionLevel === m.id
-                  ? 'border-primary bg-primary/10 text-primary'
+                  ? 'border-primary bg-primary/10 text-primary font-bold'
                   : 'border-border hover:bg-muted text-muted-foreground'
               }`}
             >
