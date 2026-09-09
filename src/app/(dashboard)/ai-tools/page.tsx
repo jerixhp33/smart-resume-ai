@@ -5,11 +5,12 @@ import { Sparkles, ScanSearch, MessageSquare, FileText, Loader2 } from 'lucide-r
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
-import { analyzeJobDescription, generateInterviewQuestions, generateCoverLetter } from '@/features/ai/actions'
+import { analyzeJobDescription, generateInterviewQuestions, generateCoverLetter, evaluateInterviewAnswer } from '@/features/ai/actions'
 import { toast } from '@/components/ui/toast'
 import type { JobAnalysis, InterviewQuestion } from '@/types'
 import { InterviewFlashcards } from '@/components/tools/InterviewFlashcards'
 import { PenTool } from 'lucide-react'
+import { cn } from '@/utils/cn'
 
 export default function AIToolsPage() {
   return (
@@ -292,6 +293,16 @@ function InterviewPrepTool() {
 
 function QuestionCard({ question }: { question: InterviewQuestion }) {
   const [showGuidance, setShowGuidance] = useState(false)
+  const [showPractice, setShowPractice] = useState(false)
+  const [candidateAnswer, setCandidateAnswer] = useState('')
+  const [evaluating, setEvaluating] = useState(false)
+  const [evaluation, setEvaluation] = useState<{
+    score?: number
+    feedback?: string
+    strengths?: string[]
+    improvements?: string[]
+  } | null>(null)
+
   const difficultyColor = {
     easy: 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30',
     medium: 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/30',
@@ -306,9 +317,31 @@ function QuestionCard({ question }: { question: InterviewQuestion }) {
     behavioral: 'text-pink-600 dark:text-pink-400',
   }
 
+  async function handleEvaluate() {
+    if (candidateAnswer.trim().length < 20) {
+      toast({ title: 'Please write a fuller practice response', description: 'At least 20 characters required.', variant: 'warning' })
+      return
+    }
+
+    setEvaluating(true)
+    const res = await evaluateInterviewAnswer({
+      question: question.question,
+      candidateAnswer: candidateAnswer.trim(),
+      guidance: question.guidance,
+    })
+    setEvaluating(false)
+
+    if (res.error) {
+      toast({ title: 'Evaluation failed', description: res.error, variant: 'error' })
+    } else {
+      setEvaluation(res)
+      toast({ title: 'Answer evaluated!', variant: 'success' })
+    }
+  }
+
   return (
-    <div className="bg-card border border-border rounded-xl p-4">
-      <div className="flex items-start gap-3">
+    <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+      <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <span className={`text-xs font-medium capitalize ${categoryColor[question.category] ?? ''}`}>
@@ -318,21 +351,94 @@ function QuestionCard({ question }: { question: InterviewQuestion }) {
               {question.difficulty}
             </span>
           </div>
-          <p className="text-sm font-medium">{question.question}</p>
-          {showGuidance && (
-            <div className="mt-3 p-3 bg-primary/5 border border-primary/20 rounded-lg">
-              <p className="text-xs font-semibold text-primary mb-1">Guidance</p>
-              <p className="text-xs text-muted-foreground leading-relaxed">{question.guidance}</p>
+          <p className="text-sm font-medium leading-relaxed">{question.question}</p>
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <button
+            onClick={() => setShowGuidance(!showGuidance)}
+            className="text-xs text-primary hover:underline"
+          >
+            {showGuidance ? 'Hide Guidance' : 'Guidance'}
+          </button>
+          <button
+            onClick={() => setShowPractice(!showPractice)}
+            className="text-xs font-medium px-2.5 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+          >
+            {showPractice ? 'Close Practice' : '✨ Practice Answer'}
+          </button>
+        </div>
+      </div>
+
+      {showGuidance && (
+        <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg animate-in">
+          <p className="text-xs font-semibold text-primary mb-1">Answer Guidance & Key Points</p>
+          <p className="text-xs text-muted-foreground leading-relaxed">{question.guidance}</p>
+        </div>
+      )}
+
+      {showPractice && (
+        <div className="pt-2 border-t border-border space-y-3 animate-in">
+          <div>
+            <label className="block text-xs font-medium mb-1 text-muted-foreground">Type your practice answer:</label>
+            <textarea
+              value={candidateAnswer}
+              onChange={e => setCandidateAnswer(e.target.value)}
+              placeholder="Use the STAR method (Situation, Task, Action, Result) to structure your practice response..."
+              rows={3}
+              className="w-full border border-input rounded-lg px-3 py-2 text-xs bg-background resize-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </div>
+
+          <Button
+            size="sm"
+            onClick={handleEvaluate}
+            loading={evaluating}
+            disabled={!candidateAnswer.trim()}
+            icon={<Sparkles className="h-3.5 w-3.5" />}
+          >
+            {evaluating ? 'Evaluating…' : 'Grade My Answer'}
+          </Button>
+
+          {evaluation && (
+            <div className="p-4 border border-border bg-card rounded-xl space-y-3 animate-in">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-muted-foreground">AI Evaluation Results:</span>
+                <span className={cn(
+                  'text-xs font-bold px-2.5 py-0.5 rounded-full',
+                  (evaluation.score ?? 0) >= 80 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                  (evaluation.score ?? 0) >= 60 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                  'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                )}>
+                  Score: {evaluation.score}/100
+                </span>
+              </div>
+
+              {evaluation.feedback && (
+                <p className="text-xs text-foreground leading-relaxed">{evaluation.feedback}</p>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs">
+                {evaluation.strengths && evaluation.strengths.length > 0 && (
+                  <div className="bg-green-50 dark:bg-green-950/20 p-2.5 rounded-lg border border-green-200 dark:border-green-800">
+                    <p className="font-semibold text-green-700 dark:text-green-400 mb-1">👍 Strengths</p>
+                    <ul className="space-y-1 text-muted-foreground">
+                      {evaluation.strengths.map((s, i) => <li key={i}>• {s}</li>)}
+                    </ul>
+                  </div>
+                )}
+                {evaluation.improvements && evaluation.improvements.length > 0 && (
+                  <div className="bg-amber-50 dark:bg-amber-950/20 p-2.5 rounded-lg border border-amber-200 dark:border-amber-800">
+                    <p className="font-semibold text-amber-700 dark:text-amber-400 mb-1">💡 Key Improvements</p>
+                    <ul className="space-y-1 text-muted-foreground">
+                      {evaluation.improvements.map((imp, i) => <li key={i}>• {imp}</li>)}
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
-        <button
-          onClick={() => setShowGuidance(!showGuidance)}
-          className="text-xs text-primary hover:underline flex-shrink-0"
-        >
-          {showGuidance ? 'Hide' : 'Guidance'}
-        </button>
-      </div>
+      )}
     </div>
   )
 }

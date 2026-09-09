@@ -508,3 +508,63 @@ export async function calculateATSScore(params: {
     return wrapAIError(error)
   }
 }
+
+// ── Evaluate Interview Answer ─────────────────────────────
+export async function evaluateInterviewAnswer(params: {
+  question: string
+  candidateAnswer: string
+  guidance: string
+}): Promise<{ score?: number; feedback?: string; strengths?: string[]; improvements?: string[]; error?: string }> {
+  const user = await requireAuth()
+
+  const prompt = `Evaluate this job candidate's practice interview response.
+
+Question: ${params.question}
+Expected Guidance/Key Points: ${params.guidance}
+
+Candidate's Response:
+${params.candidateAnswer}
+
+Evaluate objectively:
+1. Score from 0 to 100 based on completeness, structure (STAR method for behavioral), and relevance.
+2. Provide clear, encouraging feedback.
+3. List 2-3 specific strengths.
+4. List 2-3 actionable improvements.
+
+Return JSON strictly:
+{
+  "score": 85,
+  "feedback": "...",
+  "strengths": ["..."],
+  "improvements": ["..."]
+}`
+
+  try {
+    const response = await callAI({
+      taskType: 'interview_generate',
+      systemPrompt: SYSTEM_PROMPTS.BASE,
+      userPrompt: prompt,
+      userId: user.id,
+    })
+
+    const schema = z.object({
+      score: z.number().min(0).max(100),
+      feedback: z.string(),
+      strengths: z.array(z.string()),
+      improvements: z.array(z.string()),
+    })
+
+    const parsed = parseAIJSON(response.content, schema)
+
+    return {
+      score: parsed.score,
+      feedback: parsed.feedback,
+      strengths: parsed.strengths,
+      improvements: parsed.improvements,
+    }
+  } catch (error) {
+    return wrapAIError(error)
+  }
+}
+
+
