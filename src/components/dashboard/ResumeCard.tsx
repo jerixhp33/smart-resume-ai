@@ -75,6 +75,14 @@ export function ResumeCard({ resume }: ResumeCardProps) {
     }
   }
 
+  function handleExportDocx() {
+    window.open(`/api/resumes/${resume.id}/export?format=docx`, '_blank')
+  }
+
+  function handleExportJson() {
+    window.open(`/api/resumes/${resume.id}/export?format=json`, '_blank')
+  }
+
   const atsInfo = resume.ats_score !== null ? formatATSScore(resume.ats_score) : null
 
   return (
@@ -125,7 +133,7 @@ export function ResumeCard({ resume }: ResumeCardProps) {
                 <span className="sr-only">Resume options</span>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-44">
+            <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem asChild>
                 <Link href={`/builder/${resume.id}`} className="flex items-center gap-2">
                   <Edit className="h-3.5 w-3.5" /> Edit
@@ -136,6 +144,12 @@ export function ResumeCard({ resume }: ResumeCardProps) {
               </DropdownMenuItem>
               <DropdownMenuItem className="gap-2" onClick={handleDownload}>
                 <Download className="h-3.5 w-3.5" /> Download PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-2" onClick={handleExportDocx}>
+                <Download className="h-3.5 w-3.5" /> Export Word (.docx)
+              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-2" onClick={handleExportJson}>
+                <Download className="h-3.5 w-3.5" /> Export JSON
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href={`/analyzer?resumeId=${resume.id}`} className="flex items-center gap-2">
