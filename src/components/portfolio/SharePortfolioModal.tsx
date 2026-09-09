@@ -175,7 +175,7 @@ export function SharePortfolioModal({
     canvas.height = 630
 
     const renderCanvas = (bgImg?: HTMLImageElement) => {
-      // 1. Background Fill / Background Image with Dark Accent Gradient Overlay
+      // 1. Matte Background Layering
       if (bgImg) {
         const imgRatio = bgImg.width / bgImg.height
         const canvasRatio = 1200 / 630
@@ -194,24 +194,24 @@ export function SharePortfolioModal({
 
         ctx.drawImage(bgImg, offsetX, offsetY, renderW, renderH)
 
-        // Dark accent gradient overlay for pristine legibility
+        // Dark matte accent overlay gradient
         const grad = ctx.createLinearGradient(0, 0, 1200, 630)
         grad.addColorStop(0, `${accentColor}D9`)
-        grad.addColorStop(0.55, '#0f172aEE')
-        grad.addColorStop(1, '#090d16FA')
+        grad.addColorStop(0.55, '#0b0f19EE')
+        grad.addColorStop(1, '#070912FA')
         ctx.fillStyle = grad
         ctx.fillRect(0, 0, 1200, 630)
       } else {
         const grad = ctx.createLinearGradient(0, 0, 1200, 630)
         grad.addColorStop(0, accentColor || '#6366f1')
         grad.addColorStop(0.5, '#1e1b4b')
-        grad.addColorStop(1, '#090d16')
+        grad.addColorStop(1, '#070912')
         ctx.fillStyle = grad
         ctx.fillRect(0, 0, 1200, 630)
 
-        // Subtle ambient radial glow
+        // Ambient radial matte glow
         const glow = ctx.createRadialGradient(250, 180, 50, 250, 180, 500)
-        glow.addColorStop(0, 'rgba(255, 255, 255, 0.14)')
+        glow.addColorStop(0, 'rgba(255, 255, 255, 0.12)')
         glow.addColorStop(1, 'rgba(255, 255, 255, 0)')
         ctx.fillStyle = glow
         ctx.fillRect(0, 0, 1200, 630)
@@ -219,17 +219,17 @@ export function SharePortfolioModal({
 
       // 2. Top Bar: Resunio Logo Pill & @Username Badge
       // Logo Chip (Top Left)
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.14)'
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.12)'
       ctx.beginPath()
-      ctx.roundRect(60, 55, 280, 48, 14)
+      ctx.roundRect(60, 52, 285, 50, 16)
       ctx.fill()
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)'
       ctx.lineWidth = 1.5
       ctx.stroke()
 
       // Draw Vector 3D Ribbon R Logo Mark directly onto Canvas
       ctx.save()
-      ctx.translate(72, 63)
+      ctx.translate(74, 61)
       const scale = 32 / 512
       ctx.scale(scale, scale)
 
@@ -286,39 +286,39 @@ export function SharePortfolioModal({
       ctx.restore()
 
       ctx.fillStyle = '#ffffff'
-      ctx.font = 'bold 20px system-ui, -apple-system, sans-serif'
-      ctx.fillText('RESUNIO PORTFOLIO', 116, 87)
+      ctx.font = 'bold 19px system-ui, -apple-system, sans-serif'
+      ctx.fillText('RESUNIO PORTFOLIO', 118, 85)
 
       // @Username Chip (Top Right)
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.14)'
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.12)'
       ctx.beginPath()
-      ctx.roundRect(940, 55, 200, 48, 24)
+      ctx.roundRect(930, 52, 210, 50, 25)
       ctx.fill()
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)'
       ctx.stroke()
 
       ctx.fillStyle = 'rgba(255, 255, 255, 0.95)'
-      ctx.font = '500 19px monospace'
+      ctx.font = '600 18px monospace'
       ctx.textAlign = 'center'
-      ctx.fillText(`@${username}`, 1040, 86)
+      ctx.fillText(`@${username}`, 1035, 84)
       ctx.textAlign = 'left'
 
-      // 3. Main Body: Title & Summary (Clean dynamic text wrapping)
+      // 3. Main Body: Modern Impactful Typography
       const maxTextWidth = 730
       ctx.fillStyle = '#ffffff'
-      ctx.font = 'bold 44px system-ui, -apple-system, sans-serif'
+      ctx.font = '900 46px system-ui, -apple-system, sans-serif'
       
       const titleLines = getWrappedLines(ctx, portfolioTitle, maxTextWidth, 2)
       let currentY = 210
       titleLines.forEach((line) => {
         ctx.fillText(line, 60, currentY)
-        currentY += 54
+        currentY += 56
       })
 
-      // Summary lines
+      // Summary / Bio lines
       currentY += 12
       ctx.fillStyle = 'rgba(255, 255, 255, 0.88)'
-      ctx.font = '22px system-ui, -apple-system, sans-serif'
+      ctx.font = '400 22px system-ui, -apple-system, sans-serif'
       const summaryLines = getWrappedLines(ctx, portfolioSummary, maxTextWidth, 2)
       summaryLines.forEach((line) => {
         ctx.fillText(line, 60, currentY)
@@ -333,35 +333,35 @@ export function SharePortfolioModal({
 
       ctx.fillStyle = 'rgba(255, 255, 255, 0.12)'
       ctx.beginPath()
-      ctx.roundRect(60, 520, Math.max(380, textWidth + 50), 52, 14)
+      ctx.roundRect(60, 518, Math.max(380, textWidth + 54), 54, 16)
       ctx.fill()
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)'
       ctx.stroke()
 
       ctx.fillStyle = '#ffffff'
-      ctx.fillText(displayUrl, 85, 553)
+      ctx.fillText(displayUrl, 87, 552)
 
-      // 5. Embedded High-Res QR Code Card (Bottom Right)
-      const qrBoxX = 880
-      const qrBoxY = 310
-      const qrBoxW = 260
-      const qrBoxH = 265
+      // 5. Embedded Matte High-Res QR Code Card (Bottom Right)
+      const qrBoxX = 870
+      const qrBoxY = 305
+      const qrBoxW = 270
+      const qrBoxH = 275
 
       ctx.fillStyle = '#ffffff'
       ctx.beginPath()
-      ctx.roundRect(qrBoxX, qrBoxY, qrBoxW, qrBoxH, 22)
+      ctx.roundRect(qrBoxX, qrBoxY, qrBoxW, qrBoxH, 24)
       ctx.fill()
 
       const qrImg = new Image()
       qrImg.crossOrigin = 'anonymous'
       qrImg.src = qrDataUrl
       qrImg.onload = () => {
-        ctx.drawImage(qrImg, qrBoxX + 25, qrBoxY + 20, 210, 210)
+        ctx.drawImage(qrImg, qrBoxX + 30, qrBoxY + 22, 210, 210)
 
-        ctx.fillStyle = '#475569'
-        ctx.font = 'bold 11px system-ui, -apple-system, sans-serif'
+        ctx.fillStyle = '#334155'
+        ctx.font = 'bold 12px system-ui, -apple-system, sans-serif'
         ctx.textAlign = 'center'
-        ctx.fillText('SCAN TO VIEW PORTFOLIO', qrBoxX + qrBoxW / 2, qrBoxY + 248)
+        ctx.fillText('SCAN TO VIEW PORTFOLIO', qrBoxX + qrBoxW / 2, qrBoxY + 254)
         ctx.textAlign = 'left'
 
         // Export clean high quality PNG
@@ -372,7 +372,7 @@ export function SharePortfolioModal({
         a.click()
         document.body.removeChild(a)
         setDownloadingCard(false)
-        toast({ title: 'Full Share Card Downloaded!', description: 'High resolution 1200×630 share card with QR code saved to device.', variant: 'success' })
+        toast({ title: 'Full Share Card Downloaded!', description: 'High resolution 1200×630 matte share card saved to device.', variant: 'success' })
       }
     }
 
@@ -431,12 +431,21 @@ export function SharePortfolioModal({
 
         {/* Visual Aesthetic Share Card Preview */}
         <div className="space-y-2">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Share Card Preview (1200×630 HD)
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+              Executive Share Card Preview (1200×630 HD Matte)
+            </p>
+            <span className="text-[10px] font-semibold text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
+              HD Matte Canvas Output
+            </span>
+          </div>
+          
           <div
-            className="rounded-xl p-5 text-white shadow-lg relative overflow-hidden flex flex-col justify-between min-h-[160px]"
-            style={{ background: `linear-gradient(135deg, ${accentColor} 0%, #090d16 100%)` }}
+            className="rounded-2xl p-6 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between min-h-[190px] border border-white/15 group"
+            style={{ 
+              background: `radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.12) 0%, transparent 60%), linear-gradient(135deg, ${accentColor}E6 0%, #0d121f 55%, #05070e 100%)`,
+              boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.2)' 
+            }}
           >
             {ogImage && (
               <>
@@ -444,33 +453,45 @@ export function SharePortfolioModal({
                 <img
                   src={ogImage}
                   alt="Share Background"
-                  className="absolute inset-0 w-full h-full object-cover z-0"
+                  className="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-overlay filter contrast-125"
                 />
                 <div
                   className="absolute inset-0 z-0"
-                  style={{ background: `linear-gradient(135deg, ${accentColor}D9 0%, #090d16FA 100%)` }}
+                  style={{ background: `linear-gradient(135deg, ${accentColor}CC 0%, #0c101cFA 60%, #05070e 100%)` }}
                 />
               </>
             )}
 
+            {/* Top Bar Badges */}
             <div className="flex justify-between items-center z-10">
-              <span className="text-xs font-bold uppercase tracking-wider text-white/95 flex items-center gap-1.5 bg-white/15 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/20">
-                <ResunioLogo size="sm" variant="mark" showBg={false} className="!h-4 !w-4 border-0 p-0 shadow-none" />
-                Resunio Portfolio
+              <span className="text-[11px] font-black uppercase tracking-wider text-white flex items-center gap-2 bg-white/10 backdrop-blur-2xl px-3 py-1.5 rounded-xl border border-white/20 shadow-md">
+                <ResunioLogo size="sm" variant="mark" showBg={false} className="!h-4 !w-4 border-0 p-0 shadow-none filter drop-shadow" />
+                RESUNIO PORTFOLIO
               </span>
-              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-white/15 backdrop-blur-md font-mono text-white/90 border border-white/20">
+              <span className="text-xs px-3 py-1 rounded-full bg-white/10 backdrop-blur-2xl font-mono text-white/95 border border-white/20 shadow-sm font-semibold">
                 @{username}
               </span>
             </div>
 
-            <div className="space-y-1 z-10 my-3">
-              <h3 className="text-base font-bold leading-snug line-clamp-2 text-white drop-shadow-xs">{portfolioTitle}</h3>
-              <p className="text-xs text-white/80 line-clamp-2 leading-relaxed drop-shadow-xs">{portfolioSummary}</p>
+            {/* Title & Summary */}
+            <div className="space-y-2 z-10 my-4">
+              <h3 className="text-xl sm:text-2xl font-black tracking-tight leading-tight text-white drop-shadow-md">
+                {portfolioTitle}
+              </h3>
+              <p className="text-xs sm:text-sm font-normal text-white/85 line-clamp-2 leading-relaxed drop-shadow-sm max-w-[90%]">
+                {portfolioSummary}
+              </p>
             </div>
 
-            <div className="flex justify-between items-center z-10 text-[10px] font-mono text-white/80 border-t border-white/15 pt-2">
-              <span className="bg-white/10 px-2 py-0.5 rounded border border-white/10">resunio.ai/portfolio/{username}</span>
-              <span className="capitalize text-white/60">1200×630 Card Banner</span>
+            {/* Bottom URL Badge */}
+            <div className="flex justify-between items-center z-10 text-xs font-mono text-white/90 border-t border-white/15 pt-3">
+              <span className="bg-black/30 backdrop-blur-md px-3 py-1 rounded-lg border border-white/15 shadow-xs font-medium text-white/95 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                {origin.replace(/^https?:\/\//, '')}/portfolio/{username}
+              </span>
+              <span className="uppercase text-white/50 font-sans text-[10px] font-bold tracking-widest bg-white/5 px-2.5 py-1 rounded-md border border-white/10">
+                Matte Finish 1200×630
+              </span>
             </div>
           </div>
         </div>

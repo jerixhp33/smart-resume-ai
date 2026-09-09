@@ -439,12 +439,16 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
             </div>
 
             {/* LinkedIn Preview Card */}
+            {/* LinkedIn Preview Card */}
             {/* Social Share Card Preview (LinkedIn / OpenGraph) */}
             {activeTab === 'social' && (
-              <div className="border border-border rounded-2xl overflow-hidden bg-card shadow-sm">
+              <div className="border border-border/80 rounded-2xl overflow-hidden bg-card shadow-md">
                 <div
-                  className="aspect-[1200/630] relative overflow-hidden flex flex-col justify-between p-5 text-white shadow-md"
-                  style={{ background: `linear-gradient(135deg, ${accentColor} 0%, #090d16 100%)` }}
+                  className="aspect-[1200/630] relative overflow-hidden flex flex-col justify-between p-5 text-white shadow-xl"
+                  style={{ 
+                    background: `radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.12) 0%, transparent 60%), linear-gradient(135deg, ${accentColor}E6 0%, #0d121f 55%, #05070e 100%)`,
+                    boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.2)' 
+                  }}
                 >
                   {ogImage && !imageError && (
                     <>
@@ -452,54 +456,55 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
                       <img
                         src={ogImage}
                         alt="OG Preview"
-                        className="absolute inset-0 w-full h-full object-cover z-0"
+                        className="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-overlay filter contrast-125"
                         onError={() => setImageError(true)}
                       />
                       <div
                         className="absolute inset-0 z-0"
-                        style={{ background: `linear-gradient(135deg, ${accentColor}D9 0%, #090d16FA 100%)` }}
+                        style={{ background: `linear-gradient(135deg, ${accentColor}CC 0%, #0c101cFA 60%, #05070e 100%)` }}
                       />
                     </>
                   )}
 
                   {/* Top Bar */}
                   <div className="flex justify-between items-center z-10">
-                    <span className="text-xs font-bold uppercase tracking-wider text-white/95 flex items-center gap-1.5 bg-white/15 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/20">
-                      <ResunioLogo size="sm" variant="mark" showBg={false} className="!h-4 !w-4 border-0 p-0 shadow-none" />
-                      Resunio Portfolio
+                    <span className="text-[10px] font-black uppercase tracking-wider text-white flex items-center gap-1.5 bg-white/10 backdrop-blur-2xl px-2.5 py-1 rounded-xl border border-white/20 shadow-md">
+                      <ResunioLogo size="sm" variant="mark" showBg={false} className="!h-3.5 !w-3.5 border-0 p-0 shadow-none filter drop-shadow" />
+                      RESUNIO PORTFOLIO
                     </span>
-                    <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-white/15 backdrop-blur-md font-mono text-white/90 border border-white/20">
+                    <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-white/10 backdrop-blur-2xl font-mono text-white/95 border border-white/20 font-semibold">
                       @{portfolio.username}
                     </span>
                   </div>
 
                   {/* Title & Summary */}
                   <div className="space-y-1 z-10 my-3">
-                    <h3 className="text-base font-bold leading-snug line-clamp-2 text-white drop-shadow-xs">
+                    <h3 className="text-base font-black tracking-tight leading-snug line-clamp-2 text-white drop-shadow-md">
                       {title || `${portfolio.username} | Interactive Portfolio`}
                     </h3>
-                    <p className="text-xs text-white/85 line-clamp-2 leading-relaxed drop-shadow-xs">
+                    <p className="text-xs text-white/85 line-clamp-2 leading-relaxed drop-shadow-sm font-normal">
                       {description || 'Check out my interactive AI portfolio showcasing skills, projects, and career milestones.'}
                     </p>
                   </div>
 
                   {/* Footer Domain Badge */}
-                  <div className="flex justify-between items-center z-10 text-[10px] font-mono text-white/80 border-t border-white/15 pt-2">
-                    <span className="bg-white/10 px-2 py-0.5 rounded border border-white/10">
+                  <div className="flex justify-between items-center z-10 text-[10px] font-mono text-white/90 border-t border-white/15 pt-2">
+                    <span className="bg-black/30 backdrop-blur-md px-2 py-0.5 rounded border border-white/15 font-medium text-white/95 flex items-center gap-1">
+                      <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
                       {hostName}/portfolio/{portfolio.username}
                     </span>
-                    <span className="text-[10px] text-white/60">1200×630 HD Banner</span>
+                    <span className="uppercase text-white/50 font-sans text-[9px] font-bold tracking-widest bg-white/5 px-2 py-0.5 rounded border border-white/10">1200×630 HD Matte</span>
                   </div>
                 </div>
 
                 <div className="p-3 bg-muted/30 border-t border-border space-y-1">
-                  <p className="text-[11px] font-mono text-muted-foreground uppercase tracking-tight">
+                  <p className="text-[11px] font-mono text-muted-foreground uppercase tracking-tight font-medium">
                     {hostName}
                   </p>
-                  <h4 className="text-sm font-semibold line-clamp-1 text-foreground">
+                  <h4 className="text-sm font-bold line-clamp-1 text-foreground tracking-tight">
                     {title || 'Portfolio Title'}
                   </h4>
-                  <p className="text-xs text-muted-foreground line-clamp-2">
+                  <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                     {description || 'No description set. Add an SEO meta description to display here.'}
                   </p>
                 </div>
