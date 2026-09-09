@@ -393,6 +393,7 @@ export type AITaskType =
   | 'content_review'
   | 'interview_generate'
   | 'generate_portfolio'
+  | 'cover_letter'
 
 export interface AIUsage {
   id: string

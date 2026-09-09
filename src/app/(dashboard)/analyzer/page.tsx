@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { ScanSearch, Loader2, ChevronDown, CheckCircle2, AlertCircle, Info } from 'lucide-react'
+import { ScanSearch, Loader2, CheckCircle2, AlertCircle, Info, Sparkles, Copy, FileText } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { runATSAnalysis } from '@/features/ats/actions'
+import { runATSAnalysis, autofillKeywordAction, generateCoverLetterAction } from '@/features/ats/actions'
 import { toast } from '@/components/ui/toast'
 import { formatATSScore } from '@/utils/format'
 import type { ATSScanResult } from '@/types'
@@ -23,6 +23,14 @@ export default function AnalyzerPage() {
   const [result, setResult] = useState<ATSScanResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [loadingResumes, setLoadingResumes] = useState(true)
+
+  // AI Autofill & Cover Letter states
+  const [autofillKeyword, setAutofillKeyword] = useState<string | null>(null)
+  const [autofillBullet, setAutofillBullet] = useState<string | null>(null)
+  const [autofillLoading, setAutofillLoading] = useState(false)
+
+  const [coverLetter, setCoverLetter] = useState<string | null>(null)
+  const [coverLetterLoading, setCoverLetterLoading] = useState(false)
 
   useEffect(() => {
     fetch('/api/resumes/list')
@@ -45,6 +53,7 @@ export default function AnalyzerPage() {
 
     setLoading(true)
     setResult(null)
+    setCoverLetter(null)
 
     const res = await runATSAnalysis({
       resumeId: selectedResumeId,
@@ -60,15 +69,59 @@ export default function AnalyzerPage() {
     }
   }
 
+  async function handleAutofill(keyword: string) {
+    if (!selectedResumeId) return
+    setAutofillKeyword(keyword)
+    setAutofillLoading(true)
+    setAutofillBullet(null)
+
+    const res = await autofillKeywordAction({
+      resumeId: selectedResumeId,
+      keyword,
+      jobDescription: jobDescription.trim() || undefined,
+    })
+    setAutofillLoading(false)
+
+    if (res.error) {
+      toast({ title: 'Autofill failed', description: res.error, variant: 'error' })
+    } else if (res.suggestedBullet) {
+      setAutofillBullet(res.suggestedBullet)
+    }
+  }
+
+  async function handleGenerateCoverLetter() {
+    if (!selectedResumeId || !jobDescription.trim()) {
+      toast({ title: 'Job description required', description: 'Please paste a job description first.', variant: 'warning' })
+      return
+    }
+    setCoverLetterLoading(true)
+    const res = await generateCoverLetterAction({
+      resumeId: selectedResumeId,
+      jobDescription: jobDescription.trim(),
+    })
+    setCoverLetterLoading(false)
+
+    if (res.error) {
+      toast({ title: 'Generation failed', description: res.error, variant: 'error' })
+    } else if (res.coverLetter) {
+      setCoverLetter(res.coverLetter)
+      toast({ title: 'Cover letter generated!', variant: 'success' })
+    }
+  }
+
+  function copyToClipboard(text: string, label: string) {
+    navigator.clipboard.writeText(text)
+    toast({ title: `${label} copied to clipboard!`, variant: 'success' })
+  }
+
   const atsInfo = result ? formatATSScore(result.overall_score) : null
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight mb-1">ATS Analyzer</h1>
+        <h1 className="text-2xl font-bold tracking-tight mb-1">ATS Analyzer & Job Matcher</h1>
         <p className="text-sm text-muted-foreground">
-          Check how well your resume performs with Applicant Tracking Systems.
-          Score is calculated deterministically — not guessed by AI.
+          Check how well your resume performs with Applicant Tracking Systems, get AI keyword bullet suggestions, and generate tailored cover letters.
         </p>
       </div>
 
@@ -97,7 +150,7 @@ export default function AnalyzerPage() {
         <div>
           <label className="block text-sm font-medium mb-2">
             Job Description
-            <span className="ml-2 text-xs font-normal text-muted-foreground">(optional, but improves accuracy)</span>
+            <span className="ml-2 text-xs font-normal text-muted-foreground">(recommended for keyword matching & cover letter generation)</span>
           </label>
           <textarea
             value={jobDescription}
@@ -184,12 +237,13 @@ export default function AnalyzerPage() {
             </div>
           </div>
 
-          {/* Tabs: Suggestions, Keywords, Issues */}
+          {/* Tabs: Suggestions, Keywords, Issues, Cover Letter */}
           <Tabs defaultValue="suggestions">
             <TabsList>
               <TabsTrigger value="suggestions">Suggestions ({result.suggestions.length})</TabsTrigger>
               <TabsTrigger value="keywords">Keywords</TabsTrigger>
               <TabsTrigger value="issues">Formatting Issues ({result.formatting_issues.length})</TabsTrigger>
+              <TabsTrigger value="coverletter">Tailored Cover Letter</TabsTrigger>
               {result.ai_explanation && <TabsTrigger value="explanation">AI Insight</TabsTrigger>}
             </TabsList>
 
@@ -225,7 +279,7 @@ export default function AnalyzerPage() {
               ))}
             </TabsContent>
 
-            <TabsContent value="keywords">
+            <TabsContent value="keywords" className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {result.matched_keywords.length > 0 && (
                   <div>
@@ -239,27 +293,65 @@ export default function AnalyzerPage() {
                     </div>
                   </div>
                 )}
+
                 {result.missing_keywords.length > 0 && (
                   <div>
                     <h3 className="text-sm font-semibold text-red-600 dark:text-red-400 mb-2 flex items-center gap-1.5">
                       <AlertCircle className="h-4 w-4" /> Missing ({result.missing_keywords.length})
                     </h3>
+                    <p className="text-xs text-muted-foreground mb-3">Click any keyword to generate a tailored bullet point for your resume:</p>
                     <div className="flex flex-wrap gap-2">
                       {result.missing_keywords.map(kw => (
-                        <span key={kw} className="text-xs px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 font-medium">{kw}</span>
+                        <button
+                          key={kw}
+                          onClick={() => handleAutofill(kw)}
+                          className={cn(
+                            'text-xs px-2.5 py-1 rounded-full border flex items-center gap-1 transition-all hover:scale-105',
+                            autofillKeyword === kw
+                              ? 'bg-primary text-primary-foreground border-primary font-medium'
+                              : 'bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800 hover:bg-red-100'
+                          )}
+                        >
+                          <Sparkles className="h-3 w-3" />
+                          {kw}
+                        </button>
                       ))}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Add these keywords only if they accurately describe your experience.
-                    </p>
-                  </div>
-                )}
-                {result.matched_keywords.length === 0 && result.missing_keywords.length === 0 && (
-                  <div className="col-span-2 text-sm text-muted-foreground py-4">
-                    Paste a job description to get keyword analysis.
                   </div>
                 )}
               </div>
+
+              {/* Keyword autofill result preview */}
+              {autofillLoading && (
+                <div className="p-4 border border-primary/20 bg-primary/5 rounded-xl flex items-center gap-3">
+                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                  <p className="text-sm font-medium">Generating bullet point incorporating "{autofillKeyword}"…</p>
+                </div>
+              )}
+
+              {autofillBullet && autofillKeyword && !autofillLoading && (
+                <div className="p-5 border border-primary/30 bg-card rounded-xl space-y-3 animate-in">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold text-primary flex items-center gap-1.5">
+                      <Sparkles className="h-4 w-4" /> Suggested Bullet for "{autofillKeyword}"
+                    </p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => copyToClipboard(autofillBullet, 'Bullet point')}
+                      icon={<Copy className="h-3.5 w-3.5" />}
+                    >
+                      Copy Bullet
+                    </Button>
+                  </div>
+                  <p className="text-sm bg-muted/50 p-3 rounded-lg border border-border/50 text-foreground font-mono">
+                    • {autofillBullet}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Copy and paste this bullet point into your resume's Work Experience or Skills section to improve your ATS match score.
+                  </p>
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="issues" className="space-y-3">
@@ -284,6 +376,54 @@ export default function AnalyzerPage() {
               ))}
             </TabsContent>
 
+            <TabsContent value="coverletter" className="space-y-4">
+              <div className="bg-card border border-border rounded-xl p-5 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-semibold flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-primary" /> Tailored Cover Letter Generator
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Generate a custom 3-paragraph cover letter combining your resume experience with the target job description.
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleGenerateCoverLetter}
+                    loading={coverLetterLoading}
+                    disabled={!jobDescription.trim()}
+                    icon={<Sparkles className="h-4 w-4" />}
+                  >
+                    {coverLetter ? 'Regenerate Cover Letter' : 'Generate Cover Letter'}
+                  </Button>
+                </div>
+
+                {!jobDescription.trim() && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 p-3 rounded-lg border border-amber-200 dark:border-amber-800">
+                    ⚠️ Please paste a Job Description in the box above to generate a tailored cover letter.
+                  </p>
+                )}
+
+                {coverLetter && (
+                  <div className="space-y-3 pt-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-semibold text-muted-foreground">Generated Cover Letter:</span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => copyToClipboard(coverLetter, 'Cover letter')}
+                        icon={<Copy className="h-3.5 w-3.5" />}
+                      >
+                        Copy Cover Letter
+                      </Button>
+                    </div>
+                    <div className="bg-background border border-border p-5 rounded-xl text-sm whitespace-pre-line leading-relaxed text-foreground font-sans">
+                      {coverLetter}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+
             {result.ai_explanation && (
               <TabsContent value="explanation">
                 <div className="bg-primary/5 border border-primary/20 rounded-xl p-5">
@@ -298,3 +438,4 @@ export default function AnalyzerPage() {
     </div>
   )
 }
+

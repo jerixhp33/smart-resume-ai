@@ -4,7 +4,7 @@ import { getSupabaseServerClient, getSupabaseServiceClient } from '@/lib/supabas
 import { redirect } from 'next/navigation'
 import { calculateATSScore } from '@/lib/ats/engine'
 import { callAI, AIError } from '@/lib/ai/client'
-import { SYSTEM_PROMPTS } from '@/lib/ai/prompts'
+import { SYSTEM_PROMPTS, buildCoverLetterPrompt } from '@/lib/ai/prompts'
 import { updateResumeATSScore } from '@/features/resume/actions'
 import { createNotification } from '@/lib/notifications/createNotification'
 import type { ResumeData, ATSScanResult } from '@/types'
@@ -108,3 +108,83 @@ export async function getATSScanHistory(resumeId: string) {
   if (error) return { scans: [], error: error.message }
   return { scans: data ?? [] }
 }
+
+// ── Autofill Missing Keyword ──────────────────────────────
+export async function autofillKeywordAction(params: {
+  resumeId: string
+  keyword: string
+  jobDescription?: string
+}): Promise<{ suggestedBullet?: string; error?: string }> {
+  const user = await requireAuth()
+  const serviceClient = getSupabaseServiceClient()
+
+  const { data: resume } = await serviceClient
+    .from('resumes')
+    .select('data')
+    .eq('id', params.resumeId)
+    .eq('user_id', user.id)
+    .single()
+
+  if (!resume) return { error: 'Resume not found' }
+
+  try {
+    const prompt = `The job seeker is missing the keyword "${params.keyword}" in their resume for ATS compatibility.
+Generate a concise, professional bullet point or skill highlight incorporating "${params.keyword}" tailored to their background.
+Do NOT invent fake metrics or experience. Keep it realistic and ATS-friendly.
+
+Candidate background summary:
+${JSON.stringify((resume.data as ResumeData)?.experience?.slice(0, 2) ?? [])}
+
+${params.jobDescription ? `Target Job Description:\n${params.jobDescription}` : ''}
+
+Return JSON: { "suggestedBullet": "..." }`
+
+    const aiResponse = await callAI({
+      taskType: 'bullet_improve',
+      systemPrompt: SYSTEM_PROMPTS.BULLET_IMPROVE,
+      userPrompt: prompt,
+      userId: user.id,
+    })
+
+    const parsed = JSON.parse(aiResponse.content.replace(/```json|```/g, '').trim())
+    return { suggestedBullet: parsed.suggestedBullet || parsed.improved || `Proficient in ${params.keyword} with hands-on experience across key projects.` }
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'AI generation failed'
+    return { error: msg }
+  }
+}
+
+// ── Generate Tailored Cover Letter ────────────────────────
+export async function generateCoverLetterAction(params: {
+  resumeId: string
+  jobDescription: string
+}): Promise<{ coverLetter?: string; error?: string }> {
+  const user = await requireAuth()
+  const serviceClient = getSupabaseServiceClient()
+
+  const { data: resume } = await serviceClient
+    .from('resumes')
+    .select('data')
+    .eq('id', params.resumeId)
+    .eq('user_id', user.id)
+    .single()
+
+  if (!resume) return { error: 'Resume not found' }
+
+  try {
+    const prompt = buildCoverLetterPrompt(resume.data as ResumeData, params.jobDescription)
+    const aiResponse = await callAI({
+      taskType: 'cover_letter',
+      systemPrompt: SYSTEM_PROMPTS.BASE,
+      userPrompt: prompt,
+      userId: user.id,
+    })
+
+    const parsed = JSON.parse(aiResponse.content.replace(/```json|```/g, '').trim())
+    return { coverLetter: parsed.cover_letter_text }
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Cover letter generation failed'
+    return { error: msg }
+  }
+}
+
