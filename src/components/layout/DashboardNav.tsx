@@ -54,7 +54,7 @@ export function DashboardNav({ userId, isCollapsed = false, onToggleCollapse }: 
   return (
     <aside
       className={cn(
-        'hidden lg:flex flex-col fixed inset-y-0 left-0 bg-card border-r border-border z-40 transition-all duration-300 ease-in-out',
+        'hidden lg:flex flex-col sticky top-0 h-screen bg-card border-r border-border z-30 transition-all duration-300 ease-in-out flex-shrink-0',
         isCollapsed ? 'w-16' : 'w-64'
       )}
     >
