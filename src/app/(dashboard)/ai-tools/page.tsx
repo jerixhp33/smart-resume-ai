@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Sparkles, ScanSearch, MessageSquare, FileText, Loader2 } from 'lucide-react'
+import { Sparkles, ScanSearch, MessageSquare, Bot, PenTool } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
@@ -9,22 +9,25 @@ import { analyzeJobDescription, generateInterviewQuestions, generateCoverLetter,
 import { toast } from '@/components/ui/toast'
 import type { JobAnalysis, InterviewQuestion } from '@/types'
 import { InterviewFlashcards } from '@/components/tools/InterviewFlashcards'
-import { PenTool } from 'lucide-react'
+import { InterviewSimulator } from '@/components/ai/InterviewSimulator'
 import { cn } from '@/utils/cn'
 
 export default function AIToolsPage() {
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-5xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight mb-1">AI Tools</h1>
+        <h1 className="text-2xl font-bold tracking-tight mb-1">AI Tools Suite</h1>
         <p className="text-sm text-muted-foreground">
-          AI-powered tools to analyze jobs, prepare for interviews, and improve your resume.
-          AI never invents information — it only works with what you provide.
+          AI-powered tools to analyze jobs, prepare for interviews with real-time scoring, and polish your application.
+          AI never invents information — it only works with your genuine experience.
         </p>
       </div>
 
-      <Tabs defaultValue="jd-analyzer">
-        <TabsList className="w-full sm:w-auto">
+      <Tabs defaultValue="mock-interview">
+        <TabsList className="w-full sm:w-auto flex-wrap">
+          <TabsTrigger value="mock-interview" className="gap-2">
+            <Bot className="h-3.5 w-3.5" /> Mock Recruiter Interview
+          </TabsTrigger>
           <TabsTrigger value="jd-analyzer" className="gap-2">
             <ScanSearch className="h-3.5 w-3.5" /> JD Analyzer
           </TabsTrigger>
@@ -32,10 +35,13 @@ export default function AIToolsPage() {
             <PenTool className="h-3.5 w-3.5" /> Cover Letter
           </TabsTrigger>
           <TabsTrigger value="interview-prep" className="gap-2">
-            <MessageSquare className="h-3.5 w-3.5" /> Interview Prep
+            <MessageSquare className="h-3.5 w-3.5" /> Question Flashcards
           </TabsTrigger>
         </TabsList>
 
+        <TabsContent value="mock-interview">
+          <InterviewSimulator />
+        </TabsContent>
         <TabsContent value="jd-analyzer">
           <JDAnalyzerTool />
         </TabsContent>

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Plus, Briefcase, ChevronRight, Calendar, Building2, ExternalLink } from 'lucide-react'
+import { Plus, Briefcase, ChevronRight, Calendar, Building2, ExternalLink, BarChart3 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -13,6 +13,7 @@ import { formatDate } from '@/utils/format'
 import { cn } from '@/utils/cn'
 import { v4 as uuidv4 } from 'uuid'
 import { KanbanBoard } from './KanbanBoard'
+import { RecruiterAnalyticsModal } from '@/components/analytics/RecruiterAnalyticsModal'
 
 const COLUMNS: { status: ApplicationStatus; label: string; color: string }[] = [
   { status: 'wishlist', label: '🔖 Wishlist', color: 'border-slate-300' },
@@ -40,6 +41,7 @@ interface ApplicationsClientProps {
 export function ApplicationsClient({ initialApplications, resumes }: ApplicationsClientProps) {
   const [applications, setApplications] = useState(initialApplications)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showAnalyticsModal, setShowAnalyticsModal] = useState(false)
   const [selectedApp, setSelectedApp] = useState<JobApplication | null>(null)
   const [view, setView] = useState<'kanban' | 'list'>('kanban')
   const supabase = getSupabaseBrowserClient()
@@ -63,11 +65,16 @@ export function ApplicationsClient({ initialApplications, resumes }: Application
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Job Applications</h1>
-          <p className="text-sm text-muted-foreground mt-1">Track your job search pipeline</p>
+          <p className="text-sm text-muted-foreground mt-1">Track your job search pipeline & recruiter open rates</p>
         </div>
-        <Button onClick={() => setShowAddModal(true)} icon={<Plus className="h-4 w-4" />}>
-          Add Application
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setShowAnalyticsModal(true)} icon={<BarChart3 className="h-4 w-4 text-primary" />}>
+            Recruiter Link Analytics
+          </Button>
+          <Button onClick={() => setShowAddModal(true)} icon={<Plus className="h-4 w-4" />}>
+            Add Application
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -177,6 +184,12 @@ export function ApplicationsClient({ initialApplications, resumes }: Application
           }}
         />
       )}
+
+      {/* Recruiter Analytics Modal */}
+      <RecruiterAnalyticsModal
+        isOpen={showAnalyticsModal}
+        onClose={() => setShowAnalyticsModal(false)}
+      />
     </div>
   )
 }

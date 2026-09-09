@@ -418,6 +418,85 @@ export function SharePortfolioModal({
     }
   }
 
+  // Generate 4K LinkedIn / Twitter Header Banner
+  const handleDownloadBanner = (format: 'linkedin' | 'twitter') => {
+    if (!qrDataUrl) return
+    setDownloadingCard(true)
+
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    if (!ctx) {
+      setDownloadingCard(false)
+      return
+    }
+
+    const isLinkedin = format === 'linkedin'
+    const targetWidth = isLinkedin ? 3168 : 3000
+    const targetHeight = isLinkedin ? 792 : 1000
+    const logicalW = isLinkedin ? 1584 : 1500
+    const logicalH = isLinkedin ? 396 : 500
+
+    canvas.width = targetWidth
+    canvas.height = targetHeight
+
+    ctx.save()
+    ctx.scale(2, 2)
+
+    // Gradient background
+    const grad = ctx.createLinearGradient(0, 0, logicalW, logicalH)
+    grad.addColorStop(0, accentColor || '#6366f1')
+    grad.addColorStop(0.6, '#0f172a')
+    grad.addColorStop(1, '#020617')
+    ctx.fillStyle = grad
+    ctx.fillRect(0, 0, logicalW, logicalH)
+
+    // Title
+    ctx.fillStyle = '#ffffff'
+    ctx.font = '900 36px system-ui, -apple-system, sans-serif'
+    ctx.fillText(portfolioTitle, 50, 110)
+
+    // Summary
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'
+    ctx.font = '400 18px system-ui, -apple-system, sans-serif'
+    ctx.fillText(portfolioSummary.slice(0, 90) + '...', 50, 155)
+
+    // Username chip
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)'
+    ctx.beginPath()
+    ctx.roundRect(50, 200, 220, 44, 12)
+    ctx.fill()
+    ctx.fillStyle = '#ffffff'
+    ctx.font = '600 16px monospace'
+    ctx.fillText(`@${username}`, 75, 228)
+
+    // QR Code on right side of banner
+    const qrImg = new Image()
+    qrImg.crossOrigin = 'anonymous'
+    qrImg.src = qrDataUrl
+    qrImg.onload = () => {
+      const qrSize = isLinkedin ? 180 : 220
+      const qrX = logicalW - qrSize - 50
+      const qrY = (logicalH - qrSize) / 2
+
+      ctx.fillStyle = '#ffffff'
+      ctx.beginPath()
+      ctx.roundRect(qrX - 15, qrY - 15, qrSize + 30, qrSize + 30, 20)
+      ctx.fill()
+
+      ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize)
+
+      ctx.restore()
+      const a = document.createElement('a')
+      a.href = canvas.toDataURL('image/png', 1.0)
+      a.download = `resunio-${format}-banner-${username}.png`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      setDownloadingCard(false)
+      toast({ title: `4K ${isLinkedin ? 'LinkedIn' : 'Twitter/X'} Banner Downloaded!`, description: 'Pixel-perfect cover banner saved to device.', variant: 'success' })
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
@@ -564,13 +643,13 @@ export function SharePortfolioModal({
           </div>
         </div>
 
-        {/* High-Resolution QR & Single Full Card Download Option */}
+        {/* High-Resolution QR & 4K Export Suite */}
         <div className="pt-3 border-t border-border space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-              <QrIcon className="h-4 w-4 text-primary" /> Networking QR & Share Banner
+              <QrIcon className="h-4 w-4 text-primary" /> 4K Ultra HD Export Suite
             </span>
-            <span className="text-[11px] text-muted-foreground">Scan with phone camera</span>
+            <span className="text-[11px] text-muted-foreground">Retina Vector Densities</span>
           </div>
 
           <div className="bg-card border border-border rounded-xl p-4 flex flex-col sm:flex-row items-center gap-5 shadow-xs">
@@ -594,26 +673,39 @@ export function SharePortfolioModal({
 
             <div className="space-y-3 text-center sm:text-left flex-1">
               <div>
-                <h4 className="text-sm font-semibold text-foreground">In-Person & Digital Networking</h4>
+                <h4 className="text-sm font-semibold text-foreground">4K Social Branding Exports</h4>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Download your executive 4K Ultra HD (3840×2016px) Share Card with embedded QR code ready for social media & crisp print.
+                  Export high-resolution share cards, LinkedIn profile cover banners, and Twitter/X headers with embedded QR codes.
                 </p>
               </div>
 
-              {/* ONE Single Primary Download Option */}
-              <div className="flex items-center justify-center sm:justify-start">
+              {/* 4K Export Action Buttons */}
+              <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
                 <Button
                   onClick={handleDownloadFullCard}
                   disabled={generatingQr || downloadingCard || !qrDataUrl}
                   size="sm"
-                  className="gap-2 shadow-md bg-primary text-primary-foreground font-semibold text-xs h-9 px-4 hover:brightness-110"
+                  className="gap-1.5 shadow-md bg-primary text-primary-foreground font-semibold text-xs h-8 px-3 hover:brightness-110"
                 >
-                  {downloadingCard ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Download className="h-4 w-4" />
-                  )}
-                  {downloadingCard ? 'Rendering 4K Card...' : 'Download 4K Ultra HD Card with QR'}
+                  <Download className="h-3.5 w-3.5" /> 4K Share Card
+                </Button>
+                <Button
+                  onClick={() => handleDownloadBanner('linkedin')}
+                  disabled={generatingQr || downloadingCard || !qrDataUrl}
+                  size="sm"
+                  variant="outline"
+                  className="gap-1.5 font-semibold text-xs h-8 px-3 hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-blue-500"
+                >
+                  <LinkedinIcon className="h-3.5 w-3.5 text-blue-600" /> LinkedIn Banner
+                </Button>
+                <Button
+                  onClick={() => handleDownloadBanner('twitter')}
+                  disabled={generatingQr || downloadingCard || !qrDataUrl}
+                  size="sm"
+                  variant="outline"
+                  className="gap-1.5 font-semibold text-xs h-8 px-3 hover:bg-sky-50 dark:hover:bg-sky-950/30 hover:border-sky-500"
+                >
+                  <TwitterIcon className="h-3.5 w-3.5 text-sky-500" /> Twitter Banner
                 </Button>
               </div>
             </div>
