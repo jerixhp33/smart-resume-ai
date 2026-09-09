@@ -46,6 +46,7 @@ interface PortfolioStoreState {
   deleteCertificationItem: (index: number) => void
   reorderSections: (newOrder: string[]) => void
   toggleSectionVisibility: (sectionId: string, hidden: boolean) => void
+  updateAiConfig: (config: Partial<NonNullable<PortfolioContent['aiConfig']>>) => void
   save: () => Promise<void>
 }
 
@@ -299,6 +300,15 @@ export const usePortfolioStore = create<PortfolioStoreState>((set, get) => ({
     if (!content) return
     const hiddenMap = { ...content.hidden_sections, [sectionId]: hidden }
     set({ content: { ...content, hidden_sections: hiddenMap }, saveStatus: 'unsaved' })
+    get().save()
+  },
+
+  updateAiConfig: (configData) => {
+    const { content } = get()
+    if (!content) return
+    const currentAiConfig = content.aiConfig || {}
+    const newAiConfig = { ...currentAiConfig, ...configData }
+    set({ content: { ...content, aiConfig: newAiConfig }, saveStatus: 'unsaved' })
     get().save()
   },
 
