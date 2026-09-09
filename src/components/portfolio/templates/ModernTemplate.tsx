@@ -343,7 +343,7 @@ export function ModernTemplate({ content, theme, items }: TemplateProps) {
 
       {/* Footer */}
       <footer className="py-8 border-t border-border/40 text-center text-xs text-muted-foreground">
-        <p>© {new Date().getFullYear()} {hero.full_name}. Built with SmartResume AI.</p>
+        <p>© {new Date().getFullYear()} {hero.full_name}. Built with Resunio.</p>
       </footer>
     </div>
   )

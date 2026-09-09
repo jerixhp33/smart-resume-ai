@@ -77,7 +77,7 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
   const [shareModalOpen, setShareModalOpen] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const publicUrl = `smartresume.ai/portfolio/${portfolio.username}`
+  const publicUrl = `resunio.ai/portfolio/${portfolio.username}`
 
   // Reset image error state whenever ogImage changes
   React.useEffect(() => {
@@ -453,8 +453,12 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
                       style={{ background: `linear-gradient(135deg, ${accentColor} 0%, #0f172a 100%)` }}
                     >
                       <div className="flex justify-between items-center z-10">
-                        <span className="text-xs font-semibold uppercase tracking-wider opacity-80 flex items-center gap-1">
-                          <Sparkles className="h-3 w-3" /> SmartResume AI
+                        <span className="text-xs font-semibold uppercase tracking-wider opacity-80 flex items-center gap-1.5">
+                          <span className="w-3.5 h-3.5 rounded-md overflow-hidden bg-slate-950 inline-block border border-white/20 shrink-0">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
+                          </span>
+                          Resunio
                         </span>
                         <span className="text-[10px] px-2 py-0.5 rounded bg-white/20 backdrop-blur-xs font-mono">
                           {portfolio.username}
@@ -473,7 +477,7 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
                 </div>
                 <div className="p-3 bg-muted/30 border-t border-border space-y-1">
                   <p className="text-[11px] font-mono text-muted-foreground uppercase tracking-tight">
-                    smartresume.ai
+                    resunio.ai
                   </p>
                   <h4 className="text-sm font-semibold line-clamp-1 text-foreground">
                     {title || 'Portfolio Title'}
@@ -528,7 +532,7 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
                     G
                   </span>
                   <div className="flex flex-col">
-                    <span className="text-foreground text-xs font-medium">SmartResume Portfolio</span>
+                    <span className="text-foreground text-xs font-medium">Resunio Portfolio</span>
                     <span className="text-[11px] text-muted-foreground font-mono truncate">
                       https://{publicUrl}
                     </span>

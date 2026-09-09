@@ -58,7 +58,7 @@ export function ClaimUsernameModal({ open, onOpenChange, onClaimed }: ClaimUsern
         
         <div className="py-4">
           <div className="flex items-center gap-2 text-sm">
-            <span className="text-muted-foreground bg-muted px-3 py-2 rounded-md border border-border">smartresume.ai/portfolio/</span>
+            <span className="text-muted-foreground bg-muted px-3 py-2 rounded-md border border-border">resunio.ai/portfolio/</span>
             <input 
               type="text"
               value={username}

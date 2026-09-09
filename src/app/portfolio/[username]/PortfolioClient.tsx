@@ -58,7 +58,7 @@ export function PortfolioClient({ site, profile, resume, items, username }: Port
         className="fixed bottom-4 right-4 z-40 bg-card/90 backdrop-blur-md border border-border text-foreground px-3.5 py-1.5 rounded-full shadow-lg text-xs font-semibold hover:scale-105 transition-all flex items-center gap-2 group"
       >
         <Sparkles className="h-3.5 w-3.5 text-primary group-hover:rotate-12 transition-transform" />
-        <span>Built with SmartResume AI</span>
+        <span>Built with Resunio</span>
       </Link>
     </div>
   )

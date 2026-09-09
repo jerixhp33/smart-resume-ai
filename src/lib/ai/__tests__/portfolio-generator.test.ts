@@ -33,10 +33,10 @@ describe('Portfolio Generator Engine', () => {
       projects: [
         {
           id: 'proj-1',
-          name: 'SmartResume AI',
+          name: 'Resunio',
           description: 'AI resume builder platform',
           technologies: ['Next.js', 'React', 'Tailwind'],
-          url: 'https://smartresume.ai',
+          url: 'https://resunio.ai',
           github_url: 'https://github.com/example/repo',
           start_date: '2023',
           end_date: null,

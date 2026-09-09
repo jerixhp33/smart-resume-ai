@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft, BarChart2, Eye, Globe } from 'lucide-react'
 
 export const metadata = {
-  title: 'Portfolio Analytics | SmartResume AI',
+  title: 'Portfolio Analytics | Resunio',
   description: 'Track portfolio views and traffic sources.',
 }
 

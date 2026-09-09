@@ -22,7 +22,7 @@ export function DashboardLayoutClient({
 
   useEffect(() => {
     setMounted(true)
-    const saved = localStorage.getItem('smartresume_sidebar_collapsed')
+    const saved = localStorage.getItem('resunio_sidebar_collapsed')
     if (saved === 'true') {
       setIsCollapsed(true)
     }
@@ -31,7 +31,7 @@ export function DashboardLayoutClient({
   const toggleCollapse = () => {
     setIsCollapsed((prev) => {
       const next = !prev
-      localStorage.setItem('smartresume_sidebar_collapsed', String(next))
+      localStorage.setItem('resunio_sidebar_collapsed', String(next))
       return next
     })
   }

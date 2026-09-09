@@ -5,7 +5,7 @@ import { getUserPortfolioAction } from '@/features/portfolio/actions'
 import { PortfolioDashboardClient } from '@/components/portfolio/PortfolioDashboardClient'
 
 export const metadata = {
-  title: 'AI Portfolio Hub | SmartResume AI',
+  title: 'AI Portfolio Hub | Resunio',
   description: 'Manage, edit, publish and track your professional AI portfolio.',
 }
 

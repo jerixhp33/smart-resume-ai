@@ -5,7 +5,7 @@ import { useResumeStore } from '@/features/resume/store'
 import { autosaveResume } from '@/features/resume/actions'
 
 const DEBOUNCE_MS = 1500
-const OFFLINE_STORAGE_KEY = 'smartresume_offline_draft'
+const OFFLINE_STORAGE_KEY = 'resunio_offline_draft'
 
 export function useAutosave() {
   const { resumeId, data, resumeName, templateId, isDirty, setSaveStatus, markClean } = useResumeStore()

@@ -4,7 +4,7 @@ import { getPortfolioByIdAction } from '@/features/portfolio/actions'
 import { PortfolioSettingsClient } from '@/components/portfolio/PortfolioSettingsClient'
 
 export const metadata = {
-  title: 'Portfolio Settings & SEO | SmartResume AI',
+  title: 'Portfolio Settings & SEO | Resunio',
   description: 'Manage SEO metadata, custom accent themes, social cards, and page titles.',
 }
 

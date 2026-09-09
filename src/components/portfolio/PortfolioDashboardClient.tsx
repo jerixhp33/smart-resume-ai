@@ -130,7 +130,7 @@ export function PortfolioDashboardClient({ portfolio, profile }: PortfolioDashbo
           <div className="space-y-1">
             <p className="text-xs font-semibold text-muted-foreground">Your Public Portfolio Link</p>
             <p className="text-sm font-mono font-medium text-foreground truncate">
-              {publicUrl || `smartresume.ai/portfolio/${username}`}
+              {publicUrl || `resunio.ai/portfolio/${username}`}
             </p>
           </div>
 

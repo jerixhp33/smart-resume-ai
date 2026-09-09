@@ -71,7 +71,7 @@ export function SharePortfolioModal({
   const [generatingQr, setGeneratingQr] = useState(true)
   const [downloadingCard, setDownloadingCard] = useState(false)
 
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://smartresume.ai'
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://resunio.ai'
   const shareUrl = `${origin}/portfolio/${username}`
 
   // Lock body scroll 100% when modal is open (prevents background scrolling on trackpad/mouse)
@@ -155,7 +155,7 @@ export function SharePortfolioModal({
       // 2. Header Branding
       ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
       ctx.font = 'bold 24px sans-serif'
-      ctx.fillText('✨ SMARTRESUME AI PORTFOLIO', 60, 80)
+      ctx.fillText('✨ RESUNIO PORTFOLIO', 60, 80)
 
       ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
       ctx.roundRect(980, 50, 160, 42, 10)
@@ -177,7 +177,7 @@ export function SharePortfolioModal({
       // 4. Footer link
       ctx.fillStyle = 'rgba(255, 255, 255, 0.75)'
       ctx.font = '22px monospace'
-      ctx.fillText(`smartresume.ai/portfolio/${username}`, 60, 560)
+      ctx.fillText(`resunio.ai/portfolio/${username}`, 60, 560)
 
       // 5. Embedded QR Code Box on bottom right
       const qrImg = new Image()
@@ -276,8 +276,12 @@ export function SharePortfolioModal({
             )}
 
             <div className="flex justify-between items-center z-10">
-              <span className="text-[11px] font-semibold uppercase tracking-wider opacity-90 flex items-center gap-1 drop-shadow-xs">
-                <Sparkles className="h-3.5 w-3.5" /> SmartResume AI Portfolio
+              <span className="text-[11px] font-semibold uppercase tracking-wider opacity-90 flex items-center gap-1.5 drop-shadow-xs">
+                <span className="w-4 h-4 rounded-md overflow-hidden bg-slate-950 inline-block border border-white/20 shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
+                </span>
+                Resunio Portfolio
               </span>
               <span className="text-[10px] px-2 py-0.5 rounded bg-white/20 backdrop-blur-xs font-mono drop-shadow-xs">
                 @{username}
@@ -290,7 +294,7 @@ export function SharePortfolioModal({
             </div>
 
             <div className="flex justify-between items-end z-10 text-[10px] opacity-80 font-mono drop-shadow-xs">
-              <span>smartresume.ai/portfolio/{username}</span>
+              <span>resunio.ai/portfolio/{username}</span>
               <span className="capitalize">{username}</span>
             </div>
           </div>

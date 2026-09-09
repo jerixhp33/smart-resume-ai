@@ -10,17 +10,22 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | SmartResume AI',
-    default: 'SmartResume AI — Build your resume. Beat the ATS. Get hired.',
+    template: '%s | Resunio',
+    default: 'Resunio — AI Resume & Portfolio Builder',
   },
   description:
-    'Create an ATS-compatible resume, tailor it to any job, and let AI help you present your real experience better.',
-  keywords: ['resume builder', 'ATS checker', 'AI resume', 'job application', 'career tools'],
+    'Build ATS-compatible resumes, generate interactive AI portfolios, tailor applications to any job, and get hired faster with Resunio.',
+  keywords: ['Resunio', 'AI Resume Builder', 'Portfolio Builder', 'ATS checker', 'AI career tools'],
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
   openGraph: {
     type: 'website',
-    title: 'SmartResume AI',
-    description: 'Build your resume. Beat the ATS. Get hired.',
-    siteName: 'SmartResume AI',
+    title: 'Resunio — AI Resume & Portfolio Builder',
+    description: 'Build ATS-compatible resumes, generate interactive AI portfolios, and track your job search.',
+    siteName: 'Resunio',
   },
   robots: {
     index: true,

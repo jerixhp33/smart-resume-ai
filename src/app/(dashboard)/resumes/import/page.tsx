@@ -106,7 +106,7 @@ export default function ImportResumePage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Import Resume</h1>
         <p className="text-muted-foreground">
-          Upload your existing PDF resume or paste your LinkedIn profile text. Our AI will automatically extract and format your information into a new SmartResume.
+          Upload your existing PDF resume or paste your LinkedIn profile text. Our AI will automatically extract and format your information into a new Resunio resume.
         </p>
       </div>
 

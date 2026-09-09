@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!resume) return { title: 'Not Found' }
   
   return {
-    title: `${(resume.data as any)?.personal?.full_name ?? 'Resume'} - SmartResume AI`,
+    title: `${(resume.data as any)?.personal?.full_name ?? 'Resume'} - Resunio`,
     description: (resume.data as any)?.summary ?? 'View my professional resume online.',
   }
 }
@@ -66,7 +66,7 @@ export default async function PublicSlugPage({ params }: Props) {
         className="fixed bottom-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-full shadow-lg font-medium text-sm hover:scale-105 transition-transform flex items-center gap-2"
       >
         <span className="text-xl leading-none">✨</span>
-        Built with SmartResume AI
+        Built with Resunio
       </a>
     </div>
   )

@@ -3,7 +3,7 @@ import { getSupabaseServerClient } from '@/lib/supabase/server'
 import { CreatePortfolioWizard } from '@/components/portfolio/CreatePortfolioWizard'
 
 export const metadata = {
-  title: 'Build AI Portfolio | SmartResume AI',
+  title: 'Build AI Portfolio | Resunio',
   description: 'Automatically build a polished professional portfolio from your resume.',
 }
 

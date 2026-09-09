@@ -147,7 +147,7 @@ export function ProjectsSection() {
                   <div className="px-4 pb-4 pt-2 space-y-4 bg-card border-t border-border/50">
                     <Input
                       label="Project Name"
-                      placeholder="SmartResume AI"
+                      placeholder="Resunio"
                       value={proj.name ?? ''}
                       onChange={e => updateItem(proj.id, 'name', e.target.value)}
                         enableAI

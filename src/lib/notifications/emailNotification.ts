@@ -30,9 +30,9 @@ async function getTransporter() {
   return nodemailer.default.createTransport(config)
 }
 
-const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME ?? 'SmartResume AI'
+const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME ?? 'Resunio'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
-const FROM = process.env.SMTP_FROM ?? `${APP_NAME} <noreply@smartresume.ai>`
+const FROM = process.env.SMTP_FROM ?? `${APP_NAME} <noreply@resunio.ai>`
 
 function buildEmailHTML(title: string, message: string, ctaText?: string, ctaUrl?: string): string {
   return `<!DOCTYPE html>

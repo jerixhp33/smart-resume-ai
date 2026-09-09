@@ -50,7 +50,7 @@ export class MockPaymentProvider implements PaymentProvider {
       amount: params.amount,
       currency: params.currency,
       status: 'created',
-      upiLink: `upi://pay?pa=mock@upi&pn=SmartResume+AI&am=${params.amount / 100}&cu=INR&tn=Resume+Unlock`,
+      upiLink: `upi://pay?pa=mock@upi&pn=Resunio&am=${params.amount / 100}&cu=INR&tn=Resume+Unlock`,
       expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 min
     }
   }

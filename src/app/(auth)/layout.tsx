@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: { template: '%s | SmartResume AI', default: 'SmartResume AI' },
+  title: { template: '%s | Resunio', default: 'Resunio — AI Resume & Portfolio Builder' },
 }
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
@@ -10,13 +10,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-border/50">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="h-7 w-7 rounded-lg bg-primary flex items-center justify-center">
-            <svg viewBox="0 0 24 24" className="h-4 w-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M9 12h6M9 8h6M9 16h4M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
-            </svg>
+        <Link href="/" className="flex items-center gap-2.5">
+          <div className="h-8 w-8 rounded-lg overflow-hidden flex items-center justify-center bg-slate-950 border border-border/40">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="Resunio Logo" className="w-full h-full object-cover" />
           </div>
-          <span className="font-semibold text-sm">SmartResume AI</span>
+          <span className="font-bold text-base bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500">Resunio</span>
         </Link>
         <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
           Back to home
@@ -30,7 +29,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
       {/* Footer */}
       <footer className="py-4 text-center text-xs text-muted-foreground border-t border-border/50">
-        © {new Date().getFullYear()} SmartResume AI &nbsp;·&nbsp;
+        © {new Date().getFullYear()} Resunio &nbsp;·&nbsp;
         <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
         &nbsp;·&nbsp;
         <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>

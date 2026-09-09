@@ -4,7 +4,7 @@ import { getPortfolioByIdAction } from '@/features/portfolio/actions'
 import { PortfolioStudioEditor } from '@/components/portfolio/editor/PortfolioStudioEditor'
 
 export const metadata = {
-  title: 'Portfolio Studio Editor | SmartResume AI',
+  title: 'Portfolio Studio Editor | Resunio',
   description: 'Live studio editor to customize your AI portfolio.',
 }
 
