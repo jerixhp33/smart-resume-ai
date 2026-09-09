@@ -142,6 +142,7 @@ export function PortfolioStudioEditor({ portfolio }: PortfolioStudioEditorProps)
         <div className="flex items-center gap-2">
           {/* Unlimited AI Code & Design Prompt Studio Button */}
           <Button
+            data-ai-prompt-studio-btn
             onClick={() => setShowAiCodeModal(true)}
             size="sm"
             className="gap-1.5 text-xs h-8 bg-gradient-to-r from-primary via-indigo-600 to-purple-600 text-white font-bold shadow-md hover:scale-[1.02] transition-all"

@@ -10,18 +10,24 @@ import { ProfessionalTemplate } from './ProfessionalTemplate'
 import { EditorialTemplate } from './EditorialTemplate'
 import { BoldTemplate } from './BoldTemplate'
 import { ElegantTemplate } from './ElegantTemplate'
+import { AIGeneratedTemplate } from './AIGeneratedTemplate'
 import { PortfolioNavbar } from './PortfolioNavbar'
 import { getThemeConfig } from './theme-config'
 
 interface PortfolioRendererProps {
   content: PortfolioContent
-  template: PortfolioTemplateId
+  template: PortfolioTemplateId | 'ai-generated'
   theme: PortfolioThemeId
   customAccentColor?: string
+  aiConfig?: {
+    accentHex?: string
+    layoutType?: 'matrix-terminal' | 'glass-cards' | 'gold-serif' | 'cyberpunk-neon' | 'standard'
+    customCss?: string
+  }
   items?: UserFile[]
 }
 
-function getTemplateBgClass(template: PortfolioTemplateId): string {
+function getTemplateBgClass(template: string): string {
   switch (template) {
     case 'bold':
       return 'bg-black text-white'
@@ -29,6 +35,7 @@ function getTemplateBgClass(template: PortfolioTemplateId): string {
       return 'bg-[#faf8f5] text-[#1c1917]'
     case 'minimal':
       return 'bg-background text-foreground'
+    case 'ai-generated':
     case 'developer':
     case 'creative':
     case 'elegant':
@@ -39,12 +46,16 @@ function getTemplateBgClass(template: PortfolioTemplateId): string {
   }
 }
 
-export function PortfolioRenderer({ content, template, theme, customAccentColor, items }: PortfolioRendererProps) {
+export function PortfolioRenderer({ content, template, theme, customAccentColor, aiConfig, items }: PortfolioRendererProps) {
   const bgClass = getTemplateBgClass(template)
   const themeConfig = getThemeConfig(theme, customAccentColor)
-  const accentHex = customAccentColor || (themeConfig.customHex ?? '#6366f1')
+  const accentHex = customAccentColor || aiConfig?.accentHex || (themeConfig.customHex ?? '#6366f1')
 
   const renderTemplate = () => {
+    if ((template as string) === 'ai-generated') {
+      return <AIGeneratedTemplate content={content} theme={theme} aiConfig={{ ...aiConfig, accentHex }} items={items} />
+    }
+
     switch (template) {
       case 'minimal':
         return <MinimalTemplate content={content} theme={theme} items={items} />
@@ -74,7 +85,7 @@ export function PortfolioRenderer({ content, template, theme, customAccentColor,
         '--accent-color': accentHex,
       } as React.CSSProperties}
     >
-      <PortfolioNavbar content={content} template={template} theme={theme} items={items} />
+      <PortfolioNavbar content={content} template={template as PortfolioTemplateId} theme={theme} items={items} />
       {renderTemplate()}
     </div>
   )
