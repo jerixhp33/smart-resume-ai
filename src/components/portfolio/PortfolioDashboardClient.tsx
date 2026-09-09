@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import type { PortfolioSite, Profile } from '@/types'
 import { publishPortfolioAction } from '@/features/portfolio/actions'
 import { ClaimUsernameModal } from './ClaimUsernameModal'
+import { SharePortfolioModal } from './SharePortfolioModal'
 import { Sparkles, Edit3, Eye, Share2, BarChart2, Globe, Check, Copy, Settings, Plus, ArrowRight } from 'lucide-react'
 
 interface PortfolioDashboardClientProps {
@@ -20,6 +21,7 @@ export function PortfolioDashboardClient({ portfolio, profile }: PortfolioDashbo
   const [publishing, setPublishing] = useState(false)
   const [copied, setCopied] = useState(false)
   const [claimModalOpen, setClaimModalOpen] = useState(false)
+  const [shareModalOpen, setShareModalOpen] = useState(false)
   const [username, setUsername] = useState(portfolio?.username || (profile as any)?.username || '')
 
   const publicUrl = username ? `${typeof window !== 'undefined' ? window.location.origin : ''}/portfolio/${username}` : ''
@@ -81,6 +83,13 @@ export function PortfolioDashboardClient({ portfolio, profile }: PortfolioDashbo
         </div>
 
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setShareModalOpen(true)}
+            className="gap-2 shadow-xs border-primary/30 text-primary hover:bg-primary/5"
+          >
+            <Share2 className="h-4 w-4" /> Share Portfolio
+          </Button>
           <Link href={`/portfolio/editor/${portfolio.id}`}>
             <Button className="gap-2 shadow-xs">
               <Edit3 className="h-4 w-4" /> Open Studio Editor
@@ -126,6 +135,9 @@ export function PortfolioDashboardClient({ portfolio, profile }: PortfolioDashbo
           </div>
 
           <div className="flex items-center gap-2">
+            <Button size="sm" onClick={() => setShareModalOpen(true)} className="gap-1.5 shadow-xs">
+              <Share2 className="h-3.5 w-3.5" /> Share Card
+            </Button>
             <Button variant="outline" size="sm" onClick={handleCopyLink} className="gap-1.5">
               {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
               {copied ? 'Copied!' : 'Copy Link'}
@@ -172,6 +184,16 @@ export function PortfolioDashboardClient({ portfolio, profile }: PortfolioDashbo
         onOpenChange={setClaimModalOpen}
         onClaimed={(newUsername) => setUsername(newUsername)}
       />
+
+      <SharePortfolioModal
+        open={shareModalOpen}
+        onOpenChange={setShareModalOpen}
+        portfolioTitle={portfolio.title}
+        portfolioSummary={portfolio.content?.hero?.summary}
+        username={username}
+        accentColor={portfolio.seo_metadata?.accent_color || portfolio.theme}
+      />
     </div>
   )
 }
+

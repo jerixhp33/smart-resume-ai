@@ -42,6 +42,8 @@ function TwitterIcon({ className }: { className?: string }) {
   )
 }
 
+import { SharePortfolioModal } from './SharePortfolioModal'
+
 interface PortfolioSettingsClientProps {
   portfolio: PortfolioSite
 }
@@ -72,6 +74,7 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
   const [saving, setSaving] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [imageError, setImageError] = useState(false)
+  const [shareModalOpen, setShareModalOpen] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const publicUrl = `smartresume.ai/portfolio/${portfolio.username}`
@@ -166,6 +169,14 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
         </div>
 
         <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShareModalOpen(true)}
+            className="gap-1.5 border-primary/30 text-primary hover:bg-primary/5"
+          >
+            <Share2 className="h-3.5 w-3.5" /> Share Portfolio
+          </Button>
           <Link href={`/portfolio/${portfolio.username}`} target="_blank">
             <Button variant="outline" size="sm" className="gap-1.5">
               <ExternalLink className="h-3.5 w-3.5" /> View Public Site
@@ -546,6 +557,16 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
           </div>
         </div>
       </div>
+
+      <SharePortfolioModal
+        open={shareModalOpen}
+        onOpenChange={setShareModalOpen}
+        portfolioTitle={title}
+        portfolioSummary={description}
+        username={portfolio.username}
+        accentColor={accentColor}
+      />
     </div>
   )
 }
+
