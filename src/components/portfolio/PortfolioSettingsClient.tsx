@@ -22,7 +22,8 @@ import {
   Search,
   Upload,
   Image as ImageIcon,
-  Trash2
+  Trash2,
+  CheckCircle2
 } from 'lucide-react'
 
 function LinkedinIcon({ className }: { className?: string }) {
@@ -307,7 +308,16 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
                       )}
                     </div>
                     <div className="flex-1 space-y-2 text-xs w-full">
-                      <p className="font-medium text-foreground truncate max-w-[280px]">{ogImage}</p>
+                      <div className="flex items-center gap-1.5 font-medium text-foreground">
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                        <span className="truncate max-w-[240px]">
+                          {ogImage.startsWith('blob:')
+                            ? 'Local Upload Preview'
+                            : ogImage.includes('.supabase.co') || ogImage.startsWith('/api/assets/')
+                            ? 'Cloud Uploaded Social Banner'
+                            : ogImage}
+                        </span>
+                      </div>
                       <div className="flex items-center gap-2">
                         <Button
                           type="button"
@@ -352,11 +362,15 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
                 )}
 
                 <div className="space-y-1">
-                  <label className="text-[11px] text-muted-foreground font-medium">Or enter image URL manually:</label>
+                  <label className="text-[11px] text-muted-foreground font-medium">Or enter custom image URL manually:</label>
                   <Input
-                    value={ogImage}
+                    value={ogImage.includes('.supabase.co') || ogImage.startsWith('/api/assets/') ? '' : ogImage}
                     onChange={(e) => setOgImage(e.target.value)}
-                    placeholder="https://example.com/images/portfolio-banner.png"
+                    placeholder={
+                      ogImage.includes('.supabase.co') || ogImage.startsWith('/api/assets/')
+                        ? 'Cloud asset active. Paste external image URL to replace...'
+                        : 'https://example.com/images/portfolio-banner.png'
+                    }
                     className="text-xs font-mono"
                   />
                 </div>

@@ -415,22 +415,10 @@ export async function uploadPortfolioOGImageAction(formData: FormData) {
     return { error: 'Failed to upload image. Please try again.' }
   }
 
-  // 1. Try signed URL (10 years expiration) which works whether bucket is public or private
-  const { data: signedData } = await supabase.storage
-    .from('user_files')
-    .createSignedUrl(storagePath, 60 * 60 * 24 * 365 * 10)
-
-  if (signedData?.signedUrl) {
-    return { publicUrl: signedData.signedUrl }
-  }
-
-  // 2. Fallback to getPublicUrl
-  const { data: publicUrlData } = supabase.storage
-    .from('user_files')
-    .getPublicUrl(storagePath)
-
-  return { publicUrl: publicUrlData.publicUrl }
+  // Return proxied native asset URL (masks Supabase infrastructure URL)
+  return { publicUrl: `/api/assets/${storagePath}` }
 }
+
 
 
 
