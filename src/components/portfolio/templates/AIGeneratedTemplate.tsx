@@ -7,9 +7,7 @@ import { StaggerContainer } from '@/components/motion/StaggerContainer'
 import { StaggerItem } from '@/components/motion/StaggerItem'
 import { TiltCard } from '@/components/motion/TiltCard'
 import { ProjectAppPreview } from './ProjectAppPreview'
-import { getExperienceTypeLabel, getCleanDescription } from './template-utils'
-import { ExternalLink, Mail, Award, Terminal, Sparkles, CheckCircle2 } from 'lucide-react'
-import { GithubIcon } from '@/components/ui/icons'
+import { ExternalLink, Mail, Award, Terminal, Sparkles, CheckCircle2, Briefcase, GraduationCap, Code2, User, Layers } from 'lucide-react'
 
 interface AITemplateConfig {
   accentHex?: string
@@ -29,7 +27,7 @@ export function AIGeneratedTemplate({ content, theme, aiConfig, items }: Templat
   const { hero, about, experience, education, skills, projects, certifications, contact } = content
   const hidden = content.hidden_sections || {}
 
-  const accentHex = aiConfig?.accentHex || '#6366f1'
+  const accentHex = aiConfig?.accentHex || '#06b6d4'
   const layoutType = aiConfig?.layoutType || 'cyberpunk-neon'
   const customCss = aiConfig?.customCss || ''
 
@@ -52,7 +50,7 @@ export function AIGeneratedTemplate({ content, theme, aiConfig, items }: Templat
       {/* Dynamic Ambient Background Aura */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div 
-          className="absolute -top-[20%] left-1/2 -translate-x-1/2 w-[900px] h-[600px] blur-[150px] rounded-full opacity-40"
+          className="absolute -top-[20%] left-1/2 -translate-x-1/2 w-[900px] h-[600px] blur-[160px] rounded-full opacity-40 pointer-events-none"
           style={{ background: `radial-gradient(circle, ${accentHex} 0%, transparent 70%)` }}
         />
       </div>
@@ -64,9 +62,9 @@ export function AIGeneratedTemplate({ content, theme, aiConfig, items }: Templat
         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
       </div>
 
-      {/* Hero Section */}
-      {!hidden.hero && (
-        <SectionReveal id="top" className="py-20 md:py-32 max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+      {/* 1. Hero Section */}
+      {!hidden.hero && hero && (
+        <SectionReveal id="top" className="py-20 md:py-28 max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-10">
             <div className="max-w-3xl space-y-6 flex-1">
               {hero.availability && (
@@ -139,12 +137,87 @@ export function AIGeneratedTemplate({ content, theme, aiConfig, items }: Templat
         </SectionReveal>
       )}
 
-      {/* Featured Projects Grid */}
+      {/* 2. About Bio Section */}
+      {!hidden.about && about && (
+        <SectionReveal id="about" className="py-16 max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+          <div className="bg-slate-900/60 border border-white/10 rounded-3xl p-8 backdrop-blur-xl space-y-6 shadow-2xl">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400">
+              <User className="h-4 w-4" style={{ color: accentHex }} />
+              <span>About Candidate</span>
+            </div>
+            
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight">Biography & Career Direction</h2>
+            
+            <p className="text-sm sm:text-base opacity-90 leading-relaxed max-w-4xl">
+              {about.biography}
+            </p>
+
+            {about.strengths && about.strengths.length > 0 && (
+              <div className="space-y-2 pt-2">
+                <span className="text-xs font-bold uppercase tracking-wider opacity-75">Key Strengths & Competencies</span>
+                <div className="flex flex-wrap gap-2">
+                  {about.strengths.map((str, idx) => (
+                    <span 
+                      key={idx}
+                      className="px-3 py-1 rounded-xl text-xs font-bold border backdrop-blur-md"
+                      style={{
+                        backgroundColor: `${accentHex}15`,
+                        borderColor: `${accentHex}35`,
+                        color: accentHex,
+                      }}
+                    >
+                      ✓ {str}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </SectionReveal>
+      )}
+
+      {/* 3. Skills & Technical Stack Section */}
+      {!hidden.skills && skills && skills.length > 0 && (
+        <SectionReveal id="skills" className="py-16 max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+          <div className="mb-8">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400">
+              <Code2 className="h-4 w-4" style={{ color: accentHex }} />
+              <span>Technical Capabilities</span>
+            </div>
+            <h2 className="text-3xl font-black tracking-tight mt-1">Skills & Stack</h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {skills.map((group) => (
+              <TiltCard key={group.id} className="rounded-2xl">
+                <div className="bg-slate-900/80 border border-white/10 rounded-2xl p-6 hover:border-white/30 backdrop-blur-xl transition-all space-y-4 shadow-xl">
+                  <h3 className="text-base font-bold flex items-center justify-between border-b border-white/10 pb-3">
+                    <span>{group.category}</span>
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: accentHex }} />
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {group.skills.map((skill, i) => (
+                      <span
+                        key={i}
+                        className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/5 border border-white/15 hover:bg-white/10 transition-colors"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </TiltCard>
+            ))}
+          </div>
+        </SectionReveal>
+      )}
+
+      {/* 4. Featured Projects Grid */}
       {!hidden.projects && projects && projects.length > 0 && (
         <SectionReveal id="projects" className="py-20 max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="mb-10">
             <span className="text-xs font-bold uppercase tracking-widest text-slate-400 bg-white/5 px-3 py-1 rounded-full border border-white/10">
-              AI Generated Layout
+              AI Generated Showcase
             </span>
             <h2 className="text-3xl font-black tracking-tight mt-2">Featured Projects</h2>
           </div>
@@ -159,7 +232,7 @@ export function AIGeneratedTemplate({ content, theme, aiConfig, items }: Templat
                       <div className="flex justify-between items-center mb-2">
                         <h3 className="text-xl font-bold">{proj.title}</h3>
                         {proj.live_url && (
-                          <a href={proj.live_url} target="_blank" rel="noopener noreferrer" className="p-1 rounded bg-white/10 hover:bg-white/20">
+                          <a href={proj.live_url} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20">
                             <ExternalLink className="h-4 w-4" />
                           </a>
                         )}
@@ -183,22 +256,33 @@ export function AIGeneratedTemplate({ content, theme, aiConfig, items }: Templat
         </SectionReveal>
       )}
 
-      {/* Experience Timeline */}
+      {/* 5. Experience Timeline */}
       {!hidden.experience && experience && experience.length > 0 && (
         <SectionReveal id="experience" className="py-20 bg-slate-900/40 border-y border-white/10 relative z-10">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400">
+              <Briefcase className="h-4 w-4" style={{ color: accentHex }} />
+              <span>Career History</span>
+            </div>
             <h2 className="text-3xl font-black tracking-tight">Work Experience</h2>
             <div className="space-y-6">
               {experience.map((exp) => (
-                <div key={exp.id} className="bg-slate-900/80 border border-white/10 p-6 rounded-2xl space-y-3">
+                <div key={exp.id} className="bg-slate-900/80 border border-white/10 p-6 rounded-2xl space-y-3 shadow-xl">
                   <div className="flex justify-between items-start flex-wrap gap-2">
                     <div>
                       <h3 className="text-lg font-bold">{exp.role}</h3>
-                      <p className="text-xs opacity-75">{exp.company}</p>
+                      <p className="text-xs opacity-75" style={{ color: accentHex }}>{exp.company}</p>
                     </div>
-                    <span className="text-xs font-mono opacity-60 bg-white/5 px-2.5 py-1 rounded-md">{exp.period}</span>
+                    <span className="text-xs font-mono opacity-80 bg-white/5 border border-white/10 px-3 py-1 rounded-lg">{exp.period}</span>
                   </div>
-                  <p className="text-xs opacity-80 leading-relaxed">{exp.description}</p>
+                  <p className="text-xs opacity-85 leading-relaxed">{exp.description}</p>
+                  {exp.bullets && exp.bullets.length > 0 && (
+                    <ul className="space-y-1 text-xs opacity-80 pt-1 list-disc list-inside">
+                      {exp.bullets.map((b, i) => (
+                        <li key={i}>{b}</li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               ))}
             </div>
@@ -206,10 +290,60 @@ export function AIGeneratedTemplate({ content, theme, aiConfig, items }: Templat
         </SectionReveal>
       )}
 
-      {/* Contact Section */}
+      {/* 6. Education Section */}
+      {!hidden.education && education && education.length > 0 && (
+        <SectionReveal id="education" className="py-16 max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+          <div className="mb-8">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400">
+              <GraduationCap className="h-4 w-4" style={{ color: accentHex }} />
+              <span>Academic Background</span>
+            </div>
+            <h2 className="text-3xl font-black tracking-tight mt-1">Education</h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {education.map((edu) => (
+              <div key={edu.id} className="bg-slate-900/80 border border-white/10 p-6 rounded-2xl space-y-3 shadow-xl">
+                <div className="flex justify-between items-start gap-2">
+                  <div>
+                    <h3 className="text-base font-bold">{edu.degree} {edu.field ? `in ${edu.field}` : ''}</h3>
+                    <p className="text-xs opacity-75" style={{ color: accentHex }}>{edu.institution}</p>
+                  </div>
+                  <span className="text-xs font-mono opacity-75 bg-white/5 px-2.5 py-1 rounded-md">{edu.period}</span>
+                </div>
+                {edu.gpa && <p className="text-xs font-bold opacity-80">GPA: {edu.gpa}</p>}
+              </div>
+            ))}
+          </div>
+        </SectionReveal>
+      )}
+
+      {/* 7. Certifications Section */}
+      {!hidden.certifications && certifications && certifications.length > 0 && (
+        <SectionReveal id="certifications" className="py-16 max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+          <div className="mb-8">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400">
+              <Award className="h-4 w-4" style={{ color: accentHex }} />
+              <span>Verified Credentials</span>
+            </div>
+            <h2 className="text-3xl font-black tracking-tight mt-1">Certifications</h2>
+          </div>
+
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {certifications.map((cert) => (
+              <div key={cert.id} className="bg-slate-900/80 border border-white/10 p-5 rounded-2xl space-y-2 shadow-lg">
+                <p className="font-bold text-sm">{cert.title}</p>
+                <p className="text-xs opacity-75">{cert.issuer} {cert.date ? `· ${cert.date}` : ''}</p>
+              </div>
+            ))}
+          </div>
+        </SectionReveal>
+      )}
+
+      {/* 8. Contact Section */}
       {!hidden.contact && contact && (
         <SectionReveal id="contact" className="py-24 max-w-3xl mx-auto px-4 text-center space-y-6 relative z-10">
-          <h2 className="text-3xl font-black">{contact.heading || 'Get In Touch'}</h2>
+          <h2 className="text-3xl sm:text-4xl font-black">{contact.heading || 'Get In Touch'}</h2>
           <p className="text-sm opacity-80 max-w-md mx-auto">{contact.subheading}</p>
           {contact.email && (
             <a
@@ -223,8 +357,8 @@ export function AIGeneratedTemplate({ content, theme, aiConfig, items }: Templat
         </SectionReveal>
       )}
 
-      <footer className="py-8 border-t border-white/10 text-center text-xs opacity-60">
-        <p>© {new Date().getFullYear()} {hero.full_name} · Dynamic AI Portfolio</p>
+      <footer className="py-8 border-t border-white/10 text-center text-xs opacity-60 relative z-10">
+        <p>© {new Date().getFullYear()} {hero.full_name} · Dynamic AI Studio Portfolio</p>
       </footer>
     </div>
   )
