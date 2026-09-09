@@ -382,3 +382,41 @@ export async function updatePortfolioSEOSettingsAction(params: {
   return { success: true }
 }
 
+// ── Upload Portfolio OG Image Direct ────────────────────
+export async function uploadPortfolioOGImageAction(formData: FormData) {
+  const supabase = await getSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+
+  const file = formData.get('file') as File
+  if (!file) return { error: 'No file provided' }
+
+  const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif']
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return { error: 'Invalid file type. Please upload a PNG, JPEG, WebP, or GIF image.' }
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    return { error: 'Image file size must be less than 5MB.' }
+  }
+
+  const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
+  const storagePath = `${user.id}/og_${Date.now()}_${safeName}`
+
+  const { error: uploadError } = await supabase.storage
+    .from('user_files')
+    .upload(storagePath, file)
+
+  if (uploadError) {
+    console.error('OG Image upload failed:', uploadError)
+    return { error: 'Failed to upload image. Please try again.' }
+  }
+
+  const { data: publicUrlData } = supabase.storage
+    .from('user_files')
+    .getPublicUrl(storagePath)
+
+  return { publicUrl: publicUrlData.publicUrl }
+}
+
+

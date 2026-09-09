@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import Link from 'next/link'
 import { PortfolioSite } from '@/types'
-import { updatePortfolioSEOSettingsAction } from '@/features/portfolio/actions'
+import { updatePortfolioSEOSettingsAction, uploadPortfolioOGImageAction } from '@/features/portfolio/actions'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,7 +19,10 @@ import {
   Check, 
   Palette, 
   ExternalLink,
-  Search
+  Search,
+  Upload,
+  Image as ImageIcon,
+  Trash2
 } from 'lucide-react'
 
 function LinkedinIcon({ className }: { className?: string }) {
@@ -37,7 +40,6 @@ function TwitterIcon({ className }: { className?: string }) {
     </svg>
   )
 }
-
 
 interface PortfolioSettingsClientProps {
   portfolio: PortfolioSite
@@ -67,8 +69,39 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
   const [accentColor, setAccentColor] = useState(initialSeo.accent_color || portfolio.theme || '#6366f1')
   const [activeTab, setActiveTab] = useState<'social' | 'twitter' | 'google'>('social')
   const [saving, setSaving] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
 
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const publicUrl = `smartresume.ai/portfolio/${portfolio.username}`
+
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!['image/png', 'image/jpeg', 'image/webp', 'image/gif'].includes(file.type)) {
+      toast({ title: 'Invalid Image', description: 'Please upload a PNG, JPEG, WebP, or GIF image.', variant: 'error' })
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: 'File Too Large', description: 'Image size must be under 5MB.', variant: 'error' })
+      return
+    }
+
+    setUploadingImage(true)
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const res = await uploadPortfolioOGImageAction(formData)
+    setUploadingImage(false)
+
+    if (res.error) {
+      toast({ title: 'Upload Failed', description: res.error, variant: 'error' })
+    } else if (res.publicUrl) {
+      setOgImage(res.publicUrl)
+      toast({ title: 'Image Uploaded!', description: 'Social share image updated successfully.', variant: 'success' })
+    }
+  }
 
   const handleSave = async () => {
     if (!title.trim()) {
@@ -230,22 +263,86 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
                 </div>
               </div>
 
-              <div className="space-y-1.5 pt-2">
-                <label className="font-semibold text-xs text-foreground">
-                  Social Sharing Image URL (og:image)
+              <div className="space-y-3 pt-2">
+                <label className="font-semibold text-xs text-foreground flex items-center justify-between">
+                  <span>Social Sharing Image (og:image)</span>
+                  <span className="text-muted-foreground font-normal text-[11px]">Recommended: 1200×630px</span>
                 </label>
-                <Input
-                  value={ogImage}
-                  onChange={(e) => setOgImage(e.target.value)}
-                  placeholder="https://example.com/images/portfolio-banner.png"
+
+                {/* Direct Upload Dropzone */}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageFileChange}
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  className="hidden"
                 />
-                <p className="text-[11px] text-muted-foreground">
-                  Recommended size: 1200x630px. Leave empty to use auto-generated branded card.
-                </p>
+
+                {ogImage ? (
+                  <div className="border border-border rounded-xl p-3 bg-muted/20 flex flex-col sm:flex-row items-center gap-4">
+                    <div className="w-full sm:w-40 aspect-[1200/630] rounded-lg overflow-hidden border border-border bg-slate-900 shrink-0 relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={ogImage} alt="OG Thumbnail" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 space-y-2 text-xs w-full">
+                      <p className="font-medium text-foreground truncate max-w-[280px]">{ogImage}</p>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          disabled={uploadingImage}
+                          onClick={() => fileInputRef.current?.click()}
+                          className="gap-1.5 text-xs h-8"
+                        >
+                          {uploadingImage ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+                          Replace Image
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setOgImage('')}
+                          className="gap-1.5 text-xs h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" /> Remove
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => !uploadingImage && fileInputRef.current?.click()}
+                    className="border-2 border-dashed border-border hover:border-primary/50 rounded-xl p-6 transition-all text-center cursor-pointer bg-muted/10 hover:bg-primary/5 flex flex-col items-center justify-center gap-2 group"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                      {uploadingImage ? <Loader2 className="h-5 w-5 animate-spin" /> : <ImageIcon className="h-5 w-5" />}
+                    </div>
+                    <div className="space-y-0.5">
+                      <p className="text-xs font-semibold text-foreground">
+                        {uploadingImage ? 'Uploading Image...' : 'Click to Upload Direct Image'}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        PNG, JPG, WebP or GIF up to 5MB
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-1">
+                  <label className="text-[11px] text-muted-foreground font-medium">Or enter image URL manually:</label>
+                  <Input
+                    value={ogImage}
+                    onChange={(e) => setOgImage(e.target.value)}
+                    placeholder="https://example.com/images/portfolio-banner.png"
+                    className="text-xs font-mono"
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
+
 
         {/* Right Column: Real-Time Live Preview */}
         <div className="lg:col-span-5 space-y-4">
