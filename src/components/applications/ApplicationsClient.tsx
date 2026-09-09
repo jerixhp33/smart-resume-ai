@@ -168,6 +168,13 @@ export function ApplicationsClient({ initialApplications, resumes }: Application
             updateStatus(id, status)
             setSelectedApp(prev => prev ? { ...prev, status } : null)
           }}
+          onDelete={(id) => {
+            setApplications(prev => prev.filter(a => a.id !== id))
+          }}
+          onUpdate={(updated) => {
+            setApplications(prev => prev.map(a => a.id === updated.id ? updated : a))
+            setSelectedApp(updated)
+          }}
         />
       )}
     </div>
@@ -251,11 +258,55 @@ function ApplicationDetailModal({
   application,
   onClose,
   onStatusChange,
+  onDelete,
+  onUpdate,
 }: {
   application: JobApplication
   onClose: () => void
   onStatusChange: (id: string, status: ApplicationStatus) => void
+  onDelete: (id: string) => void
+  onUpdate: (updated: JobApplication) => void
 }) {
+  const supabase = getSupabaseBrowserClient()
+  const [notes, setNotes] = useState(application.notes ?? '')
+  const [salaryRange, setSalaryRange] = useState(application.salary_range ?? '')
+  const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+
+  async function handleSaveNotes() {
+    setSaving(true)
+    const { error } = await supabase
+      .from('job_applications')
+      .update({ notes: notes.trim() || null, salary_range: salaryRange.trim() || null })
+      .eq('id', application.id)
+
+    setSaving(false)
+    if (error) {
+      toast({ title: 'Failed to update details', variant: 'error' })
+    } else {
+      toast({ title: 'Application updated!', variant: 'success' })
+      onUpdate({ ...application, notes: notes.trim() || null, salary_range: salaryRange.trim() || null })
+    }
+  }
+
+  async function handleDelete() {
+    if (!confirm('Are you sure you want to delete this application?')) return
+    setDeleting(true)
+    const { error } = await supabase
+      .from('job_applications')
+      .delete()
+      .eq('id', application.id)
+
+    setDeleting(false)
+    if (error) {
+      toast({ title: 'Failed to delete application', variant: 'error' })
+    } else {
+      toast({ title: 'Application deleted', variant: 'success' })
+      onDelete(application.id)
+      onClose()
+    }
+  }
+
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
@@ -263,24 +314,27 @@ function ApplicationDetailModal({
           <DialogTitle>{application.position}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 mt-2">
-          <div className="flex items-center gap-3">
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm">{application.company}</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Building2 className="h-4 w-4" />
+              <span className="font-medium text-foreground">{application.company}</span>
+            </div>
+            {application.job_url && (
+              <a href={application.job_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-primary hover:underline">
+                <ExternalLink className="h-3.5 w-3.5" /> View Posting
+              </a>
+            )}
           </div>
-          {application.job_url && (
-            <a href={application.job_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-primary hover:underline">
-              <ExternalLink className="h-4 w-4" /> View Job Posting
-            </a>
-          )}
+
           <div>
-            <label className="block text-sm font-medium mb-1.5">Update Status</label>
-            <div className="flex flex-wrap gap-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Status Pipeline</label>
+            <div className="flex flex-wrap gap-1.5">
               {COLUMNS.map(col => (
                 <button
                   key={col.status}
                   onClick={() => onStatusChange(application.id, col.status)}
                   className={cn(
-                    'px-3 py-1.5 rounded-full text-xs font-medium border transition-all',
+                    'px-2.5 py-1 rounded-full text-xs font-medium border transition-all',
                     application.status === col.status
                       ? 'bg-primary text-primary-foreground border-primary'
                       : 'border-border hover:border-primary/40'
@@ -292,7 +346,7 @@ function ApplicationDetailModal({
               <button
                 onClick={() => onStatusChange(application.id, 'rejected')}
                 className={cn(
-                  'px-3 py-1.5 rounded-full text-xs font-medium border transition-all',
+                  'px-2.5 py-1 rounded-full text-xs font-medium border transition-all',
                   application.status === 'rejected'
                     ? 'bg-destructive text-destructive-foreground border-destructive'
                     : 'border-border hover:border-destructive/40 text-destructive'
@@ -302,15 +356,43 @@ function ApplicationDetailModal({
               </button>
             </div>
           </div>
-          {application.notes && (
-            <div>
-              <p className="text-sm font-medium mb-1">Notes</p>
-              <p className="text-sm text-muted-foreground">{application.notes}</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Input label="Salary / Range" placeholder="e.g. $120,000 / year" value={salaryRange} onChange={e => setSalaryRange(e.target.value)} />
+            {application.application_date && (
+              <div>
+                <label className="block text-xs font-medium mb-1">Applied Date</label>
+                <div className="h-10 border border-input rounded-lg px-3 flex items-center text-sm bg-muted/30">
+                  {formatDate(application.application_date, 'dd MMM yyyy')}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium mb-1">Notes & Next Steps</label>
+            <textarea
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              placeholder="Add interview feedback, recruiter contact info, or follow-up notes…"
+              rows={3}
+              className="w-full border border-input rounded-lg px-3 py-2 text-sm bg-background resize-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </div>
+
+          <div className="flex items-center justify-between pt-2 border-t border-border">
+            <Button variant="ghost" size="sm" onClick={handleDelete} loading={deleting} className="text-destructive hover:text-destructive hover:bg-destructive/10">
+              Delete
+            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
+              <Button size="sm" loading={saving} onClick={handleSaveNotes}>Save Details</Button>
             </div>
-          )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
   )
 }
+
 
