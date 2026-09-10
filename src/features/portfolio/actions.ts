@@ -3,7 +3,7 @@
 import { getSupabaseServiceClient, getSupabaseServerClient } from '@/lib/supabase/server'
 import type { Profile, UserFile, Resume, PortfolioSite, PortfolioTemplateId, PortfolioThemeId, MotionLevel, PortfolioContent } from '@/types'
 import { generateAIPortfolio } from '@/lib/ai/portfolio-generator'
-import { mapResumeToPortfolioContent } from '@/lib/portfolio/mapper'
+import { mapResumeToPortfolioContent, enrichContentWithResume } from '@/lib/portfolio/mapper'
 import { revalidatePath } from 'next/cache'
 
 export async function claimUsernameAction(username: string) {
@@ -117,7 +117,8 @@ export async function createPortfolioFromResumeAction(params: {
   }
 
   // 3. Generate portfolio content using Groq AI (with Zod schema & fallback)
-  const portfolioContent = await generateAIPortfolio(resumeData, profile, user.id)
+  const rawPortfolioContent = await generateAIPortfolio(resumeData, profile, user.id)
+  const portfolioContent = enrichContentWithResume(rawPortfolioContent, resumeData, profile)
   if (params.aiConfig) {
     portfolioContent.aiConfig = params.aiConfig
   }

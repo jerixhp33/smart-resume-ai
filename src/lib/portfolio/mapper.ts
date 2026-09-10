@@ -22,36 +22,34 @@ function getFirstSentence(text: string): string {
 
 /**
  * Deterministic mapping function from resume & profile data to portfolio content
+ * Ultra-robust parser for all variants of parsed resume schemas
  */
 export function mapResumeToPortfolioContent(
-  resumeData: Partial<ResumeData>,
+  resumeData: Partial<ResumeData> | Record<string, any>,
   profile?: Partial<Profile> | null
 ): PortfolioContent {
-  const p = resumeData.personal || {
-    full_name: profile?.full_name || 'Professional',
-    professional_title: 'Specialist',
-    email: profile?.email || '',
-    phone: '',
-    location: '',
-    linkedin: '',
-    github: '',
-    portfolio: '',
-    other_links: [],
-  }
-
-  // Ensure hero.summary is a punchy tagline/sentence while about.biography holds full summary
-  const fullSummary = resumeData.summary?.trim() || ''
+  const r: any = resumeData || {}
+  const prof: any = profile || {}
+  
+  // Extract personal info from any possible key variant
+  const p = r.personal || r.personal_info || r.personalInfo || r.basics || r.contact || {}
+  const fullName = p.full_name || p.fullName || p.name || prof.full_name || 'Candidate'
+  const title = p.professional_title || p.title || p.label || p.headline || prof.headline || 'Software Developer & Specialist'
+  const email = p.email || prof.email || ''
+  const location = p.location || prof.location || ''
+  
+  const fullSummary = (r.summary || r.about || r.objective || r.biography || prof.bio || '').toString().trim()
   const firstSentence = getFirstSentence(fullSummary)
 
   const hero = {
-    full_name: p.full_name || profile?.full_name || 'Professional',
-    title: p.professional_title || 'Software Developer & Specialist',
+    full_name: fullName,
+    title: title,
     tagline: `Building high-impact digital solutions and scalable products.`,
-    summary: (firstSentence && firstSentence !== fullSummary)
+    summary: (firstSentence && firstSentence.length > 10)
       ? firstSentence
-      : `Building high-impact digital solutions and scalable products.`,
+      : fullSummary || `Specializing in building modern, scalable software applications and user-centered solutions.`,
     avatar_url: profile?.avatar_url || undefined,
-    location: p.location || undefined,
+    location: location || undefined,
     availability: 'Available for opportunities',
     cta_primary_label: 'View My Work',
     cta_primary_url: '#projects',
@@ -59,7 +57,7 @@ export function mapResumeToPortfolioContent(
     cta_secondary_url: '#contact',
   }
 
-  const bioText = fullSummary || `${p.full_name} is a ${p.professional_title || 'specialist'} dedicated to delivering high-impact technical solutions and user-centered products.`
+  const bioText = fullSummary || `${fullName} is a ${title} dedicated to delivering high-impact technical solutions and user-centered products.`
 
   const about = {
     biography: bioText,
@@ -73,86 +71,128 @@ export function mapResumeToPortfolioContent(
     interests: ['Artificial Intelligence', 'Open Source', 'Web Performance'],
   }
 
+  // Work Experience parser (handles arrays of experience / internships)
   const rawExp = [
-    ...(resumeData.experience || []),
-    ...((resumeData as any)?.internships || []).map((exp: any, idx: number) => ({
-      id: exp.id || `intern-${idx}`,
-      company: exp.company || 'Internship',
-      position: exp.position || exp.role || 'Software Intern',
-      location: exp.location || undefined,
-      start_date: exp.start_date,
-      end_date: exp.end_date,
-      is_current: exp.is_current,
-      description: exp.description || '',
-      bullets: exp.bullets || [],
-    })),
+    ...(Array.isArray(r.experience) ? r.experience : []),
+    ...(Array.isArray(r.internships) ? r.internships : []),
+    ...(Array.isArray(r.work_history) ? r.work_history : []),
   ]
 
-  const experience = rawExp.map((exp: any, idx: number) => ({
-    id: exp.id || `exp-${idx}`,
-    company: exp.company || 'Company',
-    role: exp.position || exp.role || 'Contributor',
-    location: exp.location || undefined,
-    period: `${exp.start_date || ''}${exp.start_date || exp.end_date ? ' - ' : ''}${exp.is_current ? 'Present' : exp.end_date || ''}`,
-    is_current: exp.is_current || false,
-    description: exp.description || '',
-    bullets: exp.bullets || [],
-  }))
+  const experience = rawExp.map((exp: any, idx: number) => {
+    const comp = exp.company || exp.organization || exp.employer || 'Company'
+    const roleName = exp.position || exp.role || exp.title || exp.jobTitle || 'Software Engineer'
+    const period = exp.period || `${exp.start_date || ''}${exp.start_date || exp.end_date ? ' - ' : ''}${exp.is_current ? 'Present' : exp.end_date || ''}` || '2023 - Present'
+    const desc = exp.description || exp.summary || (Array.isArray(exp.bullets) ? exp.bullets.join('. ') : '') || 'Contributed to core development and project goals.'
+    const bullets = Array.isArray(exp.bullets) && exp.bullets.length > 0 ? exp.bullets : [desc]
 
-  const education = (resumeData.education || []).map((edu, idx) => ({
+    return {
+      id: exp.id || `exp-${idx}`,
+      company: comp,
+      role: roleName,
+      location: exp.location || undefined,
+      period,
+      is_current: exp.is_current || false,
+      description: desc,
+      bullets,
+    }
+  })
+
+  // Education parser
+  const rawEdu = Array.isArray(r.education) ? r.education : Array.isArray(r.academic) ? r.academic : []
+  const education = rawEdu.map((edu: any, idx: number) => ({
     id: edu.id || `edu-${idx}`,
-    institution: edu.institution,
-    degree: edu.degree,
-    field: edu.field_of_study || '',
-    period: `${edu.start_date || ''}${edu.start_date || edu.end_date ? ' - ' : ''}${edu.is_current ? 'Present' : edu.end_date || ''}`,
+    institution: edu.institution || edu.school || edu.college || edu.university || 'University',
+    degree: edu.degree || edu.qualification || 'Degree',
+    field: edu.field_of_study || edu.field || edu.major || 'Computer Science',
+    period: edu.period || `${edu.start_date || ''}${edu.start_date || edu.end_date ? ' - ' : ''}${edu.is_current ? 'Present' : edu.end_date || ''}` || 'Completed',
     gpa: edu.gpa || undefined,
-    achievements: edu.achievements || [],
+    achievements: Array.isArray(edu.achievements) ? edu.achievements : [],
   }))
 
-  const skills = (resumeData.skills || []).map((cat, idx) => ({
-    id: cat.id || `skill-${idx}`,
-    category: cat.name,
-    skills: cat.skills || [],
-  }))
+  // Skills parser (handles arrays of category objects OR array of skill strings)
+  const rawSkills = Array.isArray(r.skills) ? r.skills : []
+  let parsedSkillGroups: Array<{ id: string; category: string; skills: string[] }> = []
 
-  const projects = (resumeData.projects || []).map((proj, idx) => ({
-    id: proj.id || `proj-${idx}`,
-    title: proj.name,
-    tagline: proj.bullets?.[0] || 'Innovative application built with modern architecture.',
-    description: proj.description || '',
-    technologies: proj.technologies || [],
-    github_url: proj.github_url || undefined,
-    live_url: proj.url || undefined,
-    highlights: proj.bullets || [],
-    problem: 'Addressing key user workflows with efficiency and scalability.',
-    solution: 'Designed and deployed a responsive application using industry best practices.',
-    result: 'Delivered a high-performance experience with seamless interaction.',
-  }))
+  if (rawSkills.length > 0) {
+    if (typeof rawSkills[0] === 'string') {
+      // Direct array of skill strings e.g. ['JavaScript', 'React', 'Node.js']
+      parsedSkillGroups = [{
+        id: 'skill-core',
+        category: 'Technical Skills',
+        skills: rawSkills as string[],
+      }]
+    } else {
+      // Array of skill objects e.g. [{ name: 'Frontend', skills: ['React'] }]
+      parsedSkillGroups = rawSkills.map((cat: any, idx: number) => {
+        const catName = cat.name || cat.category || cat.title || cat.group || 'Technical Skills'
+        let skillList: string[] = []
+        if (Array.isArray(cat.skills)) {
+          skillList = cat.skills.map((s: any) => (typeof s === 'string' ? s : s.name || s.title || String(s)))
+        } else if (Array.isArray(cat.keywords)) {
+          skillList = cat.keywords
+        } else if (typeof cat.skill === 'string') {
+          skillList = [cat.skill]
+        }
+        return {
+          id: cat.id || `skill-${idx}`,
+          category: catName,
+          skills: skillList.length > 0 ? skillList : ['Core Technology'],
+        }
+      })
+    }
+  } else {
+    parsedSkillGroups = [{
+      id: 'skill-core',
+      category: 'Core Stack',
+      skills: ['Software Development', 'Problem Solving', 'Web Technologies'],
+    }]
+  }
 
-  const certifications = (resumeData.certifications || []).map((cert, idx) => ({
+  // Projects parser
+  const rawProjects = Array.isArray(r.projects) ? r.projects : []
+  const projects = rawProjects.map((proj: any, idx: number) => {
+    const titleName = proj.name || proj.title || proj.projectName || `Project ${idx + 1}`
+    const descText = proj.description || proj.summary || proj.details || 'Full-stack application built with modern architecture.'
+    const techList = Array.isArray(proj.technologies) 
+      ? proj.technologies 
+      : Array.isArray(proj.techStack) 
+      ? proj.techStack 
+      : ['React', 'TypeScript']
+
+    return {
+      id: proj.id || `proj-${idx}`,
+      title: titleName,
+      tagline: (Array.isArray(proj.bullets) && proj.bullets[0]) || 'Innovative web application built for real-world impact.',
+      description: descText,
+      technologies: techList,
+      github_url: proj.github_url || proj.github || undefined,
+      live_url: proj.url || proj.live_url || proj.link || undefined,
+      highlights: Array.isArray(proj.bullets) ? proj.bullets : [descText],
+      problem: 'Addressing key user workflows with efficiency and scalability.',
+      solution: 'Designed and deployed a responsive application using industry best practices.',
+      result: 'Delivered a high-performance experience with seamless interaction.',
+    }
+  })
+
+  // Certifications parser
+  const rawCerts = Array.isArray(r.certifications) ? r.certifications : []
+  const certifications = rawCerts.map((cert: any, idx: number) => ({
     id: cert.id || `cert-${idx}`,
-    title: cert.name,
-    issuer: cert.issuer,
-    date: cert.date,
-    credential_url: cert.credential_url || undefined,
-  }))
-
-  const achievements = (resumeData.achievements || []).map((ach, idx) => ({
-    id: ach.id || `ach-${idx}`,
-    title: ach.title,
-    description: ach.description,
-    date: ach.date || undefined,
+    title: cert.name || cert.title || 'Professional Certification',
+    issuer: cert.issuer || cert.organization || 'Issuing Authority',
+    date: cert.date || cert.issue_date || 'Verified',
+    credential_url: cert.credential_url || cert.url || undefined,
   }))
 
   const contact = {
     heading: "Let's build something meaningful together.",
     subheading: 'Interested in working together or discussing potential opportunities? Feel free to reach out.',
-    email: p.email || profile?.email || '',
+    email: email || profile?.email || '',
     phone: p.phone || undefined,
-    location: p.location || undefined,
-    linkedin_url: p.linkedin || undefined,
-    github_url: p.github || undefined,
-    website_url: p.portfolio || undefined,
+    location: location || undefined,
+    linkedin_url: p.linkedin || p.linkedin_url || undefined,
+    github_url: p.github || p.github_url || undefined,
+    website_url: p.portfolio || p.website || undefined,
   }
 
   return {
@@ -160,12 +200,12 @@ export function mapResumeToPortfolioContent(
     about,
     experience,
     education,
-    skills,
+    skills: parsedSkillGroups,
     projects,
     certifications,
-    achievements,
+    achievements: [],
     contact,
-    section_order: ['hero', 'about', 'projects', 'experience', 'skills', 'education', 'certifications', 'achievements', 'contact'],
+    section_order: ['hero', 'about', 'projects', 'experience', 'skills', 'education', 'certifications', 'contact'],
     hidden_sections: {},
   }
 }
@@ -175,7 +215,7 @@ export function mapResumeToPortfolioContent(
  */
 export function enrichContentWithResume(
   content: PortfolioContent,
-  resumeData?: Partial<ResumeData> | null,
+  resumeData?: Partial<ResumeData> | Record<string, any> | null,
   profile?: Partial<Profile> | null
 ): PortfolioContent {
   if (!resumeData) return content
@@ -184,7 +224,6 @@ export function enrichContentWithResume(
   let heroSummary = content.hero?.summary || mapped.hero.summary
   let aboutBio = content.about?.biography || mapped.about.biography
 
-  // If hero summary and about biography are identical, split them so hero gets the 1-sentence hook and about gets full bio
   if (heroSummary && aboutBio && heroSummary.trim() === aboutBio.trim()) {
     const fullText = aboutBio.trim()
     const firstSentence = getFirstSentence(fullText)
@@ -200,16 +239,18 @@ export function enrichContentWithResume(
     hero: {
       ...mapped.hero,
       ...content.hero,
+      full_name: content.hero?.full_name && content.hero.full_name !== 'Candidate' ? content.hero.full_name : mapped.hero.full_name,
+      title: content.hero?.title && content.hero.title !== 'Software Developer & Specialist' ? content.hero.title : mapped.hero.title,
       summary: heroSummary,
     },
     about: {
       ...mapped.about,
       ...content.about,
-      biography: aboutBio,
+      biography: aboutBio && !aboutBio.startsWith('is a specialist') ? aboutBio : mapped.about.biography,
     },
     experience: (content.experience && content.experience.length > 0) ? content.experience : mapped.experience,
     education: (content.education && content.education.length > 0) ? content.education : mapped.education,
-    skills: (content.skills && content.skills.length > 0) ? content.skills : mapped.skills,
+    skills: (content.skills && content.skills.length > 0 && content.skills[0].skills.length > 0) ? content.skills : mapped.skills,
     projects: (content.projects && content.projects.length > 0) ? content.projects : mapped.projects,
     certifications: (content.certifications && content.certifications.length > 0) ? content.certifications : mapped.certifications,
     achievements: (content.achievements && content.achievements.length > 0) ? content.achievements : mapped.achievements,
@@ -222,5 +263,3 @@ export function enrichContentWithResume(
     },
   }
 }
-
-
