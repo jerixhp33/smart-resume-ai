@@ -476,14 +476,19 @@ export default function PortfolioPage({ resumeData }) {
                 </div>
 
                 <div className="max-h-[300px] overflow-y-auto space-y-1 p-3 bg-slate-900/90 rounded-xl border border-white/10 text-slate-300">
-                  {streamedCodeLines.map((line, idx) => (
-                    <div key={idx} className="flex items-start gap-2">
-                      <span className="text-slate-600 select-none w-6 text-right font-mono text-[10px]">{idx + 1}</span>
-                      <span className={line.startsWith('//') ? 'text-slate-400 italic' : line.startsWith('import') ? 'text-purple-400 font-bold' : 'text-emerald-400'}>
-                        {line}
-                      </span>
-                    </div>
-                  ))}
+                  {(streamedCodeLines || []).map((line, idx) => {
+                    const safeLine = typeof line === 'string' ? line : ''
+                    const isComment = safeLine.startsWith('//')
+                    const isImport = safeLine.startsWith('import')
+                    return (
+                      <div key={idx} className="flex items-start gap-2">
+                        <span className="text-slate-600 select-none w-6 text-right font-mono text-[10px]">{idx + 1}</span>
+                        <span className={isComment ? 'text-slate-400 italic' : isImport ? 'text-purple-400 font-bold' : 'text-emerald-400'}>
+                          {safeLine || '\u00A0'}
+                        </span>
+                      </div>
+                    )
+                  })}
                   <div className="flex items-center gap-1 text-emerald-400 font-bold animate-pulse pt-1">
                     <span className="inline-block w-2 h-4 bg-emerald-400" />
                   </div>

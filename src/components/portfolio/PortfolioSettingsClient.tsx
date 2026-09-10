@@ -325,9 +325,9 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
                       <div className="flex items-center gap-1.5 font-medium text-foreground">
                         <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                         <span className="truncate max-w-[240px]">
-                          {ogImage.startsWith('blob:')
+                          {(ogImage || '').startsWith('blob:')
                             ? 'Local Upload Preview'
-                            : ogImage.includes('.supabase.co') || ogImage.startsWith('/api/assets/')
+                            : (ogImage || '').includes('.supabase.co') || (ogImage || '').startsWith('/api/assets/')
                             ? 'Cloud Uploaded Social Banner'
                             : ogImage}
                         </span>
@@ -378,10 +378,10 @@ export function PortfolioSettingsClient({ portfolio }: PortfolioSettingsClientPr
                 <div className="space-y-1">
                   <label className="text-[11px] text-muted-foreground font-medium">Or enter custom image URL manually:</label>
                   <Input
-                    value={ogImage.includes('.supabase.co') || ogImage.startsWith('/api/assets/') ? '' : ogImage}
+                    value={(ogImage || '').includes('.supabase.co') || (ogImage || '').startsWith('/api/assets/') ? '' : ogImage}
                     onChange={(e) => setOgImage(e.target.value)}
                     placeholder={
-                      ogImage.includes('.supabase.co') || ogImage.startsWith('/api/assets/')
+                      (ogImage || '').includes('.supabase.co') || (ogImage || '').startsWith('/api/assets/')
                         ? 'Cloud asset active. Paste external image URL to replace...'
                         : 'https://example.com/images/portfolio-banner.png'
                     }

@@ -44,9 +44,10 @@ function FileCard({ file, onDelete, onRename }: { file: UserFile, onDelete: (id:
   const [isEditing, setIsEditing] = useState(false)
   const [editName, setEditName] = useState(file.name)
 
-  const isImage = file.mime_type.startsWith('image/')
-  const Icon = isImage ? ImageIcon : file.mime_type === 'application/pdf' ? FileText : File
-  const iconColor = isImage ? 'text-blue-500' : file.mime_type === 'application/pdf' ? 'text-red-500' : 'text-gray-500'
+  const mimeType = file.mime_type || ''
+  const isImage = mimeType.startsWith('image/')
+  const Icon = isImage ? ImageIcon : mimeType === 'application/pdf' ? FileText : File
+  const iconColor = isImage ? 'text-blue-500' : mimeType === 'application/pdf' ? 'text-red-500' : 'text-gray-500'
 
   const sizeStr = (file.size / 1024 / 1024).toFixed(2) + ' MB'
 

@@ -22,7 +22,8 @@ export function MobileNav() {
     <nav className="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-card border-t border-border safe-area-inset-bottom">
       <div className="flex items-center justify-around px-2 py-2">
         {MOBILE_NAV.map(({ href, label, icon: Icon }) => {
-          const isActive = href === '/dashboard' ? pathname === href : pathname.startsWith(href)
+          const safePathname = pathname || ''
+          const isActive = href === '/dashboard' ? safePathname === href : safePathname.startsWith(href)
           return (
             <Link
               key={href}

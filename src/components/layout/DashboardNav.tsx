@@ -45,6 +45,7 @@ interface DashboardNavProps {
 
 export function DashboardNav({ userId, isCollapsed = false, onToggleCollapse }: DashboardNavProps) {
   const pathname = usePathname()
+  const safePathname = pathname || ''
   const router = useRouter()
   const supabase = getSupabaseBrowserClient()
 
@@ -81,14 +82,14 @@ export function DashboardNav({ userId, isCollapsed = false, onToggleCollapse }: 
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const isActive =
             href === '/dashboard'
-              ? pathname === href
+              ? safePathname === href
               : href === '/portfolio'
-              ? pathname === '/portfolio' ||
-                pathname.startsWith('/portfolio/editor') ||
-                pathname.startsWith('/portfolio/settings') ||
-                pathname.startsWith('/portfolio/analytics') ||
-                pathname.startsWith('/portfolio/preview')
-              : pathname.startsWith(href)
+              ? safePathname === '/portfolio' ||
+                safePathname.startsWith('/portfolio/editor') ||
+                safePathname.startsWith('/portfolio/settings') ||
+                safePathname.startsWith('/portfolio/analytics') ||
+                safePathname.startsWith('/portfolio/preview')
+              : href !== '/' && safePathname.startsWith(href)
           return (
             <Link
               key={href}
@@ -124,7 +125,7 @@ export function DashboardNav({ userId, isCollapsed = false, onToggleCollapse }: 
           className={cn(
             'flex items-center rounded-xl text-sm font-medium transition-all',
             isCollapsed ? 'justify-center p-2.5' : 'gap-3 px-3 py-2.5',
-            pathname.startsWith('/settings')
+            safePathname.startsWith('/settings')
               ? 'bg-primary/10 text-primary font-bold'
               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
           )}
